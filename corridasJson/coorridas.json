@@ -1,0 +1,15 @@
+{
+	"corridas": {
+	  "testeManual": {
+		"status": "pendente",
+		"solicitadaEm": "2025-05-05T16:00:00",
+		"passageiro": {
+		  "latitude": -23.5,
+		  "longitude": -46.6
+		}
+	  }
+	}
+  }
+  
+
+  
