@@ -1,62 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VAMU - Login</title>
-        <link rel="stylesheet" href="css/style.css">
-    </head>
-    <body>
-        <div class="container">
-            <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMU">
-            <h2>🔐 Login</h2>
-            <input
-                type="email"
-                id="email"
-                placeholder="E-mail"
-                required
-            >
-            <br>
-            <br>
-            <input
-                type="password"
-                id="senha"
-                placeholder="Senha"
-                required
-            >
-            <br>
-            <br>
-            <!-- AQUI ENTRA O BLOCO -->
-            <div class="user-type">
-                <input
-                    type="radio"
-                    id="passageiro"
-                    name="tipoUsuario"
-                    value="passageiro"
-                    checked
-                >
-                <label for="passageiro">Sou Passageiro</label>
-                <input
-                    type="radio"
-                    id="motorista"
-                    name="tipoUsuario"
-                    value="motorista"
-                >
-                <label for="motorista">Sou Motorista</label>
-            </div>
-            <!-- Botões de Ação -->
-            
-            <div class="botoes-login">
-                <button class="botao-vamu" onclick="entrar()">Entrar</button>
-                <button class="botao-vamu" onclick="cadastrar()">Cadastrar</button>
-            </div>
-            <p id="loginStatus" class="status"></p>
-        </div>
-        <!-- Firebase -->
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-        <script src="javascript/firebase-config.js"></script>
-        <script src="javascript/login.js"></script>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - VAMU</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMU" />
+    <h2>🔐 Login</h2>
+
+    <input type="email" id="email" placeholder="E-mail" required />
+    <input type="password" id="senha" placeholder="Senha" required />
+
+    <!-- Seleção de tipo de usuário -->
+    <div class="user-type">
+      <input type="radio" id="passageiro" name="tipoUsuario" value="passageiro" checked />
+      <label for="passageiro">Sou Passageiro</label>
+      <input type="radio" id="motorista" name="tipoUsuario" value="motorista" />
+      <label for="motorista">Sou Motorista</label>
+    </div>
+
+    <div class="botoes-vamu-container">
+      <button class="botao-vamu" onclick="login()">
+        <span>Entrar</span>
+      </button>
+      <button class="botao-vamu" onclick="cadastrar()">
+        <span>Cadastrar</span>
+      </button>
+    </div>
+
+    <p id="loginStatus"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <!-- Firebase Config -->
+  <script src="javascript/firebase-config.js"></script>
+
+  <!-- Script do login geral -->
+  <script src="javascript/login.js"></script>
+</body>
 </html>

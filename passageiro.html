@@ -1,35 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VAMU - Passageiro</title>
-        <link rel="stylesheet" href="css/style.css">
-    </head>
-    <body>
-        <div class="container">
-            <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMU">
-            <h2>👤 Passageiro</h2>
-            <p>Veja os motoristas online no mapa:</p>
-            <div id="mapa"></div>
-            <div class="botoes-vamu-container">
-                <button class="botao-vamu" onclick="chamarCorrida()">
-                    <span class="linha1">Chamar</span>
-                    <span class="linha2">Corrida</span>
-                </button>
-                <button class="botao-vamu" onclick="logout()">🚪 Sair</button>
-            </div>
-            <p id="statusCorrida"></p>
-        </div>
-        <!-- Firebase SDKs -->
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-        <!-- Firebase config -->
-        <script src="javascript/firebase-config.js"></script>
-        <!-- Script do Passageiro -->
-        <script src="javascript/passageiro.js"></script>
-        <!-- Google Maps API -->
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap"></script>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VAMU - Passageiro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMU" />
+    <h2>👤 Passageiro</h2>
+    <p>Veja os motoristas online no mapa:</p>
+    <div id="mapa"></div>
+
+    <!-- Campo para destino acima dos botões -->
+    <div class="formulario-destino">
+      <input type="text" id="destino" placeholder="Digite o destino (ex: Av. Paulista, SP)" />
+    </div>
+
+    <div class="botoes-vamu-container">
+      <button class="botao-vamu" onclick="chamarCorrida()">
+        <span class="linha1">Chamar</span>
+        <span class="linha2">Corrida</span>
+      </button>
+      <button class="botao-vamu" onclick="logout()">🚪 Sair</button>
+    </div>
+
+    <p id="statusCorrida"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <!-- Firebase Config -->
+  <script src="javascript/firebase-config.js"></script>
+
+  <!-- Script do Passageiro -->
+  <script src="javascript/passageiro.js"></script>
+
+  <!-- Google Maps API -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap">
+  </script>
+</body>
 </html>

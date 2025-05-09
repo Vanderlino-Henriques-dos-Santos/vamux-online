@@ -1,4 +1,4 @@
-let mapaGlobal;
+// passageiro.js
 
 function initMap() {
   if (navigator.geolocation) {
@@ -8,35 +8,39 @@ function initMap() {
         lng: position.coords.longitude
       };
 
-      mapaGlobal = new google.maps.Map(document.getElementById("mapa"), {
+      const mapa = new google.maps.Map(document.getElementById("mapa"), {
         center: local,
         zoom: 15
       });
 
       new google.maps.Marker({
         position: local,
-        map: mapaGlobal,
-        title: "Você está aqui"
+        map: mapa,
+        title: "Sua localização"
       });
-
-      mostrarStatus("Localização carregada com sucesso.");
     }, () => {
-      mostrarStatus("Não foi possível acessar sua localização.", "erro");
+      mostrarStatus("Erro ao obter localização.", "erro");
     });
   } else {
-    mostrarStatus("Geolocalização não é suportada pelo seu navegador.", "erro");
+    mostrarStatus("Geolocalização não suportada pelo navegador.", "erro");
   }
 }
 
-function mostrarStatus(mensagem, tipo = "sucesso") {
+function mostrarStatus(texto, tipo = "sucesso") {
   const status = document.getElementById("statusCorrida");
   if (status) {
-    status.textContent = mensagem;
+    status.textContent = texto;
     status.className = "status " + tipo;
   }
 }
 
 function chamarCorrida() {
+  const destino = document.getElementById("destino").value;
+  if (!destino) {
+    mostrarStatus("Por favor, insira o destino.", "aviso");
+    return;
+  }
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
       const local = {
@@ -49,19 +53,19 @@ function chamarCorrida() {
           const dadosCorrida = {
             idPassageiro: user.uid,
             passageiro: local,
+            destinoTexto: destino,
             status: "pendente",
             solicitadaEm: new Date().toISOString()
           };
 
           firebase.database().ref("corridas").push(dadosCorrida)
             .then(() => {
-              mostrarStatus("Corrida solicitada com sucesso! Aguarde um motorista.");
+              mostrarStatus("Corrida solicitada com sucesso! Aguarde um motorista.", "sucesso");
+              document.getElementById("destino").value = "";
             })
             .catch((error) => {
               mostrarStatus("Erro ao solicitar corrida: " + error.message, "erro");
             });
-        } else {
-          mostrarStatus("Usuário não autenticado. Faça login novamente.", "erro");
         }
       });
     });
@@ -80,7 +84,6 @@ function logout() {
     });
 }
 
-// Verifica se usuário está autenticado
 firebase.auth().onAuthStateChanged((user) => {
   if (!user) {
     alert("Você precisa estar logado para acessar esta página.");

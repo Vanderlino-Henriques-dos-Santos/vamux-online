@@ -64,35 +64,73 @@ function ficarOnline() {
   mostrarStatus("Você está online!");
   initMap();
   carregarCorridasPendentes();
-  document.getElementById('botaoOnline').disabled = true;
+  const botao = document.getElementById('botaoOnline');
+  if (botao) botao.disabled = true;
+}
+
+function calcularDistanciaEmKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
 function carregarCorridasPendentes() {
   const lista = document.getElementById("corridasPendentes");
   if (!lista) return;
 
-  firebase.database().ref("corridas").on("value", (snapshot) => {
-    lista.innerHTML = "";
-    const corridas = snapshot.val();
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) return;
 
-    if (corridas) {
-      Object.keys(corridas).forEach((id) => {
-        const corrida = corridas[id];
-        if (corrida.status === "pendente") {
-          const div = document.createElement("div");
-          div.innerHTML = `
-            <p>📍 Corrida disponível</p>
-            <p>Latitude: ${corrida.passageiro.latitude}</p>
-            <p>Longitude: ${corrida.passageiro.longitude}</p>
-            <button onclick="aceitarCorrida('${id}')">Aceitar Corrida</button>
-            <hr>
-          `;
-          lista.appendChild(div);
+    navigator.geolocation.getCurrentPosition((position) => {
+      const localMotorista = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      firebase.database().ref("corridas").on("value", (snapshot) => {
+        lista.innerHTML = "";
+        const corridas = snapshot.val();
+
+        if (corridas) {
+          Object.keys(corridas).forEach((id) => {
+            const corrida = corridas[id];
+            if (corrida.status === "pendente") {
+              const passageiro = corrida.passageiro;
+              const distanciaKm = calcularDistanciaEmKm(
+                localMotorista.lat,
+                localMotorista.lng,
+                passageiro.latitude,
+                passageiro.longitude
+              );
+
+              const valor = corrida.valorEstimado
+                ? `R$ ${corrida.valorEstimado.toFixed(2)}`
+                : "Calculando...";
+
+              const div = document.createElement("div");
+              div.innerHTML = `
+                <p>📍 Corrida disponível</p>
+                <p><strong>Latitude:</strong> ${passageiro.latitude}</p>
+                <p><strong>Longitude:</strong> ${passageiro.longitude}</p>
+                <p><strong>Distância:</strong> ${distanciaKm.toFixed(2)} km</p>
+                <p><strong>Valor estimado:</strong> ${valor}</p>
+                <button onclick="aceitarCorrida('${id}')">Aceitar Corrida</button>
+                <hr>
+              `;
+              lista.appendChild(div);
+            }
+          });
+        } else {
+          mostrarStatus("Nenhuma corrida disponível no momento.", "aviso");
         }
       });
-    } else {
-      mostrarStatus("Nenhuma corrida disponível no momento.", "aviso");
-    }
+    });
   });
 }
 
@@ -177,10 +215,10 @@ function logout() {
     });
 }
 
-// Verifica se o usuário está logado
 firebase.auth().onAuthStateChanged((user) => {
   if (!user) {
     alert("Você precisa estar logado para acessar esta página.");
     window.location.href = "login.html";
   }
 });
+

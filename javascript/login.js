@@ -1,39 +1,32 @@
-function cadastrar() {
+// javascript/login.js
+
+function login() {
 	const email = document.getElementById("email").value;
 	const senha = document.getElementById("senha").value;
 	const status = document.getElementById("loginStatus");
   
-	firebase.auth().createUserWithEmailAndPassword(email, senha)
+	firebase.auth().signInWithEmailAndPassword(email, senha)
 	  .then(() => {
-		status.textContent = "Cadastro realizado com sucesso!";
-		status.style.color = "lightgreen";
-  
-		// Pequeno atraso para mostrar a mensagem antes de redirecionar
-		setTimeout(() => {
-		  window.location.href = "passageiro.html";
-		}, 1000);
+		status.textContent = "Login realizado com sucesso!";
+		status.style.color = "green";
+		window.location.href = "passageiro.html";
 	  })
 	  .catch((error) => {
-		status.textContent = "Erro ao cadastrar: " + error.message;
+		status.textContent = "Erro ao fazer login: " + error.message;
 		status.style.color = "red";
 	  });
   }
+  
   function cadastrar() {
 	const email = document.getElementById("email").value;
 	const senha = document.getElementById("senha").value;
-	const tipoUsuario = document.querySelector('input[name="tipoUsuario"]:checked').value;
 	const status = document.getElementById("loginStatus");
   
 	firebase.auth().createUserWithEmailAndPassword(email, senha)
 	  .then(() => {
 		status.textContent = "Cadastro realizado com sucesso!";
-		status.style.color = "lightgreen";
-  
-		if (tipoUsuario === "passageiro") {
-		  window.location.href = "passageiro.html";
-		} else {
-		  window.location.href = "motorista.html";
-		}
+		status.style.color = "green";
+		window.location.href = "passageiro.html";
 	  })
 	  .catch((error) => {
 		status.textContent = "Erro ao cadastrar: " + error.message;

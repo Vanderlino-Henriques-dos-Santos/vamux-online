@@ -1,32 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VAMU - Motorista</title>
-        <link rel="stylesheet" href="css/style.css">
-    </head>
-    <body>
-        <div class="container">
-            <img src="assets/logo/logoprojeto.jpeg" alt="Logo VAMU" class="logo">
-            <h2>🧑‍✈️ Motorista</h2>
-            <p>Veja sua localização no mapa:</p>
-            <div id="mapa"></div>
-            <p id="statusMotorista" class="status"></p>
-            <h3>Corridas Pendentes:</h3>
-            <div id="corridasPendentes"></div>
-            <div class="botoes-vamu-container">
-                <button onclick="ficarOnline()" class="botao-vamu">Ficar Online</button>
-                <button onclick="finalizarCorrida()" class="botao-vamu">Finalizar Corrida</button>
-                <button onclick="logout()" class="botao-vamu">Sair</button>
-            </div>
-        </div>
-        <!-- Firebase + Maps -->
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-        <script src="javascript/firebase-config.js"></script>
-        <script src="javascript/motorista.js"></script>
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap"></script>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAMU - Motorista</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMU" />
+    <h2>🧑‍✈️ Motorista</h2>
+    <p>Veja sua localização no mapa:</p>
+    <div id="mapa"></div>
+    <p id="statusMotorista"></p>
+    <h3>Corridas Pendentes:</h3>
+    <div id="corridasPendentes"></div>
+  </div>
+
+  <div class="botoes-vamu-container">
+    <button id="botaoOnline" class="botao-vamu" onclick="ficarOnline()">
+      <span>Ficar</span><span>Online</span>
+    </button>
+    <button class="botao-vamu" onclick="finalizarCorrida()">
+      <span>Finalizar</span><span>Corrida</span>
+    </button>
+    <button class="botao-vamu" onclick="logout()">
+      <span>Sair</span>
+    </button>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <!-- Firebase Config -->
+  <script src="javascript/firebase-config.js"></script>
+
+  <!-- Script do Motorista -->
+  <script src="javascript/motorista.js"></script>
+
+  <!-- Google Maps API -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap"></script>
+</body>
 </html>

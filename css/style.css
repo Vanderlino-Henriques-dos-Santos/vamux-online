@@ -1,232 +1,126 @@
-/* Reset e base */
-* {
+/* Reset básico */
+body, html {
 	margin: 0;
 	padding: 0;
-	box-sizing: border-box;
-}
-
-body,
-html {
 	height: 100%;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	font-family: 'Segoe UI', sans-serif;
 	background-color: #f4f4f4;
 	overflow-x: hidden;
-}
-
-/* Container geral */
-.container {
+  }
+  
+  /* Centralização */
+  .container {
 	max-width: 400px;
-	margin: auto;
-	padding: 30px 20px;
+	margin: 0 auto;
+	padding: 20px;
 	min-height: 100vh;
-	background-color: white;
-	border-radius: 10px;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-	text-align: center;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-}
-
-/* Logo */
-.logo {
-	width: 150px;
-	height: auto;
-	border-radius: 20px; /* bordas arredondadas */
-	display: block;
-	margin: 0 auto 20px auto; /* centraliza e adiciona margem inferior */
+	align-items: center;
+	background-color: white;
+	box-shadow: 0 0 20px rgba(0,0,0,0.1);
+	border-radius: 15px;
   }
   
-  
-  /* Botões de login lado a lado e proporcionais */
-  .botoes-login {
-	display: flex;
-	justify-content: center;
-	gap: 10px;
-	margin-top: 20px;
-	flex-wrap: wrap;
+  /* Logo arredondada */
+  .logo {
+	width: 160px;
+	margin-bottom: 20px;
+	border-radius: 20px;
   }
   
+  /* Títulos e mensagens */
+  h1, h2, h3, p {
+	margin-bottom: 15px;
+	text-align: center;
+  }
   
-  .botao-vamu {
-	padding: 10px 16px;
-	background-color: #141414;
-	color: white;
-	border: none;
-	border-radius: 8px;
+  #statusCorrida,
+  #statusMotorista,
+  #loginStatus {
+	font-weight: bold;
 	font-size: 14px;
-	font-weight: 500;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
+	color: green;
+	margin-top: 10px;
   }
   
-  .botao-vamu:hover {
-	background-color: #333;
+  .status.erro {
+	color: red;
   }
   
-
-/* Inputs */
-input[type="email"],
-input[type="password"] {
+  .status.aviso {
+	color: orange;
+  }
+  
+  /* Inputs */
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
 	width: 100%;
 	padding: 12px;
 	margin: 8px 0 16px;
 	border: 1px solid #ccc;
 	border-radius: 6px;
 	font-size: 16px;
-}
-
-/* Radio Buttons */
-.user-type {
-	display: flex;
-	justify-content: center;
-	gap: 20px;
-	margin-bottom: 20px;
-}
-
-.botao-vamu {
-	padding: 8px 16px;
-	background-color: #141414;
-	color: white;
-	border: none;
-	border-radius: 8px;
-	font-size: 12px; /* fonte menor */
-	font-weight: 500;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
-	min-width: 100px; /* evita botão minúsculo demais */
-	text-align: center;
+	box-sizing: border-box;
   }
   
-  .botao-vamu:hover {
-	background-color: #333;
+  /* Campo destino (passageiro) */
+  .formulario-destino {
+	width: 100%;
+	max-width: 400px;
+	margin: 10px auto;
+	padding: 0 20px;
   }
   
-.botao-vamu span:last-child {
-	background: linear-gradient(90deg, #ec4899, #f59e0b);
-	background-clip: text;
-	-webkit-background-clip: text;
-	color: transparent;
-	-webkit-text-fill-color: transparent;
-}
-
-.botoes-login {
-	display: flex;
-	justify-content: center;
-	gap: 15px;
-	margin-top: 20px;
-}
-
-.botao-vamu {
-	padding: 10px 20px;
-	border: none;
-	background-color: #141414;
-	color: white;
-	border-radius: 8px;
-	font-size: 14px;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
-}
-
-.botao-vamu:hover {
-	background-color: #333;
-}
-
-
-
-/* Mapa */
-#mapa {
+  #destino {
+	width: 100%;
+	padding: 12px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+	font-size: 16px;
+  }
+  
+  /* Mapa */
+  #mapa {
 	width: 100%;
 	height: 300px;
 	border-radius: 10px;
-	margin-top: 20px;
-}
-
-/* Status */
-.status,
-#statusCorrida,
-#statusMotorista,
-#statusGlobal,
-#loginStatus {
-	margin-top: 20px;
-	font-weight: bold;
-}
-
-.status.sucesso,
-#loginStatus.sucesso {
-	color: #4caf50;
-}
-
-.status.erro,
-#loginStatus.erro {
-	color: #f44336;
-}
-
-.status.aviso {
-	color: #ff9800;
-}
-
-/* Responsivo */
-@media (max-width: 480px) {
-	.container {
-		margin: 20px;
-		padding: 20px;
-	}
-
-	.botao-vamu {
-		width: 140px;
-		height: 50px;
-		font-size: 12px;
-	}
-}
-/* Estilo exclusivo para a página index.html */
-.container {
-	max-width: 500px;
-	margin: 0 auto;
-	padding: 40px 20px;
-	background-color: white;
-	text-align: center;
-	border-radius: 15px;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-	margin-top: 10vh;
+	margin: 20px 0;
   }
   
-  .logo {
-	max-width: 180px;
-	border-radius: 20px;
-	margin-bottom: 20px;
-  }
-  
-  .opcoes-acesso {
-	display: flex;
-	justify-content: center;
-	gap: 20px;
-	margin-top: 30px;
-	flex-wrap: wrap;
-  }
-  
-  .botao-acesso {
-	background-color: #4CAF50;
+  /* Botões */
+  .botao-vamu {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	background: #141414;
 	color: white;
-	padding: 15px 25px;
-	font-size: 16px;
 	border: none;
-	border-radius: 10px;
+	font-weight: bold;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	font-size: 10px;
 	cursor: pointer;
-	text-decoration: none;
-	transition: background-color 0.3s ease;
+	margin: 10px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+	transition: transform 0.2s ease;
   }
   
-  .botao-acesso:hover {
-	background-color: #388e3c;
+  .botao-vamu:hover {
+	transform: scale(1.05);
   }
   
-  @media (max-width: 480px) {
-	.botao-acesso {
-	  width: 100%;
-	}
+  .botao-vamu span {
+	display: block;
+	text-align: center;
+	font-size: 12px;
   }
   
+  /* Container de botões */
   .botoes-vamu-container {
 	display: flex;
 	justify-content: center;
@@ -235,18 +129,21 @@ input[type="password"] {
 	margin-top: 20px;
   }
   
-  .botao-vamu {
-	background-color: #4CAF50;
-	color: white;
-	border: none;
-	padding: 12px 20px;
-	font-size: 14px;
-	border-radius: 10px;
-	cursor: pointer;
-	transition: 0.3s ease;
-  }
+  /* Responsivo */
+  @media (max-width: 480px) {
+	.container {
+	  padding: 20px 15px;
+	  margin: 15px;
+	}
   
-  .botao-vamu:hover {
-	background-color: #388e3c;
+	.botao-vamu {
+	  width: 80px;
+	  height: 80px;
+	  font-size: 10px;
+	}
+  
+	.logo {
+	  width: 130px;
+	}
   }
   

@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login Motorista - VAMU</title>
-        <link rel="stylesheet" href="css/style.css">
-    </head>
-    <body>
-        <div class="container">
-            <img src="assets/logo/logoprojeto-2.jpeg" class="logo" alt="Logo VAMU">
-            <h2>🧑‍✈️ Login Motorista</h2>
-            <input
-                type="email"
-                id="email"
-                placeholder="E-mail"
-                required
-            >
-            <br>
-            <br>
-            <input
-                type="password"
-                id="senha"
-                placeholder="Senha"
-                required
-            >
-            <br>
-            <br>
-            <button onclick="loginMotorista()">Entrar</button>
-            <button onclick="cadastrarMotorista()">Cadastrar</button>
-            <p id="loginStatus"></p>
-        </div>
-        <!-- Firebase SDKs -->
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-        <!-- Firebase Configuração + Script de Login do Motorista -->
-        <script src="javascript/firebase-config.js"></script>
-        <script src="javascript/login-motorista.js"></script>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Motorista - VAMU</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMU" />
+    <h2>🔐 Login Motorista</h2>
+
+    <input type="email" id="email" placeholder="E-mail" required />
+    <input type="password" id="senha" placeholder="Senha" required />
+
+    <div class="botoes-vamu-container">
+      <button class="botao-vamu" onclick="loginMotorista()">
+        <span>Entrar</span>
+      </button>
+      <button class="botao-vamu" onclick="cadastrarMotorista()">
+        <span>Cadastrar</span>
+      </button>
+    </div>
+
+    <p id="loginStatus"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <!-- Firebase Config -->
+  <script src="javascript/firebase-config.js"></script>
+
+  <!-- Script específico do login motorista -->
+  <script src="javascript/login-motorista.js"></script>
+</body>
 </html>
