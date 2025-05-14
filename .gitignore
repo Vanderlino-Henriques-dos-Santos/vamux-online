@@ -1,1 +1,6 @@
 node_modules
+# Ocultar arquivos sensíveis e logs
+*.log
+firebase-debug.*
+.env
+javascript/config.js
