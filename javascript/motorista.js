@@ -1,224 +1,133 @@
-// motorista.js
+// javascript/motorista.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
-let mapaGlobal = null;
+const firebaseConfig = {
+  apiKey: "AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM",
+  authDomain: "vamux-ad825.firebaseapp.com",
+  projectId: "vamux-ad825",
+  storageBucket: "vamux-ad825.appspot.com",
+  messagingSenderId: "750098504653",
+  appId: "1:750098504653:web:f84e3e8fb869442f474284"
+};
+
+const app = initializeApp(firebaseConfig);
+
+let map;
+let motoristaPos = null;
+let rotaPolyline = null;
+let idCorridaAtual = null;
+
+window.addEventListener("load", () => {
+  const check = setInterval(() => {
+    if (typeof google !== "undefined" && google.maps) {
+      initMap();
+      clearInterval(check);
+    }
+  }, 100);
+});
 
 function initMap() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const local = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+  navigator.geolocation.getCurrentPosition((position) => {
+    motoristaPos = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+    };
 
-      mapaGlobal = new google.maps.Map(document.getElementById("mapa"), {
-        center: local,
-        zoom: 15
-      });
-
-      new google.maps.Marker({
-        position: local,
-        map: mapaGlobal,
-        title: "Sua posição"
-      });
-
-      enviarLocalizacao(local.lat, local.lng);
-    }, () => {
-      mostrarStatus("Não foi possível acessar sua localização.", "erro");
+    map = new google.maps.Map(document.getElementById("mapa"), {
+      center: motoristaPos,
+      zoom: 14
     });
-  } else {
-    mostrarStatus("Geolocalização não suportada pelo navegador.", "erro");
-  }
-}
 
-function mostrarStatus(texto, tipo = "sucesso") {
-  const status = document.getElementById("statusMotorista");
-  if (status) {
-    status.textContent = texto;
-    status.className = "status " + tipo;
-  }
-}
-
-function enviarLocalizacao(lat, lng) {
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      const motoristaId = user.uid;
-      const dados = {
-        latitude: lat,
-        longitude: lng,
-        online: true,
-        atualizadoEm: new Date().toISOString()
-      };
-
-      firebase.database().ref("motoristas/" + motoristaId).set(dados)
-        .then(() => {
-          console.log("Localização enviada!");
-        })
-        .catch((error) => {
-          mostrarStatus("Erro ao enviar localização: " + error.message, "erro");
-        });
-    }
-  });
-}
-
-function ficarOnline() {
-  mostrarStatus("Você está online!");
-  initMap();
-  carregarCorridasPendentes();
-  const botao = document.getElementById('botaoOnline');
-  if (botao) botao.disabled = true;
-}
-
-function calcularDistanciaEmKm(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-function carregarCorridasPendentes() {
-  const lista = document.getElementById("corridasPendentes");
-  if (!lista) return;
-
-  firebase.auth().onAuthStateChanged((user) => {
-    if (!user) return;
-
-    navigator.geolocation.getCurrentPosition((position) => {
-      const localMotorista = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-
-      firebase.database().ref("corridas").on("value", (snapshot) => {
-        lista.innerHTML = "";
-        const corridas = snapshot.val();
-
-        if (corridas) {
-          Object.keys(corridas).forEach((id) => {
-            const corrida = corridas[id];
-            if (corrida.status === "pendente") {
-              const passageiro = corrida.passageiro;
-              const distanciaKm = calcularDistanciaEmKm(
-                localMotorista.lat,
-                localMotorista.lng,
-                passageiro.latitude,
-                passageiro.longitude
-              );
-
-              const valor = corrida.valorEstimado
-                ? `R$ ${corrida.valorEstimado.toFixed(2)}`
-                : "Calculando...";
-
-              const div = document.createElement("div");
-              div.innerHTML = `
-                <p>📍 Corrida disponível</p>
-                <p><strong>Latitude:</strong> ${passageiro.latitude}</p>
-                <p><strong>Longitude:</strong> ${passageiro.longitude}</p>
-                <p><strong>Distância:</strong> ${distanciaKm.toFixed(2)} km</p>
-                <p><strong>Valor estimado:</strong> ${valor}</p>
-                <button onclick="aceitarCorrida('${id}')">Aceitar Corrida</button>
-                <hr>
-              `;
-              lista.appendChild(div);
-            }
-          });
-        } else {
-          mostrarStatus("Nenhuma corrida disponível no momento.", "aviso");
-        }
-      });
+    new google.maps.Marker({
+      position: motoristaPos,
+      map: map,
+      title: "Você (Motorista)"
     });
   });
 }
 
-function aceitarCorrida(idCorrida) {
-  firebase.auth().onAuthStateChanged((user) => {
-    if (!user) return;
+window.ficarOnline = function () {
+  const db = getDatabase(app);
+  const corridasRef = ref(db, "corridas");
 
-    const motoristaId = user.uid;
+  onValue(corridasRef, (snapshot) => {
+    const container = document.getElementById("corridasPendentes");
+    container.innerHTML = "<h3 class='gradient-text'>Corridas Pendentes</h3>";
 
-    firebase.database().ref("corridas/" + idCorrida).once("value")
-      .then((snapshot) => {
-        const corrida = snapshot.val();
-
-        if (!corrida || !corrida.passageiro) {
-          mostrarStatus("Dados da corrida inválidos.", "erro");
-          return;
-        }
-
-        const destino = new google.maps.LatLng(corrida.passageiro.latitude, corrida.passageiro.longitude);
-
-        navigator.geolocation.getCurrentPosition((pos) => {
-          const origem = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-
-          firebase.database().ref("corridas/" + idCorrida).update({
-            status: "em andamento",
-            motoristaId: motoristaId
-          });
-
-          const directionsService = new google.maps.DirectionsService();
-          const directionsRenderer = new google.maps.DirectionsRenderer();
-          directionsRenderer.setMap(mapaGlobal);
-
-          const request = {
-            origin: origem,
-            destination: destino,
-            travelMode: google.maps.TravelMode.DRIVING
-          };
-
-          directionsService.route(request, (result, status) => {
-            if (status === "OK") {
-              directionsRenderer.setDirections(result);
-              mostrarStatus("Rota traçada até o passageiro!");
-            } else {
-              mostrarStatus("Erro ao traçar rota: " + status, "erro");
-            }
-          });
-        });
-      });
-  });
-}
-
-function finalizarCorrida() {
-  firebase.database().ref("corridas").once("value").then((snapshot) => {
-    const corridas = snapshot.val();
-    const user = firebase.auth().currentUser;
-    if (!user) return;
-
-    for (const id in corridas) {
-      const corrida = corridas[id];
-      if (corrida.motoristaId === user.uid && corrida.status === "em andamento") {
-        firebase.database().ref("corridas/" + id).update({
-          status: "finalizada",
-          finalizadaEm: new Date().toISOString()
-        }).then(() => {
-          mostrarStatus("Corrida finalizada com sucesso!");
-        }).catch((error) => {
-          mostrarStatus("Erro ao finalizar: " + error.message, "erro");
-        });
-        break;
+    const dados = snapshot.val();
+    for (let id in dados) {
+      if (dados[id].status === "pendente") {
+        const div = document.createElement("div");
+        div.classList.add("card-corrida");
+        div.innerHTML = `
+          <p><strong>Passageiro:</strong> ${dados[id].passageiro}</p>
+          <p><strong>Origem:</strong> ${dados[id].origem}</p>
+          <p><strong>Destino:</strong> ${dados[id].destino}</p>
+          <button class="botao-vamux" onclick="aceitarCorrida('${id}', ${dados[id].coordenadas.origem.lat}, ${dados[id].coordenadas.origem.lng})">Aceitar Corrida</button>
+        `;
+        container.appendChild(div);
       }
     }
   });
-}
+};
 
-function logout() {
-  firebase.auth().signOut()
-    .then(() => {
-      window.location.href = "login.html";
-    })
-    .catch((error) => {
-      console.error("Erro ao sair:", error);
+window.aceitarCorrida = function (id, lat, lng) {
+  const db = getDatabase(app);
+  const corridaRef = ref(db, `corridas/${id}`);
+
+  update(corridaRef, {
+    status: "aceita",
+    motorista: "Motorista VAMUX"
+  }).then(() => {
+    alert("Corrida aceita!");
+    idCorridaAtual = id;
+
+    if (rotaPolyline) {
+      rotaPolyline.setMap(null);
+    }
+
+    const destino = { lat, lng };
+    rotaPolyline = new google.maps.Polyline({
+      path: [motoristaPos, destino],
+      geodesic: true,
+      strokeColor: "#00ffd5",
+      strokeOpacity: 1.0,
+      strokeWeight: 4
     });
-}
 
-firebase.auth().onAuthStateChanged((user) => {
-  if (!user) {
-    alert("Você precisa estar logado para acessar esta página.");
-    window.location.href = "login.html";
+    rotaPolyline.setMap(map);
+    map.setCenter(destino);
+  });
+};
+
+window.finalizarCorrida = function () {
+  if (!idCorridaAtual) {
+    alert("Nenhuma corrida em andamento.");
+    return;
   }
-});
 
+  const db = getDatabase(app);
+  const corridaRef = ref(db, `corridas/${idCorridaAtual}`);
+
+  update(corridaRef, {
+    status: "finalizada"
+  }).then(() => {
+    alert("Corrida finalizada com sucesso!");
+    idCorridaAtual = null;
+
+    if (rotaPolyline) {
+      rotaPolyline.setMap(null);
+      rotaPolyline = null;
+    }
+
+    document.getElementById("corridasPendentes").innerHTML = "<p class='gradient-text'>Nenhuma corrida ativa.</p>";
+  }).catch((error) => {
+    console.error("Erro ao finalizar corrida:", error);
+    alert("Erro ao finalizar a corrida.");
+  });
+};
+
+window.sair = function () {
+  window.location.href = "login.html";
+};

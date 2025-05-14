@@ -1,92 +1,85 @@
-// passageiro.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM",
+  authDomain: "vamux-ad825.firebaseapp.com",
+  projectId: "vamux-ad825",
+  storageBucket: "vamux-ad825.appspot.com",
+  messagingSenderId: "750098504653",
+  appId: "1:750098504653:web:f84e3e8fb869442f474284"
+};
+
+const app = initializeApp(firebaseConfig);
+
+let pos = null;
+let map;
+
+window.addEventListener("load", () => {
+  const check = setInterval(() => {
+    if (typeof google !== "undefined" && google.maps) {
+      initMap();
+      clearInterval(check);
+    }
+  }, 100);
+});
 
 function initMap() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const local = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+  navigator.geolocation.getCurrentPosition((position) => {
+    pos = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+    };
 
-      const mapa = new google.maps.Map(document.getElementById("mapa"), {
-        center: local,
-        zoom: 15
-      });
-
-      new google.maps.Marker({
-        position: local,
-        map: mapa,
-        title: "Sua localização"
-      });
-    }, () => {
-      mostrarStatus("Erro ao obter localização.", "erro");
+    map = new google.maps.Map(document.getElementById("mapa"), {
+      center: pos,
+      zoom: 15
     });
-  } else {
-    mostrarStatus("Geolocalização não suportada pelo navegador.", "erro");
-  }
+
+    new google.maps.Marker({
+      position: pos,
+      map: map,
+      title: "Você (Passageiro)"
+    });
+  });
 }
 
-function mostrarStatus(texto, tipo = "sucesso") {
-  const status = document.getElementById("statusCorrida");
-  if (status) {
-    status.textContent = texto;
-    status.className = "status " + tipo;
-  }
-}
+window.chamarCorrida = function () {
+  const destino = document.getElementById('destino').value.trim();
+  const mensagem = document.getElementById('mensagem');
 
-function chamarCorrida() {
-  const destino = document.getElementById("destino").value;
-  if (!destino) {
-    mostrarStatus("Por favor, insira o destino.", "aviso");
+  if (!destino || !pos) {
+    mensagem.textContent = "Informe o destino e aguarde o mapa carregar.";
+    mensagem.style.color = "red";
     return;
   }
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const local = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      };
+  const db = getDatabase(app);
+  const corridasRef = ref(db, "corridas");
 
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          const dadosCorrida = {
-            idPassageiro: user.uid,
-            passageiro: local,
-            destinoTexto: destino,
-            status: "pendente",
-            solicitadaEm: new Date().toISOString()
-          };
+  const novaCorrida = {
+    passageiro: "Passageiro VAMUX",
+    origem: `Lat: ${pos.lat}, Lng: ${pos.lng}`,
+    destino: destino,
+    status: "pendente",
+    coordenadas: {
+      origem: { lat: pos.lat, lng: pos.lng },
+      destino: null
+    }
+  };
 
-          firebase.database().ref("corridas").push(dadosCorrida)
-            .then(() => {
-              mostrarStatus("Corrida solicitada com sucesso! Aguarde um motorista.", "sucesso");
-              document.getElementById("destino").value = "";
-            })
-            .catch((error) => {
-              mostrarStatus("Erro ao solicitar corrida: " + error.message, "erro");
-            });
-        }
-      });
-    });
-  } else {
-    mostrarStatus("Geolocalização não suportada.", "erro");
-  }
-}
-
-function logout() {
-  firebase.auth().signOut()
+  push(corridasRef, novaCorrida)
     .then(() => {
-      window.location.href = "login.html";
+      mensagem.textContent = "Corrida chamada com sucesso!";
+      mensagem.style.color = "green";
     })
     .catch((error) => {
-      console.error("Erro ao sair:", error);
+      mensagem.textContent = "Erro ao chamar corrida.";
+      mensagem.style.color = "red";
+      console.error("Erro Firebase:", error);
     });
-}
+};
 
-firebase.auth().onAuthStateChanged((user) => {
-  if (!user) {
-    alert("Você precisa estar logado para acessar esta página.");
-    window.location.href = "login.html";
-  }
-});
+window.sair = function () {
+  window.location.href = "login.html";
+};

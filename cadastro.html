@@ -3,32 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Motorista - VAMUX</title>
+  <title>Cadastro - VAMUX</title>
   <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
   <div class="container">
-    <!-- Logo -->
     <img src="assets/img/logos/logoVAMUX.jpg" alt="Logo VAMUX" class="logo" />
+    <h2 class="gradient-text">Crie sua conta no VAMUX</h2>
 
-    <!-- Título -->
-    <h2 class="gradient-text">Logo VAMUX</h2>
-    <p class="gradient-text">Seja bem-vindo, Parceiro</p>
-
-    <!-- Formulário -->
-    <form id="loginMotoristaForm" class="form-container">
+    <form onsubmit="cadastrarUsuario(event)">
       <input type="email" id="email" placeholder="Digite seu email" required />
       <input type="password" id="senha" placeholder="Digite sua senha" required />
-
-      <!-- Botão Entrar -->
-      <div class="botoes-container">
-        <button type="submit" class="botao-vamux">Entrar</button>
-      </div>
+      <button class="botao-vamux" type="submit">Cadastrar</button>
     </form>
 
-    <p id="mensagemErro"></p>
+    <p id="mensagemCadastro" style="margin-top: 15px;"></p>
   </div>
 
-  <script type="module" src="javascript/login-motorista.js"></script>
+  <script type="module" src="javascript/cadastro.js"></script>
 </body>
 </html>

@@ -2,25 +2,20 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VAMU - Início</title>
-  <link rel="stylesheet" href="css/style.css" />
- 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAMUX - Início</title>
+  <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
   <div class="container">
-    <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMU" />
-    <h2>Bem-vindo ao VAMU</h2>
-    <p>Como deseja acessar?</p>
+    <img src="assets/img/logos/logoVAMUX.jpg" alt="Logo VAMUX" class="logo" />
+    <h2 class="gradient-text">Bem-vindo ao VAMUX</h2>
+    <p class="gradient-text">Escolha como deseja entrar:</p>
 
-    <div class="botoes-login">
-      <a href="login.html" class="botao-vamu">Passageiro</a>
-      <a href="login-motorista.html" class="botao-vamu">Motorista</a>
+    <div class="botoes-container">
+      <button class="botao-vamux" onclick="window.location.href='login.html?tipo=passageiro'">Passageiro</button>
+      <button class="botao-vamux" onclick="window.location.href='login.html?tipo=motorista'">Motorista</button>
     </div>
   </div>
-
-  <p style="text-align: center; font-size: 12px; margin-top: 30px;">
-    <strong>© 2025 VAMU - Todos os direitos reservados.</strong>
-  </p>
 </body>
 </html>
