@@ -1,0 +1,34 @@
+<!-- Arquivo: public/passageiro.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Passageiro VAMUX</title>
+        <link rel="stylesheet" href="css/index.css">
+    </head>
+    <body>
+        <div class="container">
+            <img src="assets/img/logoVAMUX.jpg" alt="Logo VAMUX" style="width: 120px; border-radius: 12px; margin-bottom: 10px;">
+            <h2 class="gradient-text">Passageiro VAMUX</h2>
+            <div id="map" class="map-estilizado"></div>
+            <input type="text" id="destino" placeholder="Digite seu destino">
+            <div class="btn-group">
+                <button id="chamarCorrida" class="btn">Chamar Corrida</button>
+            </div>
+            <!-- Mensagem de status -->
+            <div id="status" class="gradient-text" style="margin-top: 20px;"></div>
+        </div>
+        <!-- Scripts Firebase + Google Maps + JS -->
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap&libraries=places" async defer></script>
+        <script src="javascript/firebase-config.js"></script>
+        <script src="javascript/passageiro.js"></script>
+        <footer class="marca-vamux">
+            VAMUX®
+      Marca registrada de Vanderlino Henriques dos Santos
+      Poá / SP - Brasil
+        </footer>
+    </body>
+</html>

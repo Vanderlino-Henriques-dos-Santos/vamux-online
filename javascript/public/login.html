@@ -1,0 +1,38 @@
+<!-- Arquivo: public/login.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login VAMUX</title>
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="assets/img/logoVAMUX.jpg" alt="Logo VAMUX" style="width: 120px; border-radius: 12px; margin-bottom: 10px;" />
+    <h2 class="gradient-text">Login VAMUX</h2>
+    <form id="login-form">
+      <label for="email" class="label-text">Email</label>
+      <input type="email" id="email" placeholder="Digite seu email" required />
+      <label for="senha" class="label-text">Senha</label>
+      <input type="password" id="senha" placeholder="Digite sua senha" required />
+      <div class="btn-group">
+        <button type="submit" class="btn">Entrar</button>
+      </div>
+    </form>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="javascript/firebase-config.js"></script>
+  <script src="javascript/login.js"></script>
+ 
+  <footer class="marca-vamux">
+  VAMUX®
+  Marca registrada de Vanderlino Henriques dos Santos
+  Poá / SP - Brasil
+</footer>
+
+
+
+</body>
+</html>

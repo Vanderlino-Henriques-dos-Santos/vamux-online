@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login Motorista VAMUX</title>
+        <link rel="stylesheet" href="css/index.css">
+    </head>
+    <body>
+        <div class="container">
+            <!-- LOGO -->
+            <img src="assets/img/logoVAMUX.jpg" alt="Logo VAMUX" style="width: 120px; border-radius: 12px; margin-bottom: 10px;">
+            <!-- TÍTULO -->
+            <h2 class="gradient-text">Login Motorista</h2>
+            <!-- FORMULÁRIO -->
+            <form id="login-form">
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Digite seu email"
+                    required
+                    autofocus
+                >
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Digite sua senha"
+                    required
+                >
+                <div class="btn-group">
+                    <button type="submit" class="btn">Entrar</button>
+                </div>
+            </form>
+            <!-- MARCA REGISTRADA -->
+            <footer class="marca-vamux">
+                
+            </footer>
+        </div>
+        <!-- Firebase + Script -->
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+        <script src="javascript/firebase-config.js"></script>
+        <script src="javascript/login-motorista.js"></script>
+          <footer class="marca-vamux">
+                VAMUX®
+      Marca registrada de Vanderlino Henriques dos Santos
+      Poá / SP - Brasil
+            </footer>
+    </body>
+</html>
