@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastro - VAMUX</title>
-  <link rel="stylesheet" href="css/index.css" />
-</head>
-<body>
-  <div class="container">
-    <img src="assets/img/logos/logoVAMUX.jpg" alt="Logo VAMUX" class="logo" />
-    <h2 class="gradient-text">Crie sua conta no VAMUX</h2>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cadastro - VAMUX</title>
+        <link rel="stylesheet" href="css/index.css">
+    </head>
+    <body>
+        <div class="container">
+            <img src="assets/img/logos/logoVAMUX.jpg" alt="Logo VAMUX" class="logo">
+            <h2 class="gradient-text">Crie sua conta no VAMUX</h2>
+            <form onsubmit="cadastrarUsuario(event)">
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Digite seu email"
+                    required
+                >
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Digite sua senha"
+                    required
+                >
+                <button class="botao-vamux" type="submit">Cadastrar</button>
+            </form>
+            <p id="mensagemCadastro" style="margin-top: 15px;"></p>
+            <div class="botoes-container" style="margin-top: 20px;">
+                <a id="linkVoltarLogin" href="#" class="botao-vamux">Voltar para o Login</a>
+            </div>
+        </div>
+        <script type="module" src="javascript/cadastro.js"></script>
+        <script>
+    const params = new URLSearchParams(window.location.search);
+    const tipo = params.get("tipo") || "passageiro";
+    document.getElementById("linkVoltarLogin").href = `login.html?tipo=${tipo}`;
 
-    <form onsubmit="cadastrarUsuario(event)">
-      <input type="email" id="email" placeholder="Digite seu email" required />
-      <input type="password" id="senha" placeholder="Digite sua senha" required />
-      <button class="botao-vamux" type="submit">Cadastrar</button>
-    </form>
-
-    <p id="mensagemCadastro" style="margin-top: 15px;"></p>
-  </div>
-
-  <script type="module" src="javascript/cadastro.js"></script>
-</body>
+    // Cursor já no campo de email
+    document.getElementById("email").focus();
+        </script>
+        <footer style="text-align: center; margin-top: 40px; font-size: 0.8em; color: #ccc;">
+            © 2025 Vanderlino Henriques dos Santos - Poá - SP - Brasil
+        </footer>
+    </body>
 </html>

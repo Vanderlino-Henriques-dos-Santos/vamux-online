@@ -2,29 +2,42 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Passageiro - VAMUX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VAMUX - Passageiro</title>
   <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
   <div class="container">
-    <img src="assets/img/logos/logoVAMUX.jpg" class="logo" />
-    <h2 class="gradient-text">Área do Passageiro</h2>
+    <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMUX" />
+    <h2 class="titulo-gradiente">👤 Passageiro</h2>
+    <p class="titulo-gradiente">Veja os motoristas online no mapa:</p>
 
-    <div id="mapa" style="width: 100%; height: 300px; border-radius: 10px; margin-bottom: 20px;"></div>
+    <div id="mapa" style="width: 100%; height: 300px; border-radius: 15px;"></div>
 
-    <label class="gradient-text" for="destino">Endereço de Destino:</label>
-    <input type="text" id="destino" placeholder="Digite o destino" required />
-
-    <div class="botoes-container">
-      <button class="botao-vamux" onclick="chamarCorrida()">Chamar Corrida</button>
-      <button class="botao-vamux" onclick="sair()">Sair</button>
+    <div class="botoes-vamux-container">
+      <button class="botao-vamux" onclick="chamarCorrida()">
+        <span>Chamar</span>
+        <span>Corrida</span>
+      </button>
     </div>
 
-    <p id="mensagem"></p>
+    <p id="statusCorrida" class="titulo-gradiente" style="margin-top: 20px;"></p>
   </div>
 
-  <script type="module" src="javascript/passageiro.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM" async defer></script>
+  <footer style="text-align: center; margin-top: 40px; font-size: 0.8em; color: #ccc;">
+    © 2025 Vanderlino Henriques dos Santos - Poá - SP - Brasil
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <!-- Firebase config -->
+  <script src="javascript/firebase-config.js"></script>
+  <!-- Lógica do passageiro -->
+  <script src="javascript/passageiro.js"></script>
+  <!-- Google Maps -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb2QNVaCUNB2PbmjRTY6TbUawkKAPelJg&callback=initMap"></script>
 </body>
 </html>

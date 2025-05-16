@@ -2,27 +2,44 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Motorista - VAMUX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VAMUX - Motorista</title>
   <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
   <div class="container">
-    <img src="assets/img/logos/logoVAMUX.jpg" class="logo" />
-    <h2 class="gradient-text">Área do Motorista</h2>
+    <img src="assets/logo/logoprojeto.jpeg" class="logo" alt="Logo VAMUX" />
+    <h2 class="titulo-gradiente">🧑‍✈️ Motorista</h2>
+    <p class="titulo-gradiente">Veja sua localização no mapa:</p>
 
-    <div id="mapa" style="width: 100%; height: 300px; border-radius: 10px; margin-bottom: 20px;"></div>
+    <div id="mapa" style="width: 100%; height: 300px; border-radius: 15px;"></div>
+
+    <p id="statusMotorista" class="titulo-gradiente" style="margin-bottom: 20px;"></p>
+
+    <h3 class="titulo-gradiente">Corridas Pendentes:</h3>
+    <div id="corridasPendentes"></div>
 
     <div class="botoes-container">
-      <button class="botao-vamux" onclick="ficarOnline()">Ficar Online</button>
+      <button id="botaoOnline" class="botao-vamux" onclick="ficarOnline()">Ficar Online</button>
       <button class="botao-vamux" onclick="finalizarCorrida()">Finalizar Corrida</button>
       <button class="botao-vamux" onclick="sair()">Sair</button>
     </div>
-
-    <div id="corridasPendentes"></div>
   </div>
 
-  <script type="module" src="javascript/motorista.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM" async defer></script>
+  <footer style="text-align: center; margin-top: 40px; font-size: 0.8em; color: #ccc;">
+    © 2025 Vanderlino Henriques dos Santos - Poá - SP - Brasil
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <!-- Firebase config -->
+  <script src="javascript/firebase-config.js"></script>
+  <!-- Lógica do motorista -->
+  <script src="javascript/motorista.js"></script>
+  <!-- Google Maps -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCb2QNVaCUNB2PbmjRTY6TbUawkKAPelJg&callback=initMap"></script>
 </body>
 </html>
