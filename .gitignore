@@ -4,3 +4,4 @@ node_modules
 firebase-debug.*
 .env
 javascript/config.js
+firebase.json
