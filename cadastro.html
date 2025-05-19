@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cadastro - VAMUX</title>
+        <link rel="stylesheet" href="css/index.css">
+    </head>
+    <body>
+        <div class="container">
+            <img src="assets/img/logos/logoVAMUX.jpg" alt="Logo VAMUX" class="logo">
+            <h2 class="gradient-text">Crie sua conta no VAMUX</h2>
+            <form onsubmit="cadastrarUsuario(event)">
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Digite seu email"
+                    required
+                >
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Digite sua senha"
+                    required
+                >
+                <button class="botao-vamux" type="submit">Cadastrar</button>
+            </form>
+            <p id="mensagemCadastro" style="margin-top: 15px;"></p>
+            <div class="botoes-container" style="margin-top: 20px;">
+                <a id="linkVoltarLogin" href="#" class="botao-vamux">Voltar para o Login</a>
+            </div>
+        </div>
+        <script type="module" src="javascript/cadastro.js"></script>
+        <script>
+    const params = new URLSearchParams(window.location.search);
+    const tipo = params.get("tipo") || "passageiro";
+    document.getElementById("linkVoltarLogin").href = `login.html?tipo=${tipo}`;
+
+    // Cursor já no campo de email
+    document.getElementById("email").focus();
+        </script>
+       <footer class="marca-vamux">
+  VAMUX®
+  Marca registrada de Vanderlino Henriques dos Santos
+  Poá / SP - Brasil
+</footer>
+
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+body {
+  background-color: #0d0f1a;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 400px;
+  margin: 60px auto;
+  background-color: #1e1e2f;
+  padding: 30px 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 255, 213, 0.2);
+  text-align: center;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.gradient-text {
+  font-size: 20px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+}
+
+.label-text {
+  display: block;
+  text-align: left;
+  margin: 10px 0 5px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #0d0f1a;
+  color: #fff;
+  font-size: 16px;
+}
+.btn {
+  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  color: #000;
+  width: 90px; /* largura fixa para todos os botões */
+  text-align: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+
+
+
+.btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+
+
+.cadastro-img {
+  width: 150px;
+  border-radius: 50%;
+}
+.map-estilizado {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 255, 213, 0.2);
+}
+.map-estilizado {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 255, 213, 0.2);
+}
+input::placeholder {
+  font-weight: bold;
+  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.marca-vamux {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 40px;
+  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-align: center;
+  line-height: 1.4;
+}
+
+
