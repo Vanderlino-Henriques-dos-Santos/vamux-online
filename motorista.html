@@ -1,43 +1,29 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Motorista - VAMUX</title>
-  <link rel="stylesheet" href="css/index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAMUX - Motorista</title>
+    <link rel="stylesheet" href="css/index.css">
 </head>
-
 <body>
-  <div class="container">
-    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo-vamux">
-    <h2 class="gradient-text">Tela do Motorista</h2>
 
-    <!-- 🗺️ Mapa -->
-    <div id="map" class="map-estilizado"></div>
+    <h1>VAMUX - Área do Motorista</h1>
 
-    <div class="btn-group">
-      <button id="btnAceitar" class="btn">Aceitar Corrida</button>
-      <button id="btnFinalizar" class="btn">Finalizar Corrida</button>
-    </div>
+    <button id="btnAceitar">🚗 Aceitar Corrida</button>
+    <button id="btnFinalizar">✅ Finalizar Corrida</button>
 
-    <p id="status" style="margin-top: 15px;"></p>
-  </div>
+    <div id="map" style="width: 100%; height: 400px; margin-top: 10px;"></div>
 
-  <!-- 🔥 Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <div id="status">Status da Corrida</div>
 
-  <!-- 🔥 Firebase Config -->
-  <script src="javascript/firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
-  <!-- 🔥 Script Motorista -->
-  <script src="javascript/motorista.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap" async defer></script>
 
-  <!-- ✅ Google Maps -->
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap">
-  </script>
+    <script src="javascript/firebase-config.js"></script>
+    <script src="javascript/motorista.js"></script>
 </body>
 </html>
-
