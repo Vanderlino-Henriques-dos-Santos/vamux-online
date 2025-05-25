@@ -1,44 +1,36 @@
-import app from './firebase-config.js';
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-
-// Pega elementos da tela
-const loginForm = document.getElementById('loginForm');
-const mensagemErro = document.getElementById('mensagemErro');
-
-// Inicializa o Firebase Auth
-const auth = getAuth(app);
-
-// Captura o tipo da URL: ?tipo=passageiro ou ?tipo=motorista
-const params = new URLSearchParams(window.location.search);
-const tipo = params.get("tipo"); // pode ser "passageiro" ou "motorista"
-
-// Garante que o tipo é válido
-if (!tipo || (tipo !== "passageiro" && tipo !== "motorista")) {
-  mensagemErro.textContent = "Tipo de usuário inválido. Volte e selecione Passageiro ou Motorista.";
-  mensagemErro.style.color = "red";
-}
+console.log("🔥 login.js carregado");
 
 // Evento de login
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+document.getElementById("btnEntrar").addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+  const mensagem = document.getElementById("mensagemLogin");
 
-  const email = document.getElementById('email').value.trim();
-  const senha = document.getElementById('senha').value;
+  const params = new URLSearchParams(window.location.search);
+  const tipo = params.get("tipo");
 
-  signInWithEmailAndPassword(auth, email, senha)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("Login ok:", user.email);
+  if (!email || !senha) {
+    mensagem.textContent = "⚠️ Preencha todos os campos.";
+    return;
+  }
 
-      if (tipo === "motorista") {
-        window.location.href = "motorista.html";
-      } else {
-        window.location.href = "passageiro.html";
-      }
+  auth.signInWithEmailAndPassword(email, senha)
+    .then(() => {
+      mensagem.textContent = "✅ Login realizado com sucesso!";
+      console.log("✅ Login OK");
+
+      setTimeout(() => {
+        if (tipo === "passageiro") {
+          window.location.href = "passageiro.html";
+        } else if (tipo === "motorista") {
+          window.location.href = "motorista.html";
+        } else {
+          mensagem.textContent = "❌ Tipo de usuário não identificado.";
+        }
+      }, 1500);
     })
     .catch((error) => {
-      console.error("Erro no login:", error);
-      mensagemErro.textContent = "Email ou senha inválidos. Tente novamente.";
-      mensagemErro.style.color = "red";
+      console.error("❌ Erro no login:", error);
+      mensagem.textContent = "❌ Erro: " + error.message;
     });
 });

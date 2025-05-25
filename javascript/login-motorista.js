@@ -1,36 +1,27 @@
-// javascript/login-motorista.js
+console.log("🔥 login-motorista.js carregado");
 
-function loginMotorista() {
-	const email = document.getElementById("email").value;
-	const senha = document.getElementById("senha").value;
-	const status = document.getElementById("loginStatus");
-  
-	firebase.auth().signInWithEmailAndPassword(email, senha)
-	  .then(() => {
-		status.textContent = "Login realizado com sucesso!";
-		status.style.color = "green";
-		window.location.href = "motorista.html";
-	  })
-	  .catch((error) => {
-		status.textContent = "Erro ao fazer login: " + error.message;
-		status.style.color = "red";
-	  });
+import { app } from './firebase-config.js';
+import { getAuth, signInWithEmailAndPassword } 
+  from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+const auth = getAuth(app);
+
+const mensagem = document.getElementById("mensagemLogin");
+
+document.getElementById("btnEntrar").addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  if (!email || !senha) {
+    mensagem.textContent = "⚠️ Preencha todos os campos.";
+    return;
   }
-  
-  function cadastrarMotorista() {
-	const email = document.getElementById("email").value;
-	const senha = document.getElementById("senha").value;
-	const status = document.getElementById("loginStatus");
-  
-	firebase.auth().createUserWithEmailAndPassword(email, senha)
-	  .then(() => {
-		status.textContent = "Cadastro realizado com sucesso!";
-		status.style.color = "green";
-		window.location.href = "motorista.html";
-	  })
-	  .catch((error) => {
-		status.textContent = "Erro ao cadastrar: " + error.message;
-		status.style.color = "red";
-	  });
-  }
-  
+
+  signInWithEmailAndPassword(auth, email, senha)
+    .then(() => {
+      window.location.href = "motorista.html";
+    })
+    .catch((error) => {
+      mensagem.textContent = "Erro: " + error.message;
+    });
+});

@@ -1,27 +1,24 @@
-<!-- Arquivo: public/index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VAMUX</title>
-  <link rel="stylesheet" href="css/index.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAMUX - Transporte Inteligente</title>
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
   <div class="container">
-    <img src="assets/img/logoVAMUX.jpg" alt="Logo VAMUX" style="width: 120px; border-radius: 12px; margin-bottom: 10px;" />
-    <h2 class="gradient-text">Seja Bem-Vindo!!!</h2>
+    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo-vamux">
+    <h2 class="gradient-text">Bem-vindo ao VAMUX</h2>
+
     <div class="btn-group">
-      <a href="login.html" class="btn">Entrar</a>
-      <a href="cadastro.html" class="btn">Cadastrar</a>
+      <a href="login.html?tipo=passageiro"><button class="btn">Passageiro</button></a>
+      <a href="login.html?tipo=motorista"><button class="btn">Motorista</button></a>
     </div>
+
+    <p class="marca-vamux">VAMUX - Transporte Inteligente</p>
   </div>
-  <footer class="marca-vamux">
-  VAMUX®
-  Marca registrada de Vanderlino Henriques dos Santos
-  Poá / SP - Brasil
-</footer>
 
-
+  <script src="javascript/index.js"></script>
 </body>
 </html>

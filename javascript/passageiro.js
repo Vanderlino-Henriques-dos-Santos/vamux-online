@@ -1,98 +1,119 @@
-// Arquivo: public/javascript/passageiro.js
+console.log("🔥 passageiro.js carregado");
 
 let map;
-let passageiroPosition = { lat: 0, lng: 0 };
-let corridaRefCriada = null;
+let passageiroPosition = { lat: -23.5, lng: -46.6 };
 let motoristaMarker = null;
+let rota = null;
+let corridaKey = null;
 
+// 🔥 Inicializa o mapa
 function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: passageiroPosition,
+    zoom: 15,
+  });
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
       passageiroPosition = {
         lat: position.coords.latitude,
-        lng: position.coords.longitude
+        lng: position.coords.longitude,
       };
 
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: passageiroPosition,
-        zoom: 15,
-      });
+      map.setCenter(passageiroPosition);
 
       new google.maps.Marker({
         position: passageiroPosition,
         map: map,
         title: "Você está aqui",
       });
-
-    }, () => {
-      document.getElementById("status").innerHTML = "❌ Não foi possível acessar sua localização.";
     });
-  } else {
-    document.getElementById("status").innerHTML = "❌ Geolocalização não suportada no seu navegador.";
   }
 }
 
-document.getElementById("chamarCorrida").addEventListener("click", () => {
-  const destino = document.getElementById("destino").value.trim();
+// 🚕 Evento de chamar corrida
+document.getElementById("chamarCorrida").addEventListener("click", chamarCorrida);
 
-  if (destino === "") {
-    document.getElementById("status").innerHTML = "❗ Digite o destino antes de chamar a corrida.";
+function chamarCorrida() {
+  const destino = document.getElementById("destino").value;
+
+  if (!destino) {
+    document.getElementById("status").innerText = "⚠️ Digite um destino válido.";
     return;
   }
 
-  const corrida = {
+  const novaCorrida = {
     status: "pendente",
-    destino: destino,
     passageiro: {
-      latitude: passageiroPosition.lat,
-      longitude: passageiroPosition.lng
-    },
-    motorista: null
+      lat: passageiroPosition.lat,
+      lng: passageiroPosition.lng,
+      destino: destino,
+    }
   };
 
-  database.ref("corridas").push(corrida)
-    .then((ref) => {
-      document.getElementById("status").innerHTML = "✅ Corrida solicitada! Aguarde um motorista.";
-      corridaRefCriada = ref;
-      escutarStatusCorrida(ref);
-    })
-    .catch((error) => {
-      console.error("Erro ao solicitar corrida:", error);
-      document.getElementById("status").innerHTML = "❌ Erro ao solicitar corrida. Tente novamente.";
-    });
-});
+  const corridaRef = database.ref("corridas").push(novaCorrida);
+  corridaKey = corridaRef.key;
+  document.getElementById("status").innerText = "🚕 Corrida solicitada! Aguardando um motorista...";
 
-function escutarStatusCorrida(ref) {
-  ref.on("value", (snapshot) => {
+  escutarCorrida(corridaKey);
+}
+
+// 🔄 Escutar o status da corrida
+function escutarCorrida(chaveCorrida) {
+  const corridaMonitorada = database.ref("corridas/" + chaveCorrida);
+
+  corridaMonitorada.on("value", (snapshot) => {
     const dados = snapshot.val();
+
     if (!dados) return;
 
     if (dados.status === "aceita" && dados.motorista) {
-      document.getElementById("status").innerHTML = "🚗 Corrida aceita! Motorista a caminho.";
+      document.getElementById("status").innerText = "🚗 Motorista a caminho...";
 
-      const pos = {
-        lat: dados.motorista.latitude,
-        lng: dados.motorista.longitude
-      };
-
-      if (motoristaMarker) motoristaMarker.setMap(null);
-
-      motoristaMarker = new google.maps.Marker({
-        position: pos,
-        map: map,
-        icon: {
-          url: "https://maps.google.com/mapfiles/kml/shapes/cabs.png",
-          scaledSize: new google.maps.Size(40, 40)
-        },
-        title: "Motorista"
-      });
-
-      map.setCenter(pos);
+      atualizarMotoristaNoMapa(dados.motorista);
+      desenharRota(passageiroPosition, dados.passageiro.destino);
     }
 
     if (dados.status === "finalizada") {
-      document.getElementById("status").innerHTML = "🏁 Corrida finalizada. Obrigado por usar o VAMUX!";
+      document.getElementById("status").innerText = "✅ Corrida finalizada!";
+      if (rota) rota.setMap(null);
       if (motoristaMarker) motoristaMarker.setMap(null);
     }
   });
+}
+
+// 📍 Atualizar motorista no mapa
+function atualizarMotoristaNoMapa(local) {
+  if (motoristaMarker) motoristaMarker.setMap(null);
+
+  motoristaMarker = new google.maps.Marker({
+    position: { lat: local.lat, lng: local.lng },
+    map: map,
+    title: "Motorista",
+    icon: "https://maps.google.com/mapfiles/ms/icons/cabs.png"
+  });
+}
+
+// 🚗 Desenhar rota no mapa
+function desenharRota(origem, destinoTexto) {
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
+
+  rota = directionsRenderer;
+
+  directionsService.route(
+    {
+      origin: origem,
+      destination: destinoTexto,
+      travelMode: google.maps.TravelMode.DRIVING,
+    },
+    (result, status) => {
+      if (status === "OK") {
+        directionsRenderer.setDirections(result);
+      } else {
+        console.error("Erro ao calcular a rota: " + status);
+      }
+    }
+  );
 }

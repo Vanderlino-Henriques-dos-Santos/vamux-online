@@ -1,52 +1,35 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+console.log("🔥 cadastro.js carregado");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM",
-  authDomain: "vamux-ad825.firebaseapp.com",
-  projectId: "vamux-ad825",
-  storageBucket: "vamux-ad825.appspot.com",
-  messagingSenderId: "750098504653",
-  appId: "1:750098504653:web:f84e3e8fb869442f474284"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const params = new URLSearchParams(window.location.search);
-const tipo = params.get("tipo");
-const mensagem = document.getElementById("mensagemCadastro");
-
-if (!tipo || (tipo !== "passageiro" && tipo !== "motorista")) {
-  mensagem.textContent = "Tipo de usuário inválido. Acesse via página inicial.";
-  mensagem.style.color = "red";
-  throw new Error("Tipo inválido");
+// Seleciona tipo de usuário
+function selecionarTipo(tipoSelecionado) {
+  document.getElementById("tipo").value = tipoSelecionado;
+  console.log(`✅ Tipo selecionado: ${tipoSelecionado}`);
 }
 
-window.cadastrarUsuario = function (event) {
-  event.preventDefault();
+// Evento de cadastro
+document.getElementById("btnCadastrar").addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+  const tipo = document.getElementById("tipo").value;
+  const mensagem = document.getElementById("mensagemCadastro");
 
-  const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value.trim();
-
-  if (!email || !senha) {
-    mensagem.textContent = "Preencha todos os campos corretamente.";
-    mensagem.style.color = "red";
+  if (!email || !senha || !tipo) {
+    mensagem.textContent = "⚠️ Preencha todos os campos e selecione se você é Passageiro ou Motorista.";
     return;
   }
 
-  createUserWithEmailAndPassword(auth, email, senha)
+  auth.createUserWithEmailAndPassword(email, senha)
     .then(() => {
-      mensagem.textContent = "Cadastro realizado com sucesso!";
-      mensagem.style.color = "green";
+      mensagem.textContent = "✅ Cadastro efetuado com sucesso!";
+      console.log("✅ Usuário cadastrado com sucesso!");
 
       setTimeout(() => {
         window.location.href = `login.html?tipo=${tipo}`;
       }, 1500);
     })
     .catch((error) => {
-      console.error("Erro ao cadastrar:", error);
-      mensagem.textContent = "Erro ao cadastrar: " + (error.message || "Tente novamente.");
-      mensagem.style.color = "red";
+      console.error("❌ Erro no cadastro:", error);
+      mensagem.textContent = "❌ Erro: " + error.message;
     });
-};
+});
+

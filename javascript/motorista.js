@@ -1,123 +1,125 @@
-let map;
-let motoristaPosition = { lat: 0, lng: 0 };
-let corridaRefAtual = null;
-let directionsService;
-let directionsRenderer;
+console.log("🔥 motorista.js carregado");
 
+let map;
+let motoristaPosition = { lat: -23.5, lng: -46.6 };
+let passageiroMarker = null;
+let rota = null;
+let corridaKey = null;
+
+// 🔥 Inicializa o mapa
 function initMap() {
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer();
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: motoristaPosition,
+    zoom: 15,
+  });
 
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
+    navigator.geolocation.watchPosition((position) => {
       motoristaPosition = {
         lat: position.coords.latitude,
-        lng: position.coords.longitude
+        lng: position.coords.longitude,
       };
 
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: motoristaPosition,
-        zoom: 15,
-      });
-
-      directionsRenderer.setMap(map);
+      map.setCenter(motoristaPosition);
 
       new google.maps.Marker({
         position: motoristaPosition,
         map: map,
-        title: "Motorista",
-      });
-
-    }, () => {
-      document.getElementById("status").innerHTML = "❌ Não foi possível obter sua localização.";
-    });
-  } else {
-    document.getElementById("status").innerHTML = "❌ Geolocalização não suportada.";
-  }
-}
-
-document.getElementById("ficar-online").addEventListener("click", () => {
-  escutarCorridasPendentes();
-  document.getElementById("status").innerHTML = "🟢 Você está online. Aguardando corridas...";
-});
-
-function escutarCorridasPendentes() {
-  database.ref("corridas").orderByChild("status").equalTo("pendente")
-    .on("child_added", (snapshot) => {
-      const dados = snapshot.val();
-      corridaRefAtual = snapshot.ref;
-
-      const info = `
-        <strong>Corrida Pendente</strong><br>
-        Destino: ${dados.destino}<br>
-        Passageiro: lat ${dados.passageiro.latitude}, lng ${dados.passageiro.longitude}
-      `;
-
-      document.getElementById("corrida-info").innerHTML = info;
-
-      document.getElementById("aceitar").disabled = false;
-      document.getElementById("recusar").disabled = false;
-      document.getElementById("status").innerHTML = "📥 Nova corrida pendente recebida.";
-    });
-}
-
-document.getElementById("aceitar").addEventListener("click", () => {
-  if (corridaRefAtual) {
-    corridaRefAtual.update({
-      status: "aceita",
-      motorista: {
-        latitude: motoristaPosition.lat,
-        longitude: motoristaPosition.lng
-      }
-    }).then(() => {
-      document.getElementById("status").innerHTML = "✅ Corrida aceita! Rota traçada.";
-      document.getElementById("aceitar").disabled = true;
-      document.getElementById("recusar").disabled = true;
-      document.getElementById("finalizar").disabled = false;
-
-      corridaRefAtual.once("value", (snapshot) => {
-        const dados = snapshot.val();
-        const passageiroPos = {
-          lat: dados.passageiro.latitude,
-          lng: dados.passageiro.longitude
-        };
-        calcularRota(motoristaPosition, passageiroPos);
+        title: "Você (Motorista)",
+        icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
       });
     });
   }
-});
 
-document.getElementById("recusar").addEventListener("click", () => {
-  document.getElementById("corrida-info").innerHTML = "Corrida recusada. Aguardando outra...";
-  document.getElementById("status").innerHTML = "⚠️ Corrida recusada.";
-  document.getElementById("aceitar").disabled = true;
-  document.getElementById("recusar").disabled = true;
-  document.getElementById("finalizar").disabled = true;
-  corridaRefAtual = null;
-});
+  escutarCorridas();
+}
 
-document.getElementById("finalizar").addEventListener("click", () => {
-  if (corridaRefAtual) {
-    corridaRefAtual.update({ status: "finalizada" }).then(() => {
-      document.getElementById("status").innerHTML = "🏁 Corrida finalizada com sucesso.";
-      document.getElementById("corrida-info").innerHTML = "";
-      document.getElementById("finalizar").disabled = true;
-    });
-  }
-});
+// 🔍 Escuta corridas pendentes
+function escutarCorridas() {
+  const corridasRef = database.ref("corridas").orderByChild("status").equalTo("pendente");
 
-function calcularRota(origem, destino) {
-  const request = {
-    origin: origem,
-    destination: destino,
-    travelMode: google.maps.TravelMode.DRIVING
-  };
+  corridasRef.on("child_added", (snapshot) => {
+    const dados = snapshot.val();
+    corridaKey = snapshot.key;
 
-  directionsService.route(request, (result, status) => {
-    if (status === google.maps.DirectionsStatus.OK) {
-      directionsRenderer.setDirections(result);
-    } else {
-      document.getElementById("status").innerHTML = "❌ Não foi possível calcular a rota.";
+    if (dados && dados.passageiro) {
+      document.getElementById("status").innerText =
+        `🚕 Corrida disponível para destino: ${dados.passageiro.destino}`;
+
+      mostrarPassageiroNoMapa(dados.passageiro);
+      desenharRota(motoristaPosition, dados.passageiro);
     }
   });
 }
+
+// ✔️ Mostrar passageiro no mapa
+function mostrarPassageiroNoMapa(local) {
+  if (passageiroMarker) passageiroMarker.setMap(null);
+
+  passageiroMarker = new google.maps.Marker({
+    position: { lat: local.lat, lng: local.lng },
+    map: map,
+    title: "Passageiro",
+    icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+  });
+}
+
+// 🚗 Desenhar rota até o passageiro
+function desenharRota(origem, destinoObj) {
+  const destino = `${destinoObj.lat},${destinoObj.lng}`;
+
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
+
+  rota = directionsRenderer;
+
+  directionsService.route(
+    {
+      origin: origem,
+      destination: destino,
+      travelMode: google.maps.TravelMode.DRIVING,
+    },
+    (result, status) => {
+      if (status === "OK") {
+        directionsRenderer.setDirections(result);
+      } else {
+        console.error("Erro ao calcular a rota: " + status);
+      }
+    }
+  );
+}
+
+// ✔️ Botão aceitar corrida
+document.getElementById("btnAceitar").addEventListener("click", () => {
+  if (!corridaKey) {
+    document.getElementById("status").innerText = "❌ Nenhuma corrida para aceitar.";
+    return;
+  }
+
+  database.ref("corridas/" + corridaKey).update({
+    status: "aceita",
+    motorista: {
+      lat: motoristaPosition.lat,
+      lng: motoristaPosition.lng,
+    },
+  });
+
+  document.getElementById("status").innerText = "🚗 Corrida aceita! A caminho do passageiro!";
+});
+
+// ✔️ Botão finalizar corrida
+document.getElementById("btnFinalizar").addEventListener("click", () => {
+  if (!corridaKey) {
+    document.getElementById("status").innerText = "❌ Nenhuma corrida ativa.";
+    return;
+  }
+
+  database.ref("corridas/" + corridaKey).update({
+    status: "finalizada",
+  });
+
+  document.getElementById("status").innerText = "✅ Corrida finalizada!";
+  if (rota) rota.setMap(null);
+  if (passageiroMarker) passageiroMarker.setMap(null);
+});

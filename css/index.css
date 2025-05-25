@@ -51,28 +51,30 @@ input {
   color: #fff;
   font-size: 16px;
 }
+/* 🔥 Estilo padrão dos botões */
 .btn {
   background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
-  border: 2px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  border: none;
   padding: 10px 20px;
   border-radius: 30px;
   font-weight: bold;
   font-size: 14px;
   cursor: pointer;
   color: #000;
-  width: 90px; /* largura fixa para todos os botões */
+  width: 120px;        /* 🔥 Deixa menor */
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
-
-
-
 
 .btn:hover {
   transform: scale(1.05);
   opacity: 0.9;
 }
+
+/* 🔥 Agrupamento dos botões centralizados */
 .btn-group {
   display: flex;
   flex-wrap: wrap;
@@ -80,6 +82,8 @@ input {
   gap: 12px;
   margin-top: 20px;
 }
+
+
 
 
 
@@ -120,5 +124,14 @@ input::placeholder {
   text-fill-color: transparent;
   text-align: center;
   line-height: 1.4;
+}
+/* 🔥 Estilo da Logo */
+.logo-vamux {
+  width: 120px;     /* 🔥 Tamanho da logo */
+  height: auto;     /* 🔥 Mantém proporção */
+  display: block;
+  margin: 0 auto 20px auto; /* 🔥 Centraliza e dá margem inferior */
+  border-radius: 20px;      /* 🔥 Opcional: deixa levemente arredondada */
+  box-shadow: 0 0 15px rgba(0, 255, 213, 0.5); /* 🔥 Glow futurista */
 }
 

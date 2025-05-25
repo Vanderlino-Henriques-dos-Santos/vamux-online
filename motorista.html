@@ -1,43 +1,43 @@
-<!-- Arquivo: public/motorista.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Motorista VAMUX</title>
-  <link rel="stylesheet" href="css/index.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Motorista - VAMUX</title>
+  <link rel="stylesheet" href="css/index.css">
 </head>
+
 <body>
   <div class="container">
-    <img src="assets/img/logoVAMUX.jpg" alt="Logo VAMUX" style="width: 120px; border-radius: 12px; margin-bottom: 10px;" />
-    <h2 class="gradient-text">Motorista VAMUX</h2>
+    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo-vamux">
+    <h2 class="gradient-text">Tela do Motorista</h2>
 
+    <!-- 🗺️ Mapa -->
     <div id="map" class="map-estilizado"></div>
 
-    <div id="corrida-info" class="gradient-text" style="margin: 15px 0;"></div>
-
     <div class="btn-group">
-      <button id="ficar-online" class="btn">Ficar Online</button>
-      <button id="aceitar" class="btn" disabled>Aceitar Corrida</button>
-      <button id="recusar" class="btn" disabled>Recusar Corrida</button>
-      <button id="finalizar" class="btn" disabled>Finalizar Corrida</button>
+      <button id="btnAceitar" class="btn">Aceitar Corrida</button>
+      <button id="btnFinalizar" class="btn">Finalizar Corrida</button>
     </div>
 
-    <!-- Mensagem de status -->
-    <div id="status" class="gradient-text" style="margin-top: 20px;"></div>
-
-    <footer class="marca-vamux">
-      VAMUX®<br>
-      Marca registrada de Vanderlino Henriques dos Santos<br>
-      Poá / SP - Brasil
-    </footer>
+    <p id="status" style="margin-top: 15px;"></p>
   </div>
 
-  <!-- Scripts Firebase + Google Maps + JS -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap&libraries=places" async defer></script>
+  <!-- 🔥 Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- 🔥 Firebase Config -->
   <script src="javascript/firebase-config.js"></script>
+
+  <!-- 🔥 Script Motorista -->
   <script src="javascript/motorista.js"></script>
+
+  <!-- ✅ Google Maps -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap">
+  </script>
 </body>
 </html>
+
