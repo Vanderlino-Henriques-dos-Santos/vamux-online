@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VAMUX - Destino Conectado</title>
-  <link rel="stylesheet" href="css/index.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando VAMUX...</title>
+
+    <script>
+        // Garante que o JavaScript redirecione para cadastro.html
+        // Isso é robusto e funciona bem em navegadores modernos.
+        window.location.href = 'cadastro.html';
+    </script>
+    <style>
+        /* Estilo básico para exibir uma mensagem enquanto o redirecionamento ocorre */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: #555;
+            background-color: #f8f8f8;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="container">
-    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo" />
-    <h1 class="gradient-text">Bem-vindo ao VAMUX</h1>
-
-    <div class="button-group-inline">
-      <a href="login.html?tipo=passageiro">
-        <button class="btn">Entrar como Passageiro</button>
-      </a>
-      <a href="login.html?tipo=motorista">
-        <button class="btn">Entrar como Motorista</button>
-      </a>
-    </div>
-
-    <a href="cadastro.html" class="link">Criar uma conta</a>
-    <a href="sobre.html" class="link">Sobre</a>
-  </div>
-
-  <script type="module" src="javascript/index.js"></script>
+    <p>Carregando VAMUX, aguarde...</p>
 </body>
 </html>
