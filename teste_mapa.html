@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Mapa VAMUX - Loader</title>
+    <style>
+        html, body {
+            height: 100%; /* Garante que HTML e BODY ocupem a altura total da janela */
+            margin: 0;
+            padding: 0;
+            display: flex; /* Para flexbox, ajuda a centralizar e organizar */
+            flex-direction: column; /* Organiza os itens verticalmente */
+            justify-content: flex-start; /* Alinha o conteúdo ao topo */
+            align-items: center; /* Centraliza horizontalmente */
+            font-family: Arial, sans-serif;
+            font-size: 16px; /* Tamanho de fonte padrão */
+            color: #333;
+            background-color: #f8f8f8; /* Cor de fundo leve */
+        }
+        #loading-message {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px; /* Espaçamento ao redor da mensagem */
+            color: #555;
+            flex-shrink: 0; /* Impede que a mensagem encolha */
+            width: 80%; /* Largura da mensagem */
+            max-width: 500px;
+        }
+        #map {
+            width: 90vw; /* 90% da largura da viewport */
+            height: 70vh; /* 70% da altura da viewport */
+            max-width: 800px; /* Largura máxima para telas grandes */
+            max-height: 600px; /* Altura máxima para telas grandes */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #e0e0e0; /* Cor de fundo para ver o espaço do mapa antes de carregar */
+            display: none; /* Inicia escondido, será mostrado pelo JS quando o mapa carregar */
+            margin-bottom: 20px; /* Espaçamento abaixo do mapa */
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-message">
+        Carregando mapa... Se esta mensagem não sumir ou se o mapa não aparecer, verifique o console do navegador (F12) para erros.
+    </div>
+    <div id="map"></div>
+
+    <script>
+        let map; // Variável global para o objeto mapa
+        
+        // Função que será chamada pela API do Google Maps quando estiver pronta
+        function initMap() {
+            console.log("🥳 initMap foi chamada com sucesso! Tentando inicializar o mapa.");
+            
+            const loadingMessage = document.getElementById('loading-message');
+            const mapDiv = document.getElementById('map');
+
+            if (loadingMessage) {
+                loadingMessage.style.display = 'none'; // Esconde a mensagem de carregamento
+            }
+            if (mapDiv) {
+                mapDiv.style.display = 'block'; // Mostra o div do mapa
+            }
+
+            const center = { lat: -23.55052, lng: -46.633308 }; // Centro de São Paulo (Exemplo)
+
+            try {
+                map = new google.maps.Map(mapDiv, {
+                    zoom: 13,
+                    center: center,
+                    mapTypeId: 'roadmap' // Garante que o tipo de mapa é o padrão de ruas
+                });
+                console.log("✅ Mapa inicializado com sucesso!");
+            } catch (error) {
+                console.error("❌ ERRO ao criar o objeto Map do Google Maps:", error);
+                if (loadingMessage) {
+                    loadingMessage.innerHTML = "❌ Erro ao criar o mapa. Verifique o console (F12) para detalhes.";
+                    loadingMessage.style.color = 'red';
+                    loadingMessage.style.backgroundColor = '#ffecec';
+                    loadingMessage.style.display = 'block'; // Garante que a mensagem de erro seja visível
+                }
+            }
+        }
+
+        // Função para carregar dinamicamente o script da API do Google Maps
+        function loadGoogleMapsScript() {
+            // Verifica se a API já foi carregada (útil para navegação entre páginas, embora aqui não seja o caso principal)
+            if (typeof google === 'object' && typeof google.maps === 'object' && typeof google.maps.Map === 'function') {
+                initMap(); // Se já estiver carregada, inicializa o mapa diretamente
+                return;
+            }
+
+            const script = document.createElement('script');
+            // Substitua PELA SUA CHAVE DE API COMPLETA
+            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap";
+            script.async = true; // Carrega o script de forma assíncrona
+            script.defer = true; // Atrasa a execução do script até o HTML ser completamente carregado
+
+            // Tratamento de erro caso o script falhe ao carregar (ex: problema de rede)
+            script.onerror = function() {
+                console.error("❌ ERRO: O script da API do Google Maps falhou ao carregar.");
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) {
+                    loadingMessage.innerHTML = "❌ Erro grave ao carregar o mapa. Verifique sua conexão e a chave da API (F12 para detalhes).";
+                    loadingMessage.style.color = 'red';
+                    loadingMessage.style.backgroundColor = '#ffecec';
+                    loadingMessage.style.display = 'block';
+                }
+            };
+
+            document.head.appendChild(script); // Adiciona o script ao <head> da página
+        }
+
+        // Chama a função para carregar o script quando o DOM estiver completamente carregado
+        document.addEventListener('DOMContentLoaded', loadGoogleMapsScript);
+    </script>
+</body>
+</html>

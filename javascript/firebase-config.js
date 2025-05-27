@@ -1,4 +1,6 @@
-// ✅ firebase-config.js - Firebase VAMUX SEM module
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
 // Configuração do seu Firebase
 const firebaseConfig = {
@@ -11,9 +13,6 @@ const firebaseConfig = {
   appId: "1:750098504653:web:f84e3e8fb869442f474284"
 };
 
-// Inicializa o Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-// 🔥 Instâncias Globais
-const database = firebase.database();
-const auth = firebase.auth();
+export default app;

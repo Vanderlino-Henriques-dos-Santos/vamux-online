@@ -1,31 +1,92 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VAMUX - Passageiro</title>
-    <link rel="stylesheet" href="css/index.css">
-</head>
-<body>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Área do Passageiro - VAMUX</title>
+        <link rel="stylesheet" href="css/index.css">
+        <style>
+            /* CSS para o mapa no passageiro.html - Garante que ele tenha tamanho */
+            #map {
+                width: 100%;
+                height: 400px; /* Altura fixa para o mapa */
+                border-radius: 10px;
+                margin-top: 20px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                background-color: #e0e0e0; /* Cor de fundo para ver o espaço antes de carregar */
+                display: block; /* Garante que o div esteja sempre visível */
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo">
+            <h1 class="gradient-text">Área do Passageiro</h1>
+            <div class="form-group">
+                <label class="label-text" for="partida">Local de Partida</label>
+                <input
+                    type="text"
+                    id="partida"
+                    class="input-box"
+                    placeholder="Ex.: Rua Felipe Camarão, 662 - Poá-SP"
+                >
+            </div>
+            <div class="form-group">
+                <label class="label-text" for="destino">Destino</label>
+                <input
+                    type="text"
+                    id="destino"
+                    class="input-box"
+                    placeholder="Ex.: Avenida Paulista, 1000 - São Paulo-SP"
+                >
+            </div>
+            <div class="button-group-inline">
+                <button class="btn" onclick="calcularRota()">Calcular Corrida</button>
+                <button class="btn" onclick="chamarCorrida()">Chamar Corrida</button>
+            </div>
+            <div id="map"></div> <p id="infoCorrida" class="gradient-text" style="margin-top: 15px;"></p>
+            <p id="mensagemStatus" class="gradient-text"></p>
+            <a href="index.html" class="link">Sair</a>
+        </div>
+        <script type="module" src="javascript/firebase-config.js"></script>
+        <script type="module" src="javascript/passageiro.js"></script>
 
-    <h1>VAMUX - Área do Passageiro</h1>
+        <script>
+            // Esta função global será chamada pela API do Google Maps quando ela terminar de carregar.
+            // Ela atua como um "gatilho" para a inicialização do mapa que está em passageiro.js.
+            function initMap() {
+                console.log("📍 initMap (Passageiro) chamada! Google Maps API pronta.");
+                // Chama a função de inicialização real do mapa que está em passageiro.js.
+                // Verificamos se ela existe antes de chamar, pois passageiro.js é um módulo.
+                if (typeof initPassengerMap === 'function') {
+                    initPassengerMap();
+                } else {
+                    console.warn("⚠️ initPassengerMap não encontrada em passageiro.js. Verifique se o script foi carregado corretamente.");
+                }
+            }
 
-    <input type="text" id="destino" placeholder="Digite seu destino">
+            // Esta função carrega dinamicamente o script da API do Google Maps.
+            function loadGoogleMapsScript() {
+                // Verifica se a API já foi carregada. Isso é um safeguard.
+                if (typeof google === 'object' && typeof google.maps === 'object' && typeof google.maps.Map === 'function') {
+                    initMap(); // Se já estiver carregada, inicializa o mapa diretamente
+                    return;
+                }
+                const script = document.createElement('script');
+                // ATENÇÃO: SUBSTITUA PELA SUA CHAVE DE API COMPLETA DO GOOGLE MAPS
+                script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap";
+                script.async = true;
+                script.defer = true;
+                script.onerror = function() { // Captura erros de carregamento do script
+                    console.error("❌ ERRO: O script do Google Maps falhou ao carregar em passageiro.html.");
+                    document.getElementById('mensagemStatus').innerHTML = "❌ Erro ao carregar o mapa. Verifique a chave da API e sua conexão.";
+                    document.getElementById('mensagemStatus').style.color = 'red';
+                };
+                document.head.appendChild(script); // Adiciona o script ao <head> da página
+            }
 
-    <button id="calcularValor">💰 Calcular Valor</button>
-    <button id="chamarCorrida">🚗 Chamar Corrida</button>
-
-    <div id="map" style="width: 100%; height: 400px; margin-top: 10px;"></div>
-
-    <div id="status">Status da Corrida</div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap" async defer></script>
-
-    <script src="javascript/firebase-config.js"></script>
-    <script src="javascript/passageiro.js"></script>
-</body>
+            // Garante que o script do Google Maps seja carregado somente depois que o DOM estiver pronto.
+            document.addEventListener('DOMContentLoaded', loadGoogleMapsScript);
+        </script>
+    </body>
 </html>

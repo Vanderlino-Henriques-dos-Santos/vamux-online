@@ -1,46 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cadastro - VAMUX</title>
-  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
+
   <div class="container">
-    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo-vamux">
-    <h2 class="gradient-text">Crie sua conta no VAMUX</h2>
+    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo" />
+    <h1 class="gradient-text">Cadastro no VAMUX</h1>
 
-    <h3 class="gradient-text">Você é:</h3>
-    <div class="btn-group">
-      <button class="btn" onclick="selecionarTipo('passageiro')">Passageiro</button>
-      <button class="btn" onclick="selecionarTipo('motorista')">Motorista</button>
+    <div class="form-group">
+      <label for="email" class="label-text">Email</label>
+      <input type="email" id="email" class="input-box" placeholder="Digite seu email" required />
     </div>
 
-    <input type="hidden" id="tipo">
-
-    <label class="label-text" for="email">Digite seu email</label>
-    <input type="email" id="email" placeholder="exemplo@email.com">
-
-    <label class="label-text" for="senha">Digite sua senha</label>
-    <input type="password" id="senha" placeholder="Digite sua senha">
-
-    <div class="btn-group">
-      <button class="btn" id="btnCadastrar">Cadastrar</button>
+    <div class="form-group">
+      <label for="senha" class="label-text">Senha</label>
+      <input type="password" id="senha" class="input-box" placeholder="Digite sua senha" required />
     </div>
 
-    <p id="mensagemCadastro" style="margin-top: 15px;"></p>
+    <div class="form-group">
+      <label for="tipo" class="label-text">Tipo de Usuário</label>
+      <select id="tipo" class="input-box">
+        <option value="passageiro">Passageiro</option>
+        <option value="motorista">Motorista</option>
+      </select>
+    </div>
 
-    <a href="index.html"><p class="gradient-link">Voltar para o Início</p></a>
+    <button class="btn" onclick="cadastrarUsuario()">Cadastrar</button>
+
+    <p id="mensagemCadastro" class="gradient-text"></p>
+
+    <a href="index.html" class="link">Voltar para o Início</a>
   </div>
 
-  <!-- 🔥 Firebase SDK versão 8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script type="module" src="javascript/firebase-config.js"></script>
+  <script type="module" src="javascript/cadastro.js"></script>
 
-  <!-- 🔥 Seus scripts -->
-  <script src="javascript/firebase-config.js"></script>
-  <script src="javascript/cadastro.js"></script>
 </body>
 </html>
