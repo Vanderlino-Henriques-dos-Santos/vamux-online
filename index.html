@@ -3,30 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bem-vindo ao VAMUX</title>
+  <title>VAMUX - Início</title>
   <link rel="stylesheet" href="css/index.css" />
- 
 </head>
 <body>
   <div class="container">
     <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo" />
-    <h1 class="logo-text">Bem-vindo ao <span class="gradient-text">VAMUX</span></h1>
-
-    <p class="label-text">Escolha seu perfil:</p>
+    <h1 class="logo-text">Bem-vindo ao VAMUX</h1>
 
     <div class="btn-group">
-      <button id="btn-passageiro" class="btn">Sou Passageiro</button>
-      <button id="btn-motorista" class="btn">Sou Motorista</button>
+      <p class="gradient-text">Cadastre-se</p>
+      <a href="cadastro.html?tipo=passageiro"><button class="btn">Sou Passageiro</button></a>
+      <a href="cadastro.html?tipo=motorista"><button class="btn">Sou Motorista</button></a>
     </div>
 
-    <p class="label-text" style="margin-top: 30px;">Já tem cadastro?</p>
-
     <div class="btn-group">
-      <button id="login-passageiro" class="btn">Login Passageiro</button>
-      <button id="login-motorista" class="btn">Login Motorista</button>
+      <p class="gradient-text">Já tem conta?</p>
+      <a href="login.html?tipo=passageiro"><button class="btn">Login Passageiro</button></a>
+      <a href="login.html?tipo=motorista"><button class="btn">Login Motorista</button></a>
     </div>
   </div>
-
-  <script src="javascript/index.js"></script>
 </body>
 </html>

@@ -5,42 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Área do Motorista - VAMUX</title>
   <link rel="stylesheet" href="css/index.css" />
+  <style>
+    /* CSS para o mapa no motorista */
+    #map {
+      width: 100%;
+      height: 300px; /* Altura do mapa */
+      margin-top: 20px;
+      border-radius: 8px;
+      background-color: #e0e0e0; /* Cor de fundo para visualização antes do carregamento */
+    }
+    .map-container {
+        /* Seu CSS existente para o container do mapa */
+    }
+    .info-corrida {
+        background-color: #333;
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1.1em;
+    }
+    .info-corrida button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #28a745; /* Verde para Aceitar */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    .info-corrida button:hover {
+        background-color: #218838;
+    }
+    .mensagem-status {
+        text-align: center;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-
-    <!-- Logo no topo -->
     <div class="logo-container">
       <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo" />
     </div>
-
-    <!-- Título -->
     <h1 class="titulo">Área do Motorista</h1>
 
-    <!-- Mapa -->
     <div id="map" class="map-container"></div>
 
-    <!-- Mensagens de status -->
-    <p id="mensagemStatus" class="mensagem-status"></p>
+    <p id="mensagemStatus" class="mensagem-status">Aguardando você ficar online...</p>
 
-    <!-- Info da Corrida -->
-    <div id="infoCorrida" class="info-corrida"></div>
+    <div id="infoCorrida" class="info-corrida">
+      </div>
 
-    <!-- Botões -->
     <div class="botoes-container">
       <button class="btn" onclick="ficarOnline()">Ficar Online</button>
       <button class="btn" onclick="finalizarCorrida()">Finalizar Corrida</button>
+      <a href="index.html"><button class="btn">Sair</button></a>
     </div>
   </div>
 
-  <!-- Google Maps -->
   <script
     async
     defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&libraries=places&callback=initMap"
   ></script>
 
-  <!-- Script Firebase -->
   <script type="module" src="javascript/motorista.js"></script>
 </body>
 </html>
