@@ -1,51 +1,45 @@
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import app from "./firebase-config.js";
+import { app } from "./firebase-config.js";
 
 const auth = getAuth(app);
+const params = new URLSearchParams(window.location.search);
+const tipo = params.get("tipo");
 
-window.fazerLogin = function () {
-    const email = document.getElementById('email').value.trim();
-    const senha = document.getElementById('senha').value.trim();
-    const mensagem = document.getElementById('mensagemLogin');
+const mensagem = document.getElementById("mensagemLogin");
+const form = document.querySelector("form");
 
-    if (!email || !senha) {
-        mensagem.innerHTML = "⚠️ Preencha todos os campos!";
-        mensagem.style.color = "orange";
-        return;
-    }
+if (!tipo || (tipo !== "passageiro" && tipo !== "motorista")) {
+  mensagem.textContent = "Tipo de usuário inválido. Acesse via página inicial.";
+  mensagem.style.color = "red";
+}
 
-    const params = new URLSearchParams(window.location.search);
-    const tipo = params.get("tipo");
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-    if (!tipo || (tipo !== "passageiro" && tipo !== "motorista")) {
-        mensagem.innerHTML = "⚠️ Tipo de usuário inválido. Acesse pela página inicial.";
-        mensagem.style.color = "red";
-        return;
-    }
+  const email = form.email.value.trim();
+  const senha = form.senha.value.trim();
 
-    signInWithEmailAndPassword(auth, email, senha)
-        .then((userCredential) => {
-            // Sucesso no login
-            mensagem.innerHTML = "✅ Login realizado com sucesso!";
-            mensagem.style.color = "lime";
+  if (!email || !senha) {
+    mensagem.textContent = "Preencha todos os campos.";
+    mensagem.style.color = "orange";
+    return;
+  }
 
-            const user = userCredential.user;
-            // Armazena o UID e o tipo de usuário no localStorage
-            localStorage.setItem('currentUserUid', user.uid);
-            localStorage.setItem('currentUserType', tipo);
+  signInWithEmailAndPassword(auth, email, senha)
+    .then(() => {
+      mensagem.textContent = "✅ Login realizado com sucesso!";
+      mensagem.style.color = "lime";
 
-
-            setTimeout(() => {
-                if (tipo === "passageiro") {
-                    window.location.href = "passageiro.html";
-                } else if (tipo === "motorista") {
-                    window.location.href = "motorista.html";
-                }
-            }, 1500);
-        })
-        .catch((error) => {
-            console.error(error);
-            mensagem.innerHTML = "❌ Erro ao fazer login: " + error.message;
-            mensagem.style.color = "red";
-        });
-};
+      setTimeout(() => {
+        if (tipo === "passageiro") {
+          window.location.href = "passageiro.html";
+        } else if (tipo === "motorista") {
+          window.location.href = "motorista.html";
+        }
+      }, 1500);
+    })
+    .catch((error) => {
+      mensagem.textContent = `Erro: ${error.message}`;
+      mensagem.style.color = "red";
+    });
+});

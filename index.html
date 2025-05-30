@@ -1,30 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carregando VAMUX...</title>
-
-    <script>
-        // Garante que o JavaScript redirecione para cadastro.html
-        window.location.href = 'cadastro.html';
-    </script>
-    <style>
-        /* Estilo básico para exibir uma mensagem enquanto o redirecionamento ocorre */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            font-size: 24px;
-            color: #555;
-            background-color: #f8f8f8;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bem-vindo ao VAMUX</title>
+  <link rel="stylesheet" href="css/index.css" />
+ 
 </head>
 <body>
-    <p>Carregando VAMUX, aguarde...</p>
+  <div class="container">
+    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo" />
+    <h1 class="logo-text">Bem-vindo ao <span class="gradient-text">VAMUX</span></h1>
+
+    <p class="label-text">Escolha seu perfil:</p>
+
+    <div class="btn-group">
+      <button id="btn-passageiro" class="btn">Sou Passageiro</button>
+      <button id="btn-motorista" class="btn">Sou Motorista</button>
+    </div>
+
+    <p class="label-text" style="margin-top: 30px;">Já tem cadastro?</p>
+
+    <div class="btn-group">
+      <button id="login-passageiro" class="btn">Login Passageiro</button>
+      <button id="login-motorista" class="btn">Login Motorista</button>
+    </div>
+  </div>
+
+  <script src="javascript/index.js"></script>
 </body>
 </html>

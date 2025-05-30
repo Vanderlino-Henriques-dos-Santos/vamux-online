@@ -1,0 +1,22 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+{
+  "rules": {
+    "corridas": {
+      "$corridaId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "usuarios": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}

@@ -1,153 +1,92 @@
 body {
-  background-color: #0d0f1a;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: white;
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #000; /* preto */
+    color: #fff; /* branco */
 }
 
 .container {
-  max-width: 400px;
-  margin: 60px auto;
-  background-color: #1e1e2f;
-  padding: 30px 20px;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 255, 213, 0.2);
-  text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+    margin: 20px auto;
+    display: block;
+    border-radius: 10px;
 }
 
 .logo-text {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.gradient-text {
-  font-size: 20px;
-  font-weight: bold;
-  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #fff;
 }
 
 .label-text {
-  display: block;
-  text-align: left;
-  margin: 10px 0 5px;
-  font-weight: bold;
-  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #fff;
+    text-align: left;
 }
 
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #0d0f1a;
-  color: #fff;
-  font-size: 16px;
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #222;
+    color: #fff;
 }
-/* 🔥 Estilo padrão dos botões */
+
 .btn {
-  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 30px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  color: #000;
-  width: 100px;        /* 🔥 Deixa menor */
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+    background-color: #fff;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
 .btn:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
+    background-color: #ddd;
+    color: #000;
 }
 
-/* 🔥 Agrupamento dos botões centralizados */
 .btn-group {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
 }
 
+a {
+    text-decoration: none;
+}
 
+#map {
+    width: 100%;
+    height: 300px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
 
-
-
-.cadastro-img {
-  width: 150px;
-  border-radius: 50%;
-}
-.map-estilizado {
-  width: 100%;
-  height: 300px;
-  margin-bottom: 20px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 255, 213, 0.2);
-}
-.map-estilizado {
-  width: 100%;
-  height: 300px;
-  margin-bottom: 20px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 255, 213, 0.2);
-}
-input::placeholder {
-  font-weight: bold;
-  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.marca-vamux {
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 40px;
-  background: linear-gradient(90deg, #3a8df0, #00ffd5, #ffb347);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-  text-align: center;
-  line-height: 1.4;
-}
-/* 🔥 Estilo da Logo */
-.logo-vamux {
-  width: 120px;     /* 🔥 Tamanho da logo */
-  height: auto;     /* 🔥 Mantém proporção */
-  display: block;
-  margin: 0 auto 20px auto; /* 🔥 Centraliza e dá margem inferior */
-  border-radius: 20px;      /* 🔥 Opcional: deixa levemente arredondada */
-  box-shadow: 0 0 15px rgba(0, 255, 213, 0.5); /* 🔥 Glow futurista */
-}
-.logo {
-  width: 150px;
-  border-radius: 50%;
-  margin-bottom: 20px;
-}
-.button-group-inline {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.button-group-inline {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
+#infoCorrida,
+#mensagemStatus {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #fff;
 }

@@ -1,78 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VAMUX - Motorista</title>
-    <link rel="stylesheet" href="css/index.css">
-    <style>
-        /* Estilo específico para o mapa do motorista */
-        #map {
-            width: 100%;
-            height: 400px; /* Altura fixa para o mapa */
-            border-radius: 8px;
-            margin-bottom: 20px; /* Espaço abaixo do mapa */
-        }
-        .button-group-inline {
-            display: flex;
-            gap: 10px; /* Espaço entre os botões */
-            margin-top: 20px; /* Espaço acima do grupo de botões */
-            flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas pequenas */
-            justify-content: center; /* Centraliza os botões */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Área do Motorista - VAMUX</title>
+  <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
-    <div class="container">
-        <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo">
-        <h1 class="title">VAMUX - Motorista</h1>
-        <p class="subtitle">Área do Motorista</p>
+  <div class="container">
 
-        <div id="map"></div>
-
-        <div class="button-group-inline">
-            <button class="btn" onclick="ficarOnline()">Ficar Online</button>
-            <button class="btn" onclick="chegouNoLocalDePartida()" id="btnChegouPartida" style="display:none;">Cheguei no Local</button>
-            <button class="btn" onclick="finalizarCorrida()">Finalizar Corrida</button>
-        </div>
-
-        <p id="infoCorrida" class="gradient-text" style="margin-top: 15px;"></p>
-        <p id="mensagemStatus" class="gradient-text"></p>
-
-        <a href="index.html" class="link">Sair</a>
+    <!-- Logo no topo -->
+    <div class="logo-container">
+      <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo" />
     </div>
 
-    <script type="module" src="javascript/motorista.js"></script>
+    <!-- Título -->
+    <h1 class="titulo">Área do Motorista</h1>
 
-    <script>
-        function initMap() {
-            console.log("📍 initMap (Motorista) chamada! Google Maps API pronta.");
-            if (typeof initDriverMap === 'function') {
-                initDriverMap();
-            } else {
-                console.warn("⚠️ initDriverMap não encontrada em motorista.js. Verifique se o script foi carregado corretamente.");
-            }
-        }
+    <!-- Mapa -->
+    <div id="map" class="map-container"></div>
 
-        function loadGoogleMapsScript() {
-            if (typeof google === 'object' && typeof google.maps === 'object' && typeof google.maps.Map === 'function') {
-                initMap();
-                return;
-            }
-            const script = document.createElement('script');
-            // ATENÇÃO: SUBSTITUA PELA SUA CHAVE DE API COMPLETA DO GOOGLE MAPS
-            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap";
-            script.async = true;
-            script.defer = true;
-            script.onerror = function() {
-                console.error("❌ ERRO: O script do Google Maps falhou ao carregar em motorista.html.");
-                document.getElementById('mensagemStatus').innerHTML = "❌ Erro ao carregar o mapa. Verifique a chave da API e sua conexão.";
-                document.getElementById('mensagemStatus').style.color = 'red';
-            };
-            document.head.appendChild(script);
-        }
+    <!-- Mensagens de status -->
+    <p id="mensagemStatus" class="mensagem-status"></p>
 
-        document.addEventListener('DOMContentLoaded', loadGoogleMapsScript);
-    </script>
+    <!-- Info da Corrida -->
+    <div id="infoCorrida" class="info-corrida"></div>
+
+    <!-- Botões -->
+    <div class="botoes-container">
+      <button class="btn" onclick="ficarOnline()">Ficar Online</button>
+      <button class="btn" onclick="finalizarCorrida()">Finalizar Corrida</button>
+    </div>
+  </div>
+
+  <!-- Google Maps -->
+  <script
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&callback=initMap"
+  ></script>
+
+  <!-- Script Firebase -->
+  <script type="module" src="javascript/motorista.js"></script>
 </body>
 </html>

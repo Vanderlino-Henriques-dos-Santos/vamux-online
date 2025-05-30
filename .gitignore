@@ -5,3 +5,6 @@ firebase-debug.*
 .env
 javascript/config.js
 firebase.json
+
+/javascript/firebase-config.js
+.env

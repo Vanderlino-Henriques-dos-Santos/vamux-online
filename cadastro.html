@@ -1,44 +1,34 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cadastro - VAMUX</title>
   <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
 
   <div class="container">
-    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo" />
-    <h1 class="gradient-text">Cadastro no VAMUX</h1>
+    <img src="assets/img/logo.jpg" alt="Logo VAMUX" class="logo"/>
 
-    <div class="form-group">
-      <label for="email" class="label-text">Email</label>
-      <input type="email" id="email" class="input-box" placeholder="Digite seu email" required />
-    </div>
+    <h1 class="logo-text">Cadastro VAMUX</h1>
 
-    <div class="form-group">
-      <label for="senha" class="label-text">Senha</label>
-      <input type="password" id="senha" class="input-box" placeholder="Digite sua senha" required />
-    </div>
+    <form>
+      <label class="label-text">Email</label>
+      <input type="email" name="email" placeholder="Digite seu email" required>
 
-    <div class="form-group">
-      <label for="tipo" class="label-text">Tipo de Usuário</label>
-      <select id="tipo" class="input-box">
-        <option value="passageiro">Passageiro</option>
-        <option value="motorista">Motorista</option>
-      </select>
-    </div>
+      <label class="label-text">Senha</label>
+      <input type="password" name="senha" placeholder="Digite sua senha" required>
 
-    <button class="btn" onclick="cadastrarUsuario()">Cadastrar</button>
+      <button type="submit" class="btn">Cadastrar</button>
+    </form>
 
-    <p id="mensagemCadastro" class="gradient-text"></p>
+    <p id="mensagemCadastro"></p>
 
-    <a href="index.html" class="link">Voltar para o Início</a>
+    <a href="index.html"><button class="btn">Voltar</button></a>
   </div>
 
   <script type="module" src="javascript/firebase-config.js"></script>
   <script type="module" src="javascript/cadastro.js"></script>
-
 </body>
 </html>
