@@ -1,10 +1,5 @@
-node_modules
-# Ocultar arquivos sensíveis e logs
-*.log
-firebase-debug.*
+firebase-config.js
 .env
-javascript/config.js
-firebase.json
+node_modules/
+.DS_Store
 
-/javascript/firebase-config.js
-.env

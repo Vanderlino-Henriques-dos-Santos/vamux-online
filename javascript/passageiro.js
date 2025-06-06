@@ -1,219 +1,346 @@
 // javascript/passageiro.js
 
-import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-import { app } from "./firebase-config.js";
-
-console.log("🥳 Arquivo passageiro.js carregado!");
-
-const database = getDatabase(app);
+// --- VERIFICAÇÃO DE LOGIN: Garante que só passageiros logados acessem esta página ---
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+if (!currentUser || currentUser.type !== 'passenger') {
+    alert('Você precisa estar logado como Passageiro para acessar esta página.');
+    window.location.href = 'login.html'; // Redireciona para a página de login
+}
+// --- FIM DA VERIFICAÇÃO DE LOGIN ---
 
 let map;
 let directionsService;
 let directionsRenderer;
-let marcadorPassageiro;
 let autocompletePartida;
 let autocompleteDestino;
 
-// Variável para armazenar o valor calculado da corrida
-let valorEstimadoCorrida = 0; // Inicializa com 0
+// Elementos HTML
+const inputPartida = document.getElementById("partida");
+const inputDestino = document.getElementById("destino");
+const btnSolicitarCorrida = document.getElementById("btnSolicitarCorrida");
+const statusPassageiroElement = document.getElementById("statusPassageiro");
 
+// --- Função de Inicialização do Mapa (callback da API do Google Maps) ---
 window.initMap = function () {
-  console.log("📍 initMap foi chamada pelo Google Maps API.");
+    console.log("📍 initMap passageiro foi chamada pelo Google Maps API.");
 
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
 
-  const mapDiv = document.getElementById("map");
-  if (!mapDiv) {
-    console.error("❌ Erro: Elemento #map não encontrado no HTML!");
-    document.getElementById("mensagemStatus").textContent = "Erro: Elemento do mapa não encontrado.";
-    return;
-  }
+    const mapDiv = document.getElementById("map");
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const localPassageiro = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        };
-        console.log("✅ Localização do passageiro obtida:", localPassageiro);
+    if (mapDiv) {
+        // Tenta obter a localização atual do passageiro (geolocalização do navegador)
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const passageiroLatLng = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    };
+                    map = new google.maps.Map(mapDiv, {
+                        center: passageiroLatLng,
+                        zoom: 15,
+                    });
+                    directionsRenderer.setMap(map); // Associa o DirectionsRenderer ao mapa
 
-        map = new google.maps.Map(mapDiv, {
-          zoom: 13,
-          center: localPassageiro,
-        });
-
-        directionsRenderer.setMap(map);
-
-        marcadorPassageiro = new google.maps.Marker({
-          position: localPassageiro,
-          map: map,
-          icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-          title: "Você (Passageiro)",
-        });
-
-        const inputPartida = document.getElementById("partida");
-        const inputDestino = document.getElementById("destino");
-
-        if (inputPartida && inputDestino) {
-          autocompletePartida = new google.maps.places.Autocomplete(inputPartida);
-          autocompleteDestino = new google.maps.places.Autocomplete(inputDestino);
-          console.log("✅ Autocompletes de partida e destino inicializados.");
+                    // Adiciona um marcador para a localização atual do passageiro
+                    new google.maps.Marker({
+                        position: passageiroLatLng,
+                        map: map,
+                        title: "Sua Localização",
+                    });
+                    console.log("✅ Mapa passageiro inicializado com localização atual.");
+                },
+                () => {
+                    // Se a geolocalização falhar, usa uma localização padrão (ex: São Paulo)
+                    console.warn("⚠️ Falha ao obter localização do passageiro. Usando localização padrão.");
+                    const defaultLatLng = { lat: -23.55052, lng: -46.633309 }; // São Paulo
+                    map = new google.maps.Map(mapDiv, {
+                        center: defaultLatLng,
+                        zoom: 12,
+                    });
+                    directionsRenderer.setMap(map);
+                }
+            );
         } else {
-          console.warn("⚠️ Campos de input 'partida' ou 'destino' não encontrados para autocomplete.");
+            // Navegador não suporta geolocalização
+            console.warn("⚠️ Navegador não suporta geolocalização. Usando localização padrão.");
+            const defaultLatLng = { lat: -23.55052, lng: -46.633309 }; // São Paulo
+            map = new google.maps.Map(mapDiv, {
+                center: defaultLatLng,
+                zoom: 12,
+            });
+            directionsRenderer.setMap(map);
         }
-
-      },
-      (error) => {
-        console.error("❌ Erro ao obter geolocalização:", error);
-        document.getElementById("mensagemStatus").textContent = "Erro ao obter sua localização. O mapa pode estar centralizado em São Paulo.";
-        const defaultCenter = { lat: -23.55052, lng: -46.633308 }; 
-        map = new google.maps.Map(mapDiv, {
-          zoom: 13,
-          center: defaultCenter,
-        });
-        directionsRenderer.setMap(map);
-
-        const inputPartida = document.getElementById("partida");
-        const inputDestino = document.getElementById("destino");
-
-        if (inputPartida && inputDestino) {
-          autocompletePartida = new google.maps.places.Autocomplete(inputPartida);
-          autocompleteDestino = new google.maps.places.Autocomplete(inputDestino);
-        }
-      },
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-    );
-  } else {
-    console.warn("⚠️ Geolocalização não suportada pelo navegador.");
-    document.getElementById("mensagemStatus").textContent = "Seu navegador não suporta geolocalização. O mapa pode estar centralizado em São Paulo.";
-    const defaultCenter = { lat: -23.55052, lng: -46.633308 }; 
-    map = new google.maps.Map(mapDiv, {
-      zoom: 13,
-      center: defaultCenter,
-    });
-    directionsRenderer.setMap(map);
-
-    const inputPartida = document.getElementById("partida");
-    const inputDestino = document.getElementById("destino");
-
-    if (inputPartida && inputDestino) {
-      autocompletePartida = new google.maps.places.Autocomplete(inputPartida);
-      autocompleteDestino = new google.maps.places.Autocomplete(inputDestino);
-    }
-  }
-};
-
-// --- Funções de Lógica da Corrida ---
-
-window.calcularCorrida = function () {
-  console.log("➡️ Botão 'Calcular Corrida' clicado.");
-  const partida = document.getElementById("partida").value;
-  const destino = document.getElementById("destino").value;
-  const mensagemStatus = document.getElementById("mensagemStatus");
-  const infoCorrida = document.getElementById("infoCorrida");
-
-  if (!partida || !destino) {
-    mensagemStatus.textContent = "Por favor, digite o local de partida e destino.";
-    mensagemStatus.style.color = "orange";
-    console.warn("⚠️ Campos de partida/destino vazios.");
-    infoCorrida.innerHTML = ""; // Limpa info anterior
-    valorEstimadoCorrida = 0; // Reseta valor
-    return;
-  }
-
-  const request = {
-    origin: partida,
-    destination: destino,
-    travelMode: google.maps.TravelMode.DRIVING,
-  };
-
-  directionsService.route(request, (result, status) => {
-    if (status === google.maps.DirectionsStatus.OK) {
-      directionsRenderer.setDirections(result);
-      const route = result.routes[0].legs[0];
-      const distanciaTexto = route.distance.text; // Ex: "115 km"
-      const duracaoTexto = route.duration.text;   // Ex: "1 hora 44 minutos"
-      
-      // Extrair apenas o número da distância em km para cálculo
-      const distanciaKm = parseFloat(distanciaTexto.replace(' km', '').replace(',', '.')); // "115 km" -> 115
-
-      // LÓGICA DE CÁLCULO DO VALOR DA CORRIDA
-      // Preços de exemplo (ajuste conforme a necessidade do seu projeto)
-      const precoPorKm = 2.50; // R$ 2.50 por km
-      const precoPorMinuto = 0.50; // R$ 0.50 por minuto (se a duração for um fator)
-      const taxaBase = 5.00; // Taxa de início de corrida
-
-      // Para calcular duração em minutos de forma mais precisa, você pode usar route.duration.value (em segundos)
-      const duracaoSegundos = route.duration.value;
-      const duracaoMinutos = duracaoSegundos / 60;
-
-      valorEstimadoCorrida = (taxaBase + (distanciaKm * precoPorKm) + (duracaoMinutos * precoPorMinuto)).toFixed(2);
-      
-      infoCorrida.innerHTML = `
-        <p>Distância: ${distanciaTexto}</p>
-        <p>Duração Estimada: ${duracaoTexto}</p>
-        <p><strong>Valor Estimado: R$ ${valorEstimadoCorrida}</strong></p>
-      `;
-      mensagemStatus.textContent = "Cálculo da corrida realizado!";
-      mensagemStatus.style.color = "green";
-      console.log("✅ Rota calculada com sucesso:", { distancia: distanciaTexto, duracao: duracaoTexto, valor: valorEstimadoCorrida });
     } else {
-      console.error("❌ Erro ao calcular rota:", status);
-      mensagemStatus.textContent = `Erro ao calcular rota: ${status}. Verifique os endereços.`;
-      mensagemStatus.style.color = "red";
-      infoCorrida.innerHTML = ""; // Limpa info
-      valorEstimadoCorrida = 0; // Reseta valor
+        console.error("❌ Elemento 'map' não encontrado no HTML para passageiro.");
     }
-  });
+
+    // --- Autocomplete para campos de input de partida e destino ---
+    if (inputPartida && inputDestino) {
+        autocompletePartida = new google.maps.places.Autocomplete(inputPartida);
+        autocompleteDestino = new google.maps.places.Autocomplete(inputDestino);
+        console.log("✅ Autocompletes de partida e destino inicializados para passageiro.");
+
+        // Adiciona listeners para recalcular rota e estimativa ao mudar os inputs
+        autocompletePartida.addListener('place_changed', () => {
+            console.log("Autocomplete Partida changed. Chamando calculateAndDisplayEstimate.");
+            const place = autocompletePartida.getPlace();
+            if (place.geometry) {
+                map.setCenter(place.geometry.location);
+            }
+            calculateAndDisplayEstimate();
+        });
+        autocompleteDestino.addListener('place_changed', () => {
+            console.log("Autocomplete Destino changed. Chamando calculateAndDisplayEstimate.");
+            const place = autocompleteDestino.getPlace();
+            if (place.geometry) {
+                map.setCenter(place.geometry.location);
+            }
+            calculateAndDisplayEstimate();
+        });
+        // Para garantir que a estimativa seja exibida mesmo sem usar o autocomplete
+        inputPartida.addEventListener('blur', () => {
+            console.log("Input Partida blurred. Chamando calculateAndDisplayEstimate.");
+            calculateAndDisplayEstimate();
+        });
+        inputDestino.addEventListener('blur', () => {
+            console.log("Input Destino blurred. Chamando calculateAndDisplayEstimate.");
+            calculateAndDisplayEstimate();
+        });
+
+    } else {
+        console.warn("⚠️ Campos de input 'partida' ou 'destino' não encontrados para autocomplete (passageiro).");
+    }
+
+    // Adiciona o event listener para o botão de solicitar corrida
+    if (btnSolicitarCorrida) {
+        btnSolicitarCorrida.addEventListener("click", solicitarCorrida);
+    }
+
+    // Inicia a verificação de status da corrida no localStorage para manter a UI atualizada
+    checkCorridaStatus(); // Verifica ao carregar a página
+    setInterval(checkCorridaStatus, 3000); // Verifica a cada 3 segundos
 };
 
-window.chamarCorrida = function () {
-  console.log("📞 Botão 'Chamar Corrida' clicado.");
-  const partida = document.getElementById("partida").value;
-  const destino = document.getElementById("destino").value;
-  const mensagemStatus = document.getElementById("mensagemStatus");
-  const infoCorrida = document.getElementById("infoCorrida"); // Para pegar os dados exibidos
+// --- Funções de Lógica da Corrida para Passageiro ---
 
-  // Certificar-se que a corrida foi calculada e os valores estão disponíveis
-  if (valorEstimadoCorrida === 0 || !partida || !destino || infoCorrida.innerHTML === "") {
-    mensagemStatus.textContent = "Por favor, calcule a corrida e verifique os endereços antes de chamar.";
-    mensagemStatus.style.color = "orange";
-    console.warn("⚠️ Tentativa de chamar corrida sem cálculo prévio ou campos vazios.");
-    return;
-  }
+/**
+ * Calcula o valor estimado da corrida com base na distância e duração.
+ * @param {number} distanceInMeters - Distância em metros.
+ * @param {number} durationInSeconds - Duração em segundos.
+ * @returns {string} Valor formatado em R$.
+ */
+function calculateEstimatedPrice(distanceInMeters, durationInSeconds) {
+    const precoBase = 5.00;
+    const precoPorKm = 2.50;
+    const precoPorMin = 0.50;
 
-  // Extrair distância e duração diretamente do HTML para garantir consistência
-  const distanciaTexto = infoCorrida.querySelector("p:nth-child(1)").textContent.replace("Distância: ", "");
-  const duracaoTexto = infoCorrida.querySelector("p:nth-child(2)").textContent.replace("Duração Estimada: ", "");
+    const distanciaKm = (distanceInMeters / 1000);
+    const duracaoMin = (durationInSeconds / 60);
 
-  // Salvar a corrida no Firebase
-  const novaCorridaRef = push(ref(database, "corridas"));
-  set(novaCorridaRef, {
-    passageiroId: "ID_DO_PASSAGEIRO_AQUI", // 🚨 Lembre-se de substituir pelo ID real do usuário logado
-    localPartida: partida,
-    localDestino: destino,
-    distancia: distanciaTexto, // Salvando o texto completo
-    duracao: duracaoTexto,     // Salvando o texto completo
-    valor: valorEstimadoCorrida, // Salvando o valor calculado
-    status: "aguardando_motorista", // Status correto para o motorista buscar
-    timestamp: new Date().toISOString(),
-  })
-    .then(() => {
-      mensagemStatus.textContent = "🚗 Corrida solicitada! Aguardando motorista...";
-      mensagemStatus.style.color = "blue";
-      console.log("✅ Corrida salva no Firebase:", { partida, destino, valor: valorEstimadoCorrida });
-      // Opcional: Limpar campos após chamar ou desabilitar botões
-      // document.getElementById("partida").value = "";
-      // document.getElementById("destino").value = "";
-      // infoCorrida.innerHTML = "";
-    })
-    .catch((error) => {
-      console.error("❌ Erro ao salvar corrida no Firebase:", error);
-      mensagemStatus.textContent = `Erro ao solicitar corrida: ${error.message}`;
-      mensagemStatus.style.color = "red";
-    });
-};
+    let precoEstimado = precoBase + (distanciaKm * precoPorKm) + (duracaoMin * precoPorMin);
+    precoEstimado = Math.max(precoEstimado, precoBase).toFixed(2);
+    
+    return precoEstimado;
+}
 
-// ... (restante do código para autenticação, se houver) ...
+
+/**
+ * Calcula e exibe a rota e a estimativa de distância/duração no mapa do passageiro.
+ * Chamado ao mudar partida/destino.
+ */
+async function calculateAndDisplayEstimate() {
+    console.log("-> Iniciando calculateAndDisplayEstimate()");
+    const partida = inputPartida.value.trim();
+    const destino = inputDestino.value.trim();
+
+    if (!partida || !destino) {
+        console.log("   Partida ou destino vazios. Resetando status.");
+        statusPassageiroElement.innerHTML = "Insira **partida** e **destino** para ver a estimativa.";
+        directionsRenderer.setDirections({ routes: [] }); // Limpa a rota se não houver dados
+        btnSolicitarCorrida.disabled = true; // Desabilita o botão
+        return;
+    }
+
+    if (!directionsService || !directionsRenderer) {
+        console.error("   Serviços de direção não inicializados.");
+        return;
+    }
+
+    // Verifica se já existe uma corrida solicitada
+    const corridaEmAndamento = localStorage.getItem('corridaSolicitada');
+    if (corridaEmAndamento) {
+        // Se uma corrida já está em andamento, não recalcula a estimativa e não mostra a mensagem de "calcular"
+        // A função checkCorridaStatus cuidará da mensagem neste caso.
+        console.log("   Corrida já em andamento, ignorando recalcular estimativa.");
+        return; 
+    }
+
+    statusPassageiroElement.textContent = "Calculando rota e estimativa...";
+    btnSolicitarCorrida.disabled = true; // Desabilita enquanto calcula
+
+    try {
+        console.log(`   Solicitando rota da API: ${partida} para ${destino}`);
+        const response = await directionsService.route({
+            origin: partida,
+            destination: destino,
+            travelMode: google.maps.TravelMode.DRIVING,
+        });
+
+        if (response.status === "OK") {
+            console.log("   Resposta da API OK. Exibindo rota.");
+            directionsRenderer.setDirections(response);
+            console.log(`✅ Rota passageiro de "${partida}" para "${destino}" exibida.`);
+
+            const route = response.routes[0].legs[0];
+            const distanciaTexto = route.distance.text; // Ex: "10 km"
+            const distanciaMetros = route.distance.value; // Ex: 10000 (metros)
+            const duracaoTexto = route.duration.text; // Ex: "15 mins"
+            const duracaoSegundos = route.duration.value; // Ex: 900 (segundos)
+
+            const valorEstimado = calculateEstimatedPrice(distanciaMetros, duracaoSegundos);
+
+            console.log(`   Distância: ${distanciaTexto}, Duração: ${duracaoTexto}, Valor: R$ ${valorEstimado}`);
+            // --- AQUI É O PONTO CHAVE: Deixa a estimativa clara e visível ---
+            statusPassageiroElement.innerHTML = `**Estimativa da Corrida:**<br>
+                                                 Distância: <b>${distanciaTexto}</b><br>
+                                                 Duração: <b>${duracaoTexto}</b><br>
+                                                 Valor Estimado: <b>R$ ${valorEstimado}</b><br>
+                                                 Revise as informações e clique em "Solicitar Corrida".`;
+            btnSolicitarCorrida.disabled = false; // Habilita o botão após calcular
+            
+        } else {
+            console.error("❌ Erro ao calcular rota para passageiro: " + response.status, response);
+            statusPassageiroElement.textContent = `Erro ao calcular rota: ${response.status}. Verifique os endereços.`;
+            directionsRenderer.setDirections({ routes: [] }); // Limpa rota em caso de erro
+            btnSolicitarCorrida.disabled = true; // Mantém desabilitado em caso de erro
+        }
+    } catch (error) {
+        console.error("❌ Erro na requisição de rota para passageiro:", error);
+        statusPassageiroElement.textContent = `Erro na requisição: ${error.message}.`;
+        directionsRenderer.setDirections({ routes: [] }); // Limpa rota em caso de erro
+        btnSolicitarCorrida.disabled = true; // Mantém desabilitado em caso de erro
+    }
+    console.log("-> Fim de calculateAndDisplayEstimate()");
+}
+
+
+/**
+ * Função chamada quando o passageiro clica em "Solicitar Corrida".
+ * Salva os dados da corrida no localStorage e atualiza o status.
+ */
+async function solicitarCorrida() {
+    console.log("-> Iniciando solicitarCorrida()");
+    const partida = inputPartida.value.trim();
+    const destino = inputDestino.value.trim();
+
+    if (!partida || !destino) {
+        console.log("   Partida ou destino vazios ao solicitar corrida.");
+        statusPassageiroElement.textContent = "Por favor, preencha partida e destino.";
+        return;
+    }
+
+    const currentDirections = directionsRenderer.getDirections();
+    if (!currentDirections || currentDirections.status !== "OK") {
+        console.error("   Erro: Direções não obtidas ou status não é OK antes de solicitar.");
+        statusPassageiroElement.textContent = "Erro ao obter rota calculada. Tente novamente.";
+        return;
+    }
+    const route = currentDirections.routes[0].legs[0];
+    const distanciaMetros = route.distance.value;
+    const duracaoSegundos = route.duration.value;
+    const valorEstimado = calculateEstimatedPrice(distanciaMetros, duracaoSegundos);
+
+    console.log("   Passageiro solicitou corrida:", partida, "->", destino);
+    
+    // Altera o texto imediatamente após a solicitação
+    statusPassageiroElement.innerHTML = `**Corrida solicitada com sucesso!**<br>Aguardando motorista...`;
+    btnSolicitarCorrida.disabled = true; // Desabilita o botão para evitar múltiplas solicitações
+    inputPartida.disabled = true; // Desabilita os campos de input
+    inputDestino.disabled = true; // Desabilita os campos de input
+
+
+    // --- SALVAR INFORMAÇÕES NO LOCALSTORAGE ---
+    const corridaData = {
+        origemPassageiro: partida,
+        destinoFinal: destino,
+        distanciaKmEstimada: (distanciaMetros / 1000).toFixed(2), // Salva em KM
+        duracaoMinEstimada: (duracaoSegundos / 60).toFixed(2), // Salva em Minutos
+        valorEstimado: valorEstimado,
+        status: "pendente", // Status inicial da corrida
+    };
+    localStorage.setItem('corridaSolicitada', JSON.stringify(corridaData));
+    console.log("   Dados da corrida salvos no localStorage. Status: PENDENTE");
+    console.log("-> Fim de solicitarCorrida()");
+}
+
+/**
+ * Verifica o status da corrida no localStorage para atualizar a UI do passageiro.
+ */
+function checkCorridaStatus() {
+    // console.log("-> Executando checkCorridaStatus()");
+    const corridaJson = localStorage.getItem('corridaSolicitada');
+    if (corridaJson) {
+        const corridaData = JSON.parse(corridaJson);
+        
+        // Corrida pendente (solicitada, mas não aceita ainda)
+        if (corridaData.status === "pendente") {
+            if (!statusPassageiroElement.textContent.includes("Corrida solicitada com sucesso!")) {
+                statusPassageiroElement.innerHTML = `**Corrida solicitada com sucesso!**<br>Aguardando motorista...`;
+                console.log("   Status da corrida atualizado para passageiro: Pendente (aguardando motorista).");
+            }
+            btnSolicitarCorrida.disabled = true; // Mantém desabilitado
+            inputPartida.disabled = true; // Desabilita os campos de input
+            inputDestino.disabled = true; // Desabilita os campos de input
+        }
+        // Motorista aceitou
+        else if (corridaData.status === "aceita") {
+            if (!statusPassageiroElement.textContent.includes("Motorista aceitou a corrida")) {
+                statusPassageiroElement.innerHTML = "🎉 **Motorista aceitou a corrida!** 🎉<br>Ele está a caminho!";
+                console.log("   Status da corrida atualizado para passageiro: Motorista aceitou!");
+            }
+            btnSolicitarCorrida.disabled = true; // Mantém desabilitado
+            inputPartida.disabled = true;
+            inputDestino.disabled = true;
+        }
+        // Passageiro a bordo
+        else if (corridaData.status === "a_bordo") {
+            if (!statusPassageiroElement.textContent.includes("Você está a bordo")) {
+                 statusPassageiroElement.innerHTML = "🚗 **Você está a bordo!** 💨<br>Boa viagem!";
+                 console.log("   Status da corrida atualizado para passageiro: Passageiro a bordo!");
+            }
+            btnSolicitarCorrida.disabled = true; // Mantém desabilitado
+            inputPartida.disabled = true;
+            inputDestino.disabled = true;
+        }
+        // Corrida finalizada
+        else if (corridaData.status === "finalizada") {
+            if (!statusPassageiroElement.textContent.includes("Corrida Finalizada!")) {
+                const valorFinal = corridaData.valorFinal ? `R$ ${corridaData.valorFinal}` : 'Não calculado';
+                statusPassageiroElement.innerHTML = `✅ **Corrida Finalizada!** ✅<br>Obrigado por usar a VAMUX.<br>Valor total: **${valorFinal}**<br>Para uma nova corrida, preencha e solicite novamente.`;
+                btnSolicitarCorrida.disabled = false; // Habilita para nova corrida
+                inputPartida.disabled = false; // Habilita campos para nova corrida
+                inputDestino.disabled = false; // Habilita campos para nova corrida
+                directionsRenderer.setDirections({ routes: [] }); // Limpa a rota do passageiro
+                console.log("   Status da corrida atualizado para passageiro: Finalizada!");
+                localStorage.removeItem('corridaSolicitada'); // Remove a corrida do localStorage
+            }
+        }
+    } else {
+        // Se não há corrida no localStorage
+        // Apenas atualiza o status para o estado inicial se a mensagem atual não for a de "Estimativa da Corrida"
+        // ou "Insira partida e destino..." (que já é o estado inicial)
+        const currentMessage = statusPassageiroElement.innerHTML;
+        if (!currentMessage.includes("Estimativa da Corrida:") && 
+            !currentMessage.includes("Insira **partida** e **destino** para ver a estimativa.")) {
+             statusPassageiroElement.innerHTML = "Insira **partida** e **destino** para ver a estimativa.";
+             btnSolicitarCorrida.disabled = true; // Desabilita enquanto não há input válido
+             inputPartida.disabled = false; // Habilita campos
+             inputDestino.disabled = false; // Habilita campos
+             directionsRenderer.setDirections({ routes: [] }); // Limpa a rota se não há corrida ativa
+        }
+    }
+    // console.log("-> Fim de checkCorridaStatus()");
+}

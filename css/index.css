@@ -1,92 +1,316 @@
+/* css/index.css - TODOS OS ESTILOS DO PROJETO - V2 (Visual Futurista) */
+
+/* ---------------------------------------------------- */
+/* ESTILOS GERAIS/UNIVERSAIS (body, html, etc.) */
+/* ---------------------------------------------------- */
 body {
+    font-family: 'Inter', sans-serif; /* Fonte mais moderna */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #000; /* preto */
-    color: #fff; /* branco */
+    background: linear-gradient(135deg, #f0f2f5 0%, #e0e5ec 100%); /* Gradiente suave */
+    color: #2c3e50; /* Cinza escuro para contraste */
+    overflow-x: hidden; /* Evita scroll horizontal em mobile */
 }
 
+/* ---------------------------------------------------- */
+/* ESTILOS DA PÁGINA INICIAL (index.html) - Formulário de Cadastro */
+/* ---------------------------------------------------- */
 .container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
+    background-color: #ffffff;
+    padding: 40px 60px;
+    border-radius: 15px; /* Mais arredondado */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Sombra mais suave e espalhada */
     text-align: center;
+    width: 100%;
+    max-width: 480px; /* Ligeiramente mais largo */
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+    animation: fadeIn 0.8s ease-out; /* Animação de entrada */
 }
 
-.logo {
-    width: 120px;
-    height: auto;
-    margin: 20px auto;
-    display: block;
-    border-radius: 10px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.logo-text {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: #fff;
+h1 {
+    color: #1a2a3a; /* Azul escuro */
+    margin-bottom: 35px;
+    font-size: 2.8em; /* Levemente maior */
+    font-weight: 700; /* Mais negrito */
 }
-
-.label-text {
-    display: block;
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #fff;
+.form-group {
+    margin-bottom: 22px;
     text-align: left;
 }
-
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600; /* Seminegrito */
+    color: #34495e; /* Cinza azulado */
+    font-size: 0.95em;
+}
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #222;
-    color: #fff;
+    padding: 14px; /* Mais padding */
+    border: 1px solid #dcdfe4; /* Borda mais clara */
+    border-radius: 10px; /* Mais arredondado */
+    font-size: 1.05em; /* Levemente maior */
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background-color: #f8faff; /* Fundo mais claro */
+}
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+    border-color: #007bff; /* Azul vibrante */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Sombra de foco */
+    outline: none;
+    background-color: #ffffff;
 }
 
-.btn {
-    background-color: #fff;
-    color: #000;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.btn:hover {
-    background-color: #ddd;
-    color: #000;
-}
-
-.btn-group {
+.buttons-container {
     display: flex;
+    gap: 18px; /* Mais espaço entre os botões */
     justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-top: 35px;
+}
+.register-button {
+    display: inline-block;
+    padding: 16px 28px; /* Mais padding */
+    border: none;
+    border-radius: 10px; /* Mais arredondado */
+    font-size: 1.15em; /* Levemente maior */
+    font-weight: 700; /* Mais negrito */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    flex: 1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra para botões */
+}
+.register-button.passenger {
+    background: linear-gradient(45deg, #007bff, #0056b3); /* Gradiente azul */
+}
+.register-button.driver {
+    background: linear-gradient(45deg, #28a745, #1e7e34); /* Gradiente verde */
+}
+.register-button:hover {
+    transform: translateY(-5px); /* Mais destaque no hover */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.register-button.passenger:hover {
+    background: linear-gradient(45deg, #0056b3, #003a7a);
+}
+.register-button.driver:hover {
+    background: linear-gradient(45deg, #1e7e34, #155724);
 }
 
-a {
-    text-decoration: none;
+.message {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1.05em;
+    font-weight: 500;
+    display: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
+.message.success {
+    background-color: #e6ffed; /* Verde claro */
+    color: #1a7d3c; /* Verde escuro */
+    border: 1px solid #b3e6c8;
+}
+.message.error {
+    background-color: #ffe6e6; /* Vermelho claro */
+    color: #cc0000; /* Vermelho escuro */
+    border: 1px solid #ffb3b3;
+}
+
+.switch-form {
+    margin-top: 25px;
+    font-size: 0.95em;
+    color: #555;
+}
+
+.switch-form a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.switch-form a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+
+/* ---------------------------------------------------- */
+/* ESTILOS DAS PÁGINAS DE MAPA (passageiro.html e motorista.html) */
+/* ---------------------------------------------------- */
 
 #map {
-    width: 100%;
-    height: 300px;
-    margin-top: 20px;
-    border-radius: 8px;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
 
-#infoCorrida,
-#mensagemStatus {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #fff;
+/* --- Media Query para Telas Menores (Mobile/Tablet) --- */
+@media (max-width: 768px) {
+    .container {
+        padding: 30px 40px;
+        margin: 20px; /* Adiciona margem em telas pequenas */
+    }
+    h1 {
+        font-size: 2.2em;
+        margin-bottom: 25px;
+    }
+    .form-group input {
+        font-size: 1em;
+    }
+    .buttons-container {
+        flex-direction: column; /* Botões empilham em telas pequenas */
+        gap: 10px;
+    }
+    .register-button {
+        padding: 14px 20px;
+        font-size: 1.05em;
+    }
+
+    #map {
+        height: 60vh; /* Mapa ocupa 60% da altura em mobile */
+        position: relative; /* Para não ocupar a tela toda */
+    }
+    
+    body {
+        /* Para que o mapa e os controles possam ser empilhados em mobile */
+        flex-direction: column;
+        justify-content: flex-start; /* Alinha no topo */
+        min-height: 100vh;
+    }
+
+    .controls {
+        position: relative; /* Ou absolute com bottom:0 se preferir */
+        top: auto;
+        bottom: 0; /* Fixa os controles na parte inferior em mobile */
+        left: 0;
+        width: 100%;
+        border-radius: 15px 15px 0 0; /* Arredonda só em cima */
+        padding: 20px;
+        box-sizing: border-box;
+        max-width: none; /* Remove a largura máxima */
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.1); /* Sombra para cima */
+    }
+}
+
+/* Estilos para os controles (inputs e botões) que ficam sobre o mapa */
+.controls {
+    position: absolute; /* Posição absoluta para desktop */
+    top: 20px; /* Mais afastado do topo */
+    left: 20px;
+    background-color: rgba(255, 255, 255, 0.98); /* Fundo quase opaco */
+    padding: 25px; /* Mais padding */
+    border-radius: 12px; /* Mais arredondado */
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada */
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Mais espaço entre elementos */
+    max-width: 380px; /* Aumenta um pouco a largura */
+}
+
+.controls input[type="text"] {
+    padding: 14px;
+    border: 1px solid #dcdfe4;
+    border-radius: 8px;
+    font-size: 1.05em;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background-color: #f8faff;
+}
+.controls input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    background-color: #ffffff;
+}
+
+.controls button {
+    padding: 14px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos específicos para os botões do passageiro */
+button#btnSolicitarCorrida {
+    background: linear-gradient(45deg, #007bff, #0056b3); /* Gradiente azul */
+}
+button#btnSolicitarCorrida:hover:not(:disabled) {
+    background: linear-gradient(45deg, #0056b3, #003a7a);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+button#btnSolicitarCorrida:disabled {
+    background-color: #a8d4ff;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+/* Estilos específicos para os botões do motorista */
+button#btnAceitarCorrida {
+    background: linear-gradient(45deg, #28a745, #1e7e34); /* Gradiente verde */
+}
+button#btnAceitarCorrida:hover {
+    background: linear-gradient(45deg, #1e7e34, #155724);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+button#btnPassageiroABordo {
+    background: linear-gradient(45deg, #ffc107, #e0a800); /* Gradiente amarelo/laranja */
+    color: #333;
+}
+button#btnPassageiroABordo:hover {
+    background: linear-gradient(45deg, #e0a800, #c09000);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+button#btnFinalizarCorrida {
+    background: linear-gradient(45deg, #dc3545, #c82333); /* Gradiente vermelho */
+}
+button#btnFinalizarCorrida:hover {
+    background: linear-gradient(45deg, #c82333, #a71d2a);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para as mensagens de status */
+.status-message {
+    margin-top: 8px;
+    padding: 12px;
+    background-color: #e9f5ff; /* Azul claro */
+    border-radius: 8px;
+    font-size: 0.9em;
+    color: #0056b3; /* Azul escuro */
+    border: 1px solid #b3e0ff;
+    line-height: 1.5;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
