@@ -1,5 +1,7 @@
-firebase-config.js
+# IGNORAR arquivos sensíveis
 .env
+firebase-config.js
+apikey.js
+*.zip
 node_modules/
-.DS_Store
-
+git add
