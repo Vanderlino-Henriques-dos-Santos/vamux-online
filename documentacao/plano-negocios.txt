@@ -1,0 +1,29 @@
+PLANO DE NEGÓCIOS - VAMUX
+
+Nome: VAMUX - Destino Conectado
+Categoria: Transporte urbano (semelhante a Uber)
+Apresentação: Mista (nome + logo)
+Registro: INPI - Classe 39 (Transporte)
+Diferencial: Plataforma brasileira com foco em acessibilidade, economia local e impacto social.
+
+Resumo:
+O VAMUX é um aplicativo de mobilidade urbana com foco em conectar passageiros e motoristas de forma rápida, segura e acessível. O projeto está em desenvolvimento com tecnologias como HTML, CSS, JavaScript, Firebase e Google Maps API.
+
+Objetivos:
+- Oferecer uma alternativa nacional ao Uber e 99.
+- Gerar renda local para motoristas autônomos.
+- Implementar funções sociais (corridas solidárias, prioridade para idosos, etc).
+- Expandir para regiões com pouco acesso a transporte.
+
+Estrutura Atual:
+- Login de passageiros e motoristas.
+- Geolocalização ativa com mapa em tempo real.
+- Firebase Database e Storage.
+- Interface moderna e responsiva.
+- Fluxo de chamada de corrida e aceite por parte do motorista.
+
+Próximas etapas:
+- Implementar cálculo automático de corrida.
+- Finalizar sistema de upload e verificação de documentos.
+- Criar painel administrativo (opcional).
+- Publicar oficialmente nas lojas (Google Play / App Store).

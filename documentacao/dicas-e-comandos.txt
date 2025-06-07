@@ -1,0 +1,40 @@
+DICAS E COMANDOS PARA O PROJETO VAMUX
+
+1. Abrir o projeto no VS Code:
+   - Vá em 'Arquivo > Abrir Pasta...' e selecione a pasta do VAMUX.
+
+2. Iniciar servidor local:
+   - Use extensão Live Server (clicar com botão direito no HTML > 'Open with Live Server').
+
+3. Firebase:
+   - firebase login
+   - firebase init
+   - firebase deploy
+
+4. GitHub:
+   - git init
+   - git add .
+   - git commit -m "primeiro commit"
+   - git remote add origin [URL]
+   - git push -u origin main
+
+5. Vercel:
+   - Instale Vercel CLI: npm install -g vercel
+   - Rode: vercel login
+   - Em seguida: vercel --prod
+
+6. Estrutura recomendada de pastas:
+   /vamux
+     ├── css/
+     ├── javascript/
+     ├── images/
+     ├── documentacao/
+     ├── index.html
+     ├── login.html
+     ├── passageiro.html
+     ├── motorista.html
+     └── ...
+
+7. Firebase Config:
+   - Nome do arquivo: firebase-config.js
+   - Guardar na pasta javascript/

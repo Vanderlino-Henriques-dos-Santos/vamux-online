@@ -1,0 +1,25 @@
+RELATÓRIO PREPARATÓRIO PARA O SEBRAE
+
+Apresentação do projeto VAMUX:
+- Nome: VAMUX - Destino Conectado
+- Proposta: Aplicativo de transporte urbano com foco social e inclusão.
+- Estrutura atual: App web responsivo com geolocalização e Firebase.
+- Diferenciais: Inclusão digital, tarifa justa, apoio a motoristas locais.
+
+Recursos utilizados:
+- HTML, CSS, JavaScript (Front-end)
+- Firebase (Database, Auth, Storage)
+- Google Maps API
+
+Necessidades:
+- Apoio para formalização da empresa
+- Validação de modelo de negócio
+- Consultoria jurídica e contábil
+- Ajuda para cadastro na prefeitura/local
+- Auxílio na publicação nas lojas de apps
+
+Próximos passos:
+- Lançar MVP (mínimo produto viável)
+- Fazer testes com motoristas reais
+- Ajustar funcionalidades com base nos testes
+- Escalar para outras cidades

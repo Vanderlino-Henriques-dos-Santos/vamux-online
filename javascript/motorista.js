@@ -4,358 +4,578 @@
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser || currentUser.type !== 'driver') {
     alert('Você precisa estar logado como Motorista para acessar esta página.');
-    window.location.href = 'login.html'; // Redireciona para a página de login
+    localStorage.clear(); 
+    window.location.href = 'login.html';
 }
 // --- FIM DA VERIFICAÇÃO DE LOGIN ---
 
-// Variáveis globais para o mapa e serviços de direção
-let map;
-let directionsService;
-let directionsRenderer;
-let motoristaMarker; // Marcador da posição atual do motorista
-let watchId; // ID para o watchPosition da geolocalização
+let mapMotorista;
+let directionsServiceMotorista;
+let directionsRendererMotorista;
+let passageiroMarker; 
+let destinoMarker; 
 
 // Elementos HTML
-const statusCorridaElement = document.getElementById("statusCorrida");
+const statusMotoristaElement = document.getElementById("statusMotorista");
+
+const corridaPendenteDetalhes = document.getElementById("corridaPendenteDetalhes");
+const origemCorridaSpan = document.getElementById("origemCorrida");
+const destinoCorridaSpan = document.getElementById("destinoCorrida");
+const valorCorridaSpan = document.getElementById("valorCorrida");
+const passageiroNomeSpan = document.getElementById("passageiroNome"); 
+
 const btnAceitarCorrida = document.getElementById("btnAceitarCorrida");
-const btnPassageiroABordo = document.getElementById("btnPassageiroABordo");
+const btnRecusarCorrida = document.getElementById("btnRecusarCorrida");
+
+const corridaAtivaDetalhes = document.getElementById("corridaAtivaDetalhes");
+const infoCorridaAtivaElement = document.getElementById("infoCorridaAtiva");
+const btnChegueiNoPassageiro = document.getElementById("btnChegueiNoPassageiro");
 const btnFinalizarCorrida = document.getElementById("btnFinalizarCorrida");
+const btnLogout = document.getElementById("btnLogout");
 
-// Variáveis para a corrida atual
-let corridaAtual = null; // Objeto que armazenará os detalhes da corrida recebida
+let currentPendingRide = null; 
 
-// --- Função de Inicialização do Mapa (callback da API do Google Maps) ---
-window.initMap = function () {
-    console.log("📍 initMap motorista foi chamada pelo Google Maps API.");
+// --- FUNÇÃO DE INICIALIZAÇÃO DO MAPA PARA MOTORISTA ---
+window.initMapMotorista = function () {
+    console.log("📍 initMapMotorista foi chamada pelo Google Maps API.");
 
-    directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsServiceMotorista = new google.maps.DirectionsService();
+    directionsRendererMotorista = new google.maps.DirectionsRenderer();
 
-    const mapDiv = document.getElementById("map");
+    const mapDivMotorista = document.getElementById("mapMotorista");
 
-    if (mapDiv) {
-        map = new google.maps.Map(mapDiv, {
-            center: { lat: -23.55052, lng: -46.633309 }, // Centro padrão (São Paulo)
-            zoom: 12,
-        });
-        directionsRenderer.setMap(map); // Associa o DirectionsRenderer ao mapa
-
-        // Tenta obter a localização atual do motorista em tempo real
+    if (mapDivMotorista) {
         if (navigator.geolocation) {
-            watchId = navigator.geolocation.watchPosition(
+            navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const motoristaLatLng = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
                     };
+                    mapMotorista = new google.maps.Map(mapDivMotorista, {
+                        center: motoristaLatLng,
+                        zoom: 15,
+                    });
+                    directionsRendererMotorista.setMap(mapMotorista);
+                    console.log("✅ Mapa motorista inicializado com localização atual.");
 
-                    if (!motoristaMarker) {
-                        motoristaMarker = new google.maps.Marker({
-                            position: motoristaLatLng,
-                            map: map,
-                            title: "Sua Localização (Motorista)",
-                            icon: {
-                                url: 'http://maps.google.com/mapfiles/ms/icons/car.png', // Ícone de carro
-                                scaledSize: new google.maps.Size(40, 40) // Tamanho do ícone
-                            }
-                        });
-                        map.setCenter(motoristaLatLng); // Centraliza o mapa na primeira localização
-                        map.setZoom(15);
-                    } else {
-                        motoristaMarker.setPosition(motoristaLatLng);
-                    }
-                    console.log("✅ Localização do motorista atualizada.");
+                    updateMotoristaLocation(motoristaLatLng.lat, motoristaLatLng.lng);
+                    // Simula atualização de localização do motorista a cada 3 segundos
+                    setInterval(() => {
+                        updateMotoristaLocation(motoristaLatLng.lat, motoristaLatLng.lng);
+                    }, 3000); 
                 },
-                (error) => {
-                    console.warn(`⚠️ Erro ao obter localização do motorista: ${error.message}`);
-                    statusCorridaElement.textContent = "Erro na geolocalização. Mapa pode não ser preciso.";
-                },
-                {
-                    enableHighAccuracy: true,
-                    maximumAge: 0,
-                    timeout: 5000,
+                (error) => { 
+                    console.warn("⚠️ Falha ao obter localização do motorista. Usando localização padrão. Erro:", error.message);
+                    const defaultLatLng = { lat: -23.55052, lng: -46.633309 }; // São Paulo
+                    mapMotorista = new google.maps.Map(mapDivMotorista, {
+                        center: defaultLatLng,
+                        zoom: 12,
+                    });
+                    directionsRendererMotorista.setMap(mapMotorista);
+                    updateMotoristaLocation(defaultLatLng.lat, defaultLatLng.lng); 
                 }
             );
-            console.log("✅ Mapa motorista inicializado e monitorando localização.");
         } else {
-            console.warn("⚠️ Navegador não suporta geolocalização. A localização do motorista não será atualizada.");
+            console.warn("⚠️ Navegador não suporta geolocalização. Usando localização padrão.");
+            const defaultLatLng = { lat: -23.55052, lng: -46.633309 }; // São Paulo
+            mapMotorista = new google.maps.Map(mapDivMotorista, {
+                center: defaultLatLng,
+                zoom: 12,
+            });
+            directionsRendererMotorista.setMap(mapMotorista);
+            updateMotoristaLocation(defaultLatLng.lat, defaultLatLng.lng); 
         }
     } else {
-        console.error("❌ Elemento 'map' não encontrado no HTML.");
+        console.error("❌ Elemento 'mapMotorista' não encontrado no HTML para motorista.");
     }
 
-    // --- Adiciona os Event Listeners para os botões de controle da corrida ---
-    if (btnAceitarCorrida) {
-        btnAceitarCorrida.addEventListener("click", aceitarCorrida);
-    }
-    if (btnPassageiroABordo) {
-        btnPassageiroABordo.addEventListener("click", passageiroABordo);
-    }
-    if (btnFinalizarCorrida) {
-        btnFinalizarCorrida.addEventListener("click", finalizarCorrida);
-    }
+    // Adiciona event listeners aos botões
+    if (btnAceitarCorrida) btnAceitarCorrida.addEventListener("click", aceitarCorrida);
+    if (btnRecusarCorrida) btnRecusarCorrida.addEventListener("click", recusarCorrida);
+    if (btnChegueiNoPassageiro) btnChegueiNoPassageiro.addEventListener("click", chegueiNoPassageiro);
+    if (btnFinalizarCorrida) btnFinalizarCorrida.addEventListener("click", finalizarCorrida);
+    if (btnLogout) btnLogout.addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    });
 
-    // Inicia a verificação de novas corridas no localStorage (simulando backend)
-    checkNewCorrida(); // Verifica ao carregar a página
-    setInterval(checkNewCorrida, 5000); // Verifica a cada 5 segundos
+    // Chamada inicial e periódica do status da corrida
+    checkCorridaStatusMotorista();
+    setInterval(checkCorridaStatusMotorista, 3000); 
 };
+
 
 // --- Funções de Lógica da Corrida para Motorista ---
 
-/**
- * Calcula o valor estimado da corrida com base na distância e duração.
- * (Função auxiliar, mantida aqui para o cálculo interno do valor final)
- * @param {number} distanceInMeters - Distância em metros.
- * @param {number} durationInSeconds - Duração em segundos.
- * @returns {string} Valor formatado em R$.
- */
-function calculateEstimatedPrice(distanceInMeters, durationInSeconds) {
-    const precoBase = 5.00;
-    const precoPorKm = 2.50;
-    const precoPorMin = 0.50;
+function updateMotoristaLocation(lat, lng) {
+    const motoristaLocalizacaoAtual = { lat: lat, lng: lng };
+    localStorage.setItem('motoristaLocalizacaoAtual', JSON.stringify(motoristaLocalizacaoAtual));
+}
 
-    const distanciaKm = (distanceInMeters / 1000);
-    const duracaoMin = (durationInSeconds / 60);
+async function checkCorridaStatusMotorista() {
+    // console.log("-> Executando checkCorridaStatusMotorista()"); 
 
-    let precoEstimado = precoBase + (distanciaKm * precoPorKm) + (duracaoMin * precoPorMin);
-    precoEstimado = Math.max(precoEstimado, precoBase).toFixed(2);
+    let corridasPendentes = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
+    const corridaAtivaMotorista = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
     
-    return precoEstimado;
-}
+    // --- LÓGICA PARA CORRIDA ATIVA (ACEITA/A BORDO) ---
+    // Verifica se há uma corrida ativa para ESTE motorista
+    if (corridaAtivaMotorista && (corridaAtivaMotorista.status === "aceita" || corridaAtivaMotorista.status === "a_bordo")) {
+        console.log(`   Corrida ${corridaAtivaMotorista.status} detectada para este motorista.`);
 
+        statusMotoristaElement.style.display = 'none';
+        corridaPendenteDetalhes.style.display = 'none';
+        corridaAtivaDetalhes.style.display = 'block';
 
-/**
- * Verifica se há uma nova corrida solicitada no localStorage pelo passageiro.
- * Atualiza a UI do motorista para exibir a solicitação e seus detalhes.
- */
-function checkNewCorrida() {
-    const corridaJson = localStorage.getItem('corridaSolicitada');
-    if (corridaJson) {
-        const data = JSON.parse(corridaJson);
-        // Se for uma nova corrida pendente e não houver corrida ativa no motorista
-        if (data.status === "pendente" && (!corridaAtual || corridaAtual.status === "finalizada" || corridaAtual.status === "cancelada")) {
-            corridaAtual = data;
-            // Exibe as informações da corrida pendente, incluindo distância e duração estimadas
-            statusCorridaElement.innerHTML = `Nova corrida disponível! <br> De: <b>${corridaAtual.origemPassageiro}</b> <br> Para: <b>${corridaAtual.destinoFinal}</b><br>Distância Estimada: ${corridaAtual.distanciaKmEstimada} km <br>Duração Estimada: ${corridaAtual.duracaoMinEstimada} min`;
-            btnAceitarCorrida.style.display = "block";
-            btnPassageiroABordo.style.display = "none";
-            btnFinalizarCorrida.style.display = "none";
-            console.log("Nova corrida detectada:", corridaAtual);
-        }
-        // Se a corrida já foi aceita mas o motorista recarregou a página
-        else if (data.status === "aceita" && (!corridaAtual || corridaAtual.status !== "aceita")) {
-            corridaAtual = data; // Restaura o estado da corrida
-            statusCorridaElement.textContent = "Corrida em andamento: Indo buscar o passageiro...";
-            btnAceitarCorrida.style.display = "none";
-            btnPassageiroABordo.style.display = "block";
-            btnFinalizarCorrida.style.display = "none";
-            // Redesenha a rota se a corrida já está aceita
-            if (motoristaMarker && motoristaMarker.getPosition()) {
-                calculateAndDisplayRoute(motoristaMarker.getPosition(), corridaAtual.origemPassageiro);
+        infoCorridaAtivaElement.innerHTML = ''; 
+
+        if (corridaAtivaMotorista.status === "aceita") {
+            infoCorridaAtivaElement.innerHTML = `Dirija-se a:<br><b>${corridaAtivaMotorista.origemPassageiro}</b><br>Para buscar o passageiro.`;
+            btnChegueiNoPassageiro.disabled = false;
+            btnFinalizarCorrida.disabled = true; // Só pode finalizar depois de chegar no passageiro e iniciar
+            
+            // Exibir a rota do motorista até o passageiro, usando o que foi salvo
+            if (directionsRendererMotorista) {
+                // Se a rota motorista-passageiro já está salva, usa ela
+                if (corridaAtivaMotorista.rotaMotoristaPassageiro) {
+                    directionsRendererMotorista.setDirections(corridaAtivaMotorista.rotaMotoristaPassageiro);
+                    console.log("   Rota motorista-passageiro exibida a partir de dados salvos.");
+                } else { // Caso a rota não tenha sido salva por algum motivo, tenta recalcular
+                    console.warn("   Rota motorista-passageiro não encontrada em dados salvos. Recalculando...");
+                    await displayRouteToPassageiro(corridaAtivaMotorista); // Chama a função para calcular e exibir
+                }
+                
+                if (mapMotorista) {
+                    if (passageiroMarker) passageiroMarker.setMap(null); 
+                    passageiroMarker = new google.maps.Marker({
+                        position: directionsRendererMotorista.getDirections().routes[0].legs[0].end_location, // Pega a posição final da rota
+                        map: mapMotorista,
+                        title: "Local do Passageiro",
+                        icon: {
+                            url: 'http://maps.google.com/mapfiles/ms/icons/man.png', // Ícone de pessoa
+                            scaledSize: new google.maps.Size(32, 32)
+                        }
+                    });
+                    if (destinoMarker) {
+                        destinoMarker.setMap(null);
+                        destinoMarker = null;
+                    }
+                }
             } else {
-                console.warn("Localização do motorista ainda não disponível para redesenhar rota.");
+                console.warn("   directionsRendererMotorista não pronto para exibir rota.");
             }
-        }
-        // Se o passageiro já está a bordo mas o motorista recarregou a página
-        else if (data.status === "a_bordo" && (!corridaAtual || corridaAtual.status !== "a_bordo")) {
-            corridaAtual = data; // Restaura o estado da corrida
-            statusCorridaElement.textContent = "Corrida em andamento: Passageiro a bordo!";
-            btnAceitarCorrida.style.display = "none";
-            btnPassageiroABordo.style.display = "none";
-            btnFinalizarCorrida.style.display = "block";
-            // Redesenha a rota se o passageiro já está a bordo
-            calculateAndDisplayRoute(corridaAtual.origemPassageiro, corridaAtual.destinoFinal);
-        }
-        // Se a corrida foi finalizada (pelo motorista ou passageiro)
-        else if (data.status === "finalizada") {
-            if (corridaAtual && corridaAtual.status !== "finalizada") { // Só executa se o status mudou para finalizada
-                 // Exibe a mensagem de finalização (valores ainda não são o foco principal)
-                 statusCorridaElement.innerHTML = `Corrida Finalizada! <br> Aguardando novas corridas...`;
-                 btnAceitarCorrida.style.display = "none"; // Garante que nenhum botão de ação da corrida apareça
-                 btnPassageiroABordo.style.display = "none";
-                 btnFinalizarCorrida.style.display = "none";
-                 directionsRenderer.setDirections({ routes: [] }); // Limpa a rota
-                 corridaAtual = null; // Reseta a corrida atual
+
+        } else if (corridaAtivaMotorista.status === "a_bordo") {
+            infoCorridaAtivaElement.innerHTML = `Indo para:<br><b>${corridaAtivaMotorista.destinoFinal}</b>`;
+            btnChegueiNoPassageiro.disabled = true;
+            btnFinalizarCorrida.disabled = false;
+            
+            // Exibir a rota do passageiro ao destino final, usando o que foi salvo
+            if (directionsRendererMotorista) {
+                 if (corridaAtivaMotorista.rotaPassageiroDestino) {
+                    directionsRendererMotorista.setDirections(corridaAtivaMotorista.rotaPassageiroDestino);
+                    console.log("   Rota para destino final exibida a partir de dados salvos.");
+                } else {
+                    console.warn("   Rota passageiro-destino não encontrada em dados salvos. Recalculando...");
+                    await displayRouteToDestino(corridaAtivaMotorista);
+                }
+
+                if (passageiroMarker) {
+                    passageiroMarker.setMap(null);
+                    passageiroMarker = null;
+                }
+                if (destinoMarker) destinoMarker.setMap(null); 
+                destinoMarker = new google.maps.Marker({
+                    position: directionsRendererMotorista.getDirections().routes[0].legs[0].end_location, // Pega a posição final da rota
+                    map: mapMotorista,
+                    title: "Destino Final",
+                    icon: {
+                        url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png', // Ícone de destino
+                        scaledSize: new google.maps.Size(32, 32)
+                    }
+                });
+            } else {
+                console.warn("   directionsRendererMotorista não pronto para exibir rota para destino.");
             }
         }
 
+        currentPendingRide = null; 
+
     } else {
-        // Não há corrida solicitada no localStorage
-        if (corridaAtual !== null) { // Se o motorista tinha uma corrida ativa que sumiu do localStorage
-            console.log("Corrida removida do localStorage. Resetando interface do motorista.");
-            statusCorridaElement.textContent = "Aguardando novas corridas...";
-            btnAceitarCorrida.style.display = "none";
-            btnPassageiroABordo.style.display = "none";
-            btnFinalizarCorrida.style.display = "none";
-            directionsRenderer.setDirections({ routes: [] }); // Limpa a rota
-            corridaAtual = null;
-        }
-        if (statusCorridaElement.textContent !== "Aguardando novas corridas...") {
-             statusCorridaElement.textContent = "Aguardando novas corridas...";
-             btnAceitarCorrida.style.display = "none";
-             btnPassageiroABordo.style.display = "none";
-             btnFinalizarCorrida.style.display = "none";
+        // --- LÓGICA PARA BUSCAR NOVAS CORRIDAS PENDENTES ---
+        corridaAtivaDetalhes.style.display = 'none'; 
+
+        // Encontra a primeira corrida pendente disponível que não tenha sido finalizada
+        // Filtra para garantir que só pegamos corridas que não estão sendo gerenciadas por outro motorista (simulação)
+        const novaCorridaPendente = corridasPendentes.find(c => c.status === "pendente");
+
+        if (novaCorridaPendente) {
+            console.log("   Nova corrida pendente encontrada:", novaCorridaPendente);
+            statusMotoristaElement.style.display = 'none';
+            corridaPendenteDetalhes.style.display = 'block';
+
+            origemCorridaSpan.textContent = novaCorridaPendente.origemPassageiro;
+            destinoCorridaSpan.textContent = novaCorridaPendente.destinoFinal;
+            valorCorridaSpan.textContent = `R$ ${novaCorridaPendente.valorEstimado}`;
+            passageiroNomeSpan.textContent = novaCorridaPendente.passageiroNome || novaCorridaPendente.passageiroId; 
+
+            btnAceitarCorrida.disabled = false;
+            btnRecusarCorrida.disabled = false;
+
+            currentPendingRide = novaCorridaPendente; 
+
+            // Exibir rota estimada para o motorista (origem do passageiro -> destino final)
+            if (directionsRendererMotorista) {
+                if (novaCorridaPendente.rotaPassageiroDestino) {
+                    directionsRendererMotorista.setDirections(novaCorridaPendente.rotaPassageiroDestino);
+                    console.log("   Rota passageiro-destino exibida para nova corrida pendente.");
+                } else {
+                    console.warn("   rotaPassageiroDestino não encontrada para a corrida pendente. Tentando reconstruir...");
+                    // Se não tiver a rota em JSON, tenta construir a partir das strings de endereço
+                    if (directionsServiceMotorista && mapMotorista && novaCorridaPendente.origemPassageiro && novaCorridaPendente.destinoFinal) {
+                        try {
+                            const request = {
+                                origin: novaCorridaPendente.origemPassageiro,
+                                destination: novaCorridaPendente.destinoFinal,
+                                travelMode: google.maps.TravelMode.DRIVING,
+                            };
+                            directionsServiceMotorista.route(request, (response, status) => {
+                                if (status === "OK") {
+                                    directionsRendererMotorista.setDirections(response);
+                                    console.log("   Rota passageiro-destino reconstruída a partir de strings para corrida pendente.");
+                                } else {
+                                    console.error("❌ Erro ao reconstruir rota para corrida pendente: STATUS = " + status, response);
+                                }
+                            });
+                        } catch (e) {
+                            console.error("❌ Erro ao tentar traçar rota para corrida pendente (strings - catch):", e);
+                        }
+                    }
+                }
+                
+                if (mapMotorista) {
+                    if (passageiroMarker) passageiroMarker.setMap(null); 
+                    passageiroMarker = new google.maps.Marker({
+                        position: directionsRendererMotorista.getDirections().routes[0].legs[0].start_location,
+                        map: mapMotorista,
+                        title: "Local do Passageiro",
+                        icon: {
+                            url: 'http://maps.google.com/mapfiles/ms/icons/man.png',
+                            scaledSize: new google.maps.Size(32, 32)
+                        }
+                    });
+                    if (destinoMarker) {
+                        destinoMarker.setMap(null);
+                        destinoMarker = null;
+                    }
+                }
+            }
+
+
+        } else {
+            console.log("   Nenhuma corrida pendente ou ativa encontrada para este motorista.");
+            statusMotoristaElement.style.display = 'block';
+            statusMotoristaElement.textContent = "Aguardando novas corridas...";
+            corridaPendenteDetalhes.style.display = 'none';
+            btnAceitarCorrida.disabled = true;
+            btnRecusarCorrida.disabled = true;
+            currentPendingRide = null;
+
+            if (directionsRendererMotorista) directionsRendererMotorista.setDirections({ routes: [] });
+            if (passageiroMarker) {
+                passageiroMarker.setMap(null);
+                passageiroMarker = null;
+            }
+            if (destinoMarker) {
+                destinoMarker.setMap(null);
+                destinoMarker = null;
+            }
         }
     }
 }
 
-
-/**
- * Simula a aceitação da corrida pelo motorista.
- * Exibe a rota do motorista até o passageiro.
- */
 async function aceitarCorrida() {
-    if (!corridaAtual || corridaAtual.status !== "pendente") {
-        console.warn("Nenhuma corrida pendente para aceitar ou status incorreto.");
+    console.log("-> Motorista clicou em Aceitar Corrida!");
+    if (!currentPendingRide) {
+        console.error("   Nenhuma corrida pendente selecionada para aceitar.");
         return;
     }
 
-    console.log("Motorista aceitou a corrida!");
-    statusCorridaElement.textContent = "Aceitou a corrida! Indo buscar o passageiro...";
+    // 1. Atualizar o status da corrida para "aceita" no localStorage do passageiro
+    let passageiroCorrida = JSON.parse(localStorage.getItem('corridaSolicitada'));
 
-    // Atualiza o status da corrida no localStorage
-    corridaAtual.status = "aceita";
-    localStorage.setItem('corridaSolicitada', JSON.stringify(corridaAtual));
-
-    // Esconde o botão de aceitar e mostra o de passageiro a bordo
-    btnAceitarCorrida.style.display = "none";
-    btnPassageiroABordo.style.display = "block";
-    btnFinalizarCorrida.style.display = "none";
-
-    // Calcula e exibe a rota da localização atual do motorista até o passageiro
-    const origemMotorista = motoristaMarker ? motoristaMarker.getPosition() : null;
-    if (origemMotorista) {
-        await calculateAndDisplayRoute(origemMotorista, corridaAtual.origemPassageiro);
-    } else {
-        console.warn("Localização do motorista não disponível para traçar rota inicial.");
-        statusCorridaElement.textContent = "Erro: Localização do motorista não encontrada. Tente novamente.";
-    }
-}
-
-/**
- * Simula o momento em que o passageiro entra no carro.
- * Exibe a rota do passageiro até o destino final.
- */
-async function passageiroABordo() {
-    if (!corridaAtual || corridaAtual.status !== "aceita") {
-        console.warn("Nenhuma corrida ativa para marcar como a bordo ou status incorreto.");
-        return;
-    }
-
-    console.log("Passageiro a bordo!");
-    statusCorridaElement.textContent = "Passageiro a bordo! Indo para o destino final...";
-
-    // Atualiza o status da corrida no localStorage
-    corridaAtual.status = "a_bordo";
-    localStorage.setItem('corridaSolicitada', JSON.stringify(corridaAtual));
-
-    // Esconde o botão de passageiro a bordo e mostra o de finalizar corrida
-    btnPassageiroABordo.style.display = "none";
-    btnFinalizarCorrida.style.display = "block";
-
-    // Calcula e exibe a rota do passageiro até o destino final
-    await calculateAndDisplayRoute(corridaAtual.origemPassageiro, corridaAtual.destinoFinal);
-}
-
-/**
- * Simula a finalização da corrida.
- * Limpa a rota do mapa e calcula o preço (valores ainda não são o foco principal).
- */
-async function finalizarCorrida() {
-    if (!corridaAtual || corridaAtual.status !== "a_bordo") {
-        console.warn("Nenhuma corrida ativa para finalizar ou status incorreto.");
-        return;
-    }
-
-    console.log("Corrida finalizada!");
-
-    let precoCorrida = "N/A";
-    let distanciaTotalKm = "N/A";
-    let duracaoTotalMin = "N/A";
-
-    if (directionsRenderer && directionsRenderer.getDirections()) {
-        const route = directionsRenderer.getDirections().routes[0].legs[0];
-        distanciaTotalKm = (route.distance.value / 1000).toFixed(2); // Distância em KM
-        duracaoTotalMin = (route.duration.value / 60).toFixed(2); // Duração em minutos
-
-        // Exemplo de cálculo de preço (mantido para fins de demonstração, mas a exibição é focada no fluxo)
-        const precoBase = 5.00;
-        const precoPorKm = 2.50;
-        const precoPorMin = 0.50;
-        precoCorrida = (precoBase + (parseFloat(distanciaTotalKm) * precoPorKm) + (parseFloat(duracaoTotalMin) * precoPorMin)).toFixed(2);
-
-        // --- Lógica de Divisão do Valor (mantida, mas a exibição no status é simplificada) ---
-        const VAMUX_TAXA_PERCENTUAL = 0.25; // 25% de taxa para a VAMUX
-        const valorParaVamux = (parseFloat(precoCorrida) * VAMUX_TAXA_PERCENTUAL).toFixed(2);
-        const valorParaMotorista = (parseFloat(precoCorrida) - parseFloat(valorParaVamux)).toFixed(2);
-
-        statusCorridaElement.innerHTML = `Corrida Finalizada! <br> Aguardando novas corridas...`;
+    if (passageiroCorrida && passageiroCorrida.passageiroId === currentPendingRide.passageiroId && passageiroCorrida.status === "pendente") {
+        passageiroCorrida.status = "aceita";
+        passageiroCorrida.motoristaId = currentUser.email;
+        passageiroCorrida.motoristaNome = currentUser.name; 
         
-        // Atualiza o status da corrida no localStorage com o valor final e a divisão
-        corridaAtual.status = "finalizada";
-        corridaAtual.valorFinal = precoCorrida;
-        corridaAtual.valorParaMotorista = valorParaMotorista;
-        corridaAtual.valorParaVamux = valorParaVamux;
-        localStorage.setItem('corridaSolicitada', JSON.stringify(corridaAtual));
+        // Calcular rota do motorista até o passageiro (motoristaLocation -> origemPassageiro)
+        try {
+            const motoristaLocalizacaoAtual = JSON.parse(localStorage.getItem('motoristaLocalizacaoAtual'));
+            if (!motoristaLocalizacaoAtual) {
+                alert("Sua localização não está disponível. Por favor, permita a geolocalização.");
+                console.error("Localização do motorista não disponível ao aceitar corrida.");
+                return;
+            }
+
+            console.log("   Calculando rota motorista -> passageiro para salvar em corridaSolicitada...");
+            const request = {
+                origin: new google.maps.LatLng(motoristaLocalizacaoAtual.lat, motoristaLocalizacaoAtual.lng),
+                destination: passageiroCorrida.origemPassageiro, 
+                travelMode: google.maps.TravelMode.DRIVING,
+            };
+
+            const response = await new Promise((resolve, reject) => {
+                directionsServiceMotorista.route(request, (result, status) => {
+                    if (status === "OK") {
+                        resolve(result);
+                    } else {
+                        reject(new Error(`Directions Service failed: ${status}`));
+                    }
+                });
+            });
+
+            passageiroCorrida.rotaMotoristaPassageiro = response; // SALVA A ROTA NO OBJETO DA CORRIDA
+            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiroCorrida));
+            console.log("   Status da corrida do passageiro atualizado para 'aceita' com rota do motorista.");
+        } catch (error) {
+            console.error("❌ ERRO ao calcular rota motorista-passageiro ao aceitar:", error);
+            alert("Erro ao calcular rota até o passageiro. Tente novamente. Detalhes no console.");
+            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiroCorrida)); // Salva mesmo com erro na rota
+        }
 
     } else {
-        // Se não conseguiu obter a rota para calcular
-        statusCorridaElement.innerHTML = `Corrida Finalizada! <br> Aguardando novas corridas...`;
-        corridaAtual.status = "finalizada";
-        localStorage.setItem('corridaSolicitada', JSON.stringify(corridaAtual)); // Ainda finaliza a corrida
-    }
-
-
-    // Esconde todos os botões de ação e limpa a rota
-    btnAceitarCorrida.style.display = "none";
-    btnPassageiroABordo.style.display = "none";
-    btnFinalizarCorrida.style.display = "none";
-    directionsRenderer.setDirections({ routes: [] }); // Limpa a rota do mapa
-    corridaAtual = null; // Limpa a corrida atual para receber uma nova
-}
-
-
-/**
- * Calcula e exibe uma rota entre um ponto de origem e um destino.
- * @param {string|google.maps.LatLngLiteral} origin - O endereço ou LatLng de partida.
- * @param {string} destination - O endereço de destino.
- */
-async function calculateAndDisplayRoute(origin, destination) {
-    if (!directionsService || !directionsRenderer) {
-        console.error("Serviços de direção não inicializados.");
+        console.warn("   Corrida do passageiro não encontrada ou status incorreto para aceitar. Provavelmente já foi aceita por outro motorista ou cancelada.");
+        alert("Esta corrida não está mais disponível ou já foi aceita por outro motorista.");
+        checkCorridaStatusMotorista();
         return;
     }
 
-    directionsRenderer.setDirections({ routes: [] }); // Limpa qualquer rota anterior
+    // 2. Remover a corrida da lista de `corridasPendentes` (para outros motoristas)
+    let corridasPendentes = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
+    corridasPendentes = corridasPendentes.filter(c => !(c.passageiroId === currentPendingRide.passageiroId && c.status === "pendente"));
+    localStorage.setItem('corridasPendentes', JSON.stringify(corridasPendentes));
+    console.log("   Corrida removida da lista de pendentes para outros motoristas.");
+
+    // 3. Salvar a corrida como a corrida "ativa" do motorista (corridaAceitaMotorista)
+    localStorage.setItem('corridaAceitaMotorista', JSON.stringify(passageiroCorrida)); 
+
+    // 4. Atualizar a interface do motorista imediatamente
+    checkCorridaStatusMotorista();
+    alert(`Corrida de ${currentPendingRide.origemPassageiro} para ${currentPendingRide.destinoFinal} aceita!`);
+    console.log("-> Fim de aceitarCorrida()");
+}
+
+function recusarCorrida() {
+    console.log("-> Motorista clicou em Recusar Corrida.");
+    if (!currentPendingRide) {
+        console.error("   Nenhuma corrida pendente selecionada para recusar.");
+        return;
+    }
+
+    // Apenas remove a corrida pendente da lista para este motorista para que ele não a veja novamente.
+    // Em um sistema real, poderíamos ter um status de "recusada" para evitar que outros motoristas a vejam
+    // ou um mecanismo de re-atribuição. Para este MVP, ela continua pendente para outros se houver.
+    let corridasPendentes = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
+    corridasPendentes = corridasPendentes.filter(c => 
+        !(c.passageiroId === currentPendingRide.passageiroId && 
+          c.origemPassageiro === currentPendingRide.origemPassageiro && 
+          c.destinoFinal === currentPendingRide.destinoFinal && 
+          c.status === "pendente") // Filtra apenas a corrida exata recusada
+    );
+    localStorage.setItem('corridasPendentes', JSON.stringify(corridasPendentes));
+
+    currentPendingRide = null; 
+    
+    checkCorridaStatusMotorista(); 
+    console.log("   Corrida recusada. Voltando a aguardar novas corridas.");
+    alert("Corrida recusada. Aguardando novas solicitações.");
+}
+
+async function chegueiNoPassageiro() {
+    console.log("-> Motorista clicou em Cheguei no Passageiro.");
+    let corridaAtiva = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
+
+    if (corridaAtiva && corridaAtiva.status === "aceita") {
+        corridaAtiva.status = "a_bordo";
+        // Não é necessário recalcular rota aqui, pois a rota passageiro-destino já está salva (rotaPassageiroDestino)
+        // Isso otimiza o uso da API e o desempenho
+        localStorage.setItem('corridaAceitaMotorista', JSON.stringify(corridaAtiva));
+
+        // Sincroniza com o localStorage do passageiro
+        let passageiroCorrida = JSON.parse(localStorage.getItem('corridaSolicitada'));
+        if (passageiroCorrida && passageiroCorrida.passageiroId === corridaAtiva.passageiroId) {
+            passageiroCorrida.status = "a_bordo";
+            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiroCorrida));
+            console.log("   Status do passageiro atualizado para 'a_bordo'.");
+        }
+        console.log("   Status da corrida do motorista atualizado para 'a_bordo'.");
+        checkCorridaStatusMotorista(); 
+        alert("Passageiro a bordo! Indo para o destino.");
+    } else {
+        console.warn("   Nenhuma corrida ativa ou status incorreto para 'cheguei no passageiro'.");
+    }
+}
+
+async function finalizarCorrida() {
+    console.log("-> Motorista clicou em Finalizar Corrida.");
+    let corridaAtiva = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
+
+    if (corridaAtiva && corridaAtiva.status === "a_bordo") {
+        corridaAtiva.status = "finalizada";
+        corridaAtiva.valorFinal = corridaAtiva.valorEstimado; // Para o MVP, o valor final é o estimado
+
+        localStorage.setItem('corridaAceitaMotorista', JSON.stringify(corridaAtiva));
+
+        // Sincroniza com o localStorage do passageiro
+        let passageiroCorrida = JSON.parse(localStorage.getItem('corridaSolicitada'));
+        if (passageiroCorrida && passageiroCorrida.passageiroId === corridaAtiva.passageiroId) {
+            passageiroCorrida.status = "finalizada";
+            passageiroCorrida.valorFinal = corridaAtiva.valorFinal; 
+            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiroCorrida));
+            console.log("   Status do passageiro atualizado para 'finalizada'.");
+        }
+
+        console.log("   Status da corrida do motorista atualizado para 'finalizada'.");
+        alert(`Corrida Finalizada! Valor: R$ ${corridaAtiva.valorFinal}`);
+
+        // Remove a corrida ativa do motorista
+        localStorage.removeItem('corridaAceitaMotorista');
+        
+        checkCorridaStatusMotorista(); 
+    } else {
+        console.warn("   Nenhuma corrida ativa ou status incorreto para 'finalizar corrida'.");
+    }
+}
+
+// Funções auxiliares para exibir rotas no mapa do motorista
+async function displayRouteToPassageiro(corridaData) {
+    console.log("-> displayRouteToPassageiro: Iniciando.");
+    if (!directionsServiceMotorista || !directionsRendererMotorista || !mapMotorista) {
+        console.error("❌ Serviços de mapa do motorista NÃO inicializados para displayRouteToPassageiro.");
+        return; 
+    }
+    const motoristaLocalizacaoAtual = JSON.parse(localStorage.getItem('motoristaLocalizacaoAtual'));
+    if (!motoristaLocalizacaoAtual) {
+        console.warn("⚠️ Localização do motorista não disponível para traçar rota até o passageiro.");
+        statusMotoristaElement.textContent = "Erro: Localização do motorista não disponível.";
+        statusMotoristaElement.style.display = 'block';
+        return;
+    }
 
     try {
+        console.log("   Solicitando rota motorista -> passageiro:", {
+            origin: motoristaLocalizacaoAtual,
+            destination: corridaData.origemPassageiro
+        });
         const request = {
-            origin: origin,
-            destination: destination,
+            origin: new google.maps.LatLng(motoristaLocalizacaoAtual.lat, motoristaLocalizacaoAtual.lng),
+            destination: corridaData.origemPassageiro, 
             travelMode: google.maps.TravelMode.DRIVING,
         };
 
-        const response = await directionsService.route(request);
+        const response = await new Promise((resolve, reject) => {
+            directionsServiceMotorista.route(request, (result, status) => {
+                if (status === "OK") {
+                    resolve(result);
+                } else {
+                    reject(new Error(`Directions Service failed: ${status}`));
+                }
+            });
+        });
 
-        if (response.status === "OK") {
-            directionsRenderer.setDirections(response);
-            console.log(`✅ Rota exibida.`);
+        directionsRendererMotorista.setDirections(response);
+        console.log("✅ Rota motorista -> passageiro exibida com SUCESSO.");
 
-            const route = response.routes[0].legs[0];
-            const distancia = route.distance.text;
-            const duracao = route.duration.text;
-
-            // Atualiza o status com informações da rota, se não for o status final
-            if (!statusCorridaElement.innerHTML.includes("Finalizada") && !statusCorridaElement.innerHTML.includes("Aguardando novas corridas...")) {
-                 statusCorridaElement.innerHTML += `<br> (Distância: ${distancia}, Duração: ${duracao})`;
+        if (passageiroMarker) passageiroMarker.setMap(null); 
+        passageiroMarker = new google.maps.Marker({
+            position: response.routes[0].legs[0].end_location, 
+            map: mapMotorista,
+            title: "Local do Passageiro",
+            icon: {
+                url: 'http://maps.google.com/mapfiles/ms/icons/man.png',
+                scaledSize: new google.maps.Size(32, 32)
             }
-
-        } else {
-            console.error("❌ Erro ao calcular rota: " + response.status);
-            statusCorridaElement.innerHTML = `Erro ao calcular rota: ${response.status}. <br> Verifique os endereços.`;
+        });
+        if (destinoMarker) { 
+            destinoMarker.setMap(null);
+            destinoMarker = null;
         }
+        return response; // Retorna a rota para que possa ser salva se necessário
+
     } catch (error) {
-        console.error("❌ Erro na requisição de rota:", error);
-        statusCorridaElement.innerHTML = `Erro na requisição: ${error.message}.`;
+        console.error("❌ ERRO na requisição de rota motorista -> passageiro (catch):", error);
+        statusMotoristaElement.textContent = `Erro ao obter rota calculada: ${error.message}. Verifique o console (F12).`;
+        statusMotoristaElement.style.display = 'block';
+        directionsRendererMotorista.setDirections({ routes: [] });
+        if (passageiroMarker) passageiroMarker.setMap(null);
+        passageiroMarker = null;
+        throw error; // Re-lança o erro para ser capturado por quem chamou
+    }
+}
+
+async function displayRouteToDestino(corridaData) {
+    console.log("-> displayRouteToDestino: Iniciando.");
+    if (!directionsServiceMotorista || !directionsRendererMotorista || !mapMotorista) {
+        console.error("❌ Serviços de mapa do motorista NÃO inicializados para displayRouteToDestino.");
+        return;
+    }
+    const motoristaLocalizacaoAtual = JSON.parse(localStorage.getItem('motoristaLocalizacaoAtual'));
+    if (!motoristaLocalizacaoAtual) {
+        console.warn("⚠️ Localização do motorista não disponível para traçar rota até o destino.");
+        statusMotoristaElement.textContent = "Erro: Localização do motorista não disponível.";
+        statusMotoristaElement.style.display = 'block';
+        return;
+    }
+
+    try {
+        console.log("   Solicitando rota motorista -> destino:", {
+            origin: motoristaLocalizacaoAtual,
+            destination: corridaData.destinoFinal
+        });
+        const request = {
+            origin: new google.maps.LatLng(motoristaLocalizacaoAtual.lat, motoristaLocalizacaoAtual.lng),
+            destination: corridaData.destinoFinal, 
+            travelMode: google.maps.TravelMode.DRIVING,
+        };
+
+        const response = await new Promise((resolve, reject) => {
+            directionsServiceMotorista.route(request, (result, status) => {
+                if (status === "OK") {
+                    resolve(result);
+                } else {
+                    reject(new Error(`Directions Service failed: ${status}`));
+                }
+            });
+        });
+
+        directionsRendererMotorista.setDirections(response);
+        console.log("✅ Rota motorista -> destino final exibida com SUCESSO.");
+
+        if (passageiroMarker) { 
+            passageiroMarker.setMap(null);
+            passageiroMarker = null;
+        }
+        if (destinoMarker) destinoMarker.setMap(null); 
+        destinoMarker = new google.maps.Marker({
+            position: response.routes[0].legs[0].end_location, 
+            map: mapMotorista,
+            title: "Destino Final",
+            icon: {
+                url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                scaledSize: new google.maps.Size(32, 32)
+            }
+        });
+        return response; // Retorna a rota para que possa ser salva se necessário
+
+    } catch (error) {
+        console.error("❌ ERRO na requisição de rota motorista -> destino (catch):", error);
+        statusMotoristaElement.textContent = `Erro ao obter rota calculada: ${error.message}. Verifique o console (F12).`;
+        statusMotoristaElement.style.display = 'block';
+        directionsRendererMotorista.setDirections({ routes: [] });
+        if (destinoMarker) destinoMarker.setMap(null);
+        destinoMarker = null;
+        throw error; // Re-lança o erro
     }
 }

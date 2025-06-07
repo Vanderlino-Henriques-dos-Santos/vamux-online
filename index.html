@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App de Caronas - Cadastro</title>
-    <link rel="stylesheet" href="css/index.css">
-</head>
+    <title>VAMUX - Cadastro</title>
+    <link rel="stylesheet" href="css/index.css"> </head>
 <body>
     <div class="container">
         <h1>Crie sua Conta</h1>
@@ -33,6 +32,7 @@
     </div>
 
     <script>
+        // Seu script de cadastro embutido no HTML
         const nameInput = document.getElementById('name');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
@@ -80,9 +80,10 @@
 
             let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
 
-            const userExists = users.some(u => u.email === user.email);
+            // Verifica se o email já está cadastrado para este tipo de usuário
+            const userExists = users.some(u => u.email === user.email && u.type === userType);
             if (userExists) {
-                showMessage('Este e-mail já está cadastrado. Tente outro.', 'error');
+                showMessage(`Este e-mail já está cadastrado como ${userType === 'passenger' ? 'Passageiro' : 'Motorista'}.`, 'error');
                 return;
             }
 

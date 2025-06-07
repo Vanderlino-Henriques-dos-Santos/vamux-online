@@ -1,0 +1,12 @@
+DEIAS E PRÓXIMOS PASSOS PARA O VAMUX
+
+1. Criar versão do app para PWA (Progressive Web App)
+2. Adicionar suporte para pagamento por Pix
+3. Criar opção de corridas solidárias ou doações para motoristas
+4. Desenvolver dashboard para administração do sistema
+5. Permitir corridas agendadas com antecedência
+6. Adicionar avaliação de passageiros e motoristas
+7. Implementar botão de emergência
+8. Adicionar suporte multilíngue
+9. Fazer campanhas sociais e marketing local
+10. Buscar parcerias com cooperativas e prefeituras

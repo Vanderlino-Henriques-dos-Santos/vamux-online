@@ -3,20 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passageiro - App de Caronas</title>
+    <title>VAMUX - Passageiro</title>
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-    <div id="map"></div>
+    <div class="container">
+        <h2>Solicitar Corrida</h2>
+        <label for="partidaInput">Origem:</label>
+        <input type="text" id="partidaInput" placeholder="Seu endereço de partida">
 
-    <div class="controls">
-        <input type="text" id="partida" placeholder="Digite seu local de partida" />
-        <input type="text" id="destino" placeholder="Digite seu destino" />
-        <button id="btnSolicitarCorrida">Solicitar Corrida</button>
-        <p id="statusPassageiro" class="status-message">Insira partida e destino.</p>
+        <label for="destinoInput">Destino:</label>
+        <input type="text" id="destinoInput" placeholder="Endereço de destino">
+
+        <button id="btnCalcularEstimativa">Calcular Estimativa</button>
+
+        <div id="estimateDisplay" class="info-panel" style="display: none;">
+            <p>Valor Estimado: <span id="valorEstimado"></span></p>
+            <p>Distância: <span id="distanciaEstimada"></span></p>
+            <p>Tempo Estimado: <span id="tempoEstimado"></span></p>
+            <button id="btnSolicitarCorrida" disabled>Solicitar Corrida</button>
+        </div>
+
+        <div id="corridaStatus" class="info-panel" style="display: none;">
+            <p id="statusMessage"></p>
+            <p id="motoristaInfo"></p> 
+        </div>
     </div>
 
-    <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&libraries=places&callback=initMap"></script>-->
+    <div id="mapPassageiro"></div>
+    <button id="btnLogout" class="logout-btn">Sair</button>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&libraries=places&callback=initMapPassageiro"></script>
     <script src="javascript/passageiro.js"></script>
 </body>
 </html>

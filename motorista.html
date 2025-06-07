@@ -3,20 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motorista - App de Caronas</title>
-    <link rel="stylesheet" href="css/index.css">
-</head>
+    <title>VAMUX - Motorista</title>
+    <link rel="stylesheet" href="css/index.css"> </head>
 <body>
-    <div id="map"></div>
+    <div class="container">
+        <h2>Painel do Motorista</h2>
+        
+        <div id="statusMotorista" class="info-panel">
+            <p>Aguardando novas corridas...</p>
+        </div>
 
-    <div class="controls">
-        <button id="btnAceitarCorrida" style="display: none;">Aceitar Corrida</button>
-        <button id="btnPassageiroABordo" style="display: none;">Passageiro a Bordo</button>
-        <button id="btnFinalizarCorrida" style="display: none;">Finalizar Corrida</button>
-        <p id="statusCorrida">Aguardando corrida...</p>
+        <div id="corridaPendenteDetalhes" class="info-panel" style="display: none;">
+            <h3>Nova Corrida Solicitada!</h3>
+            <p>De: <span id="origemCorrida"></span></p>
+            <p>Para: <span id="destinoCorrida"></span></p>
+            <p>Estimativa: <span id="valorCorrida"></span></p>
+            <p>Passageiro: <span id="passageiroNome"></span></p>
+            <div class="button-group">
+                <button id="btnAceitarCorrida" disabled>Aceitar Corrida</button>
+                <button id="btnRecusarCorrida" disabled>Recusar Corrida</button>
+            </div>
+        </div>
+
+        <div id="corridaAtivaDetalhes" class="info-panel" style="display: none;">
+            <h3>Corrida Ativa</h3>
+            <p id="infoCorridaAtiva"></p>
+            <div class="button-group">
+                <button id="btnChegueiNoPassageiro" disabled>Cheguei no Passageiro</button>
+                <button id="btnFinalizarCorrida" disabled>Finalizar Corrida</button>
+            </div>
+        </div>
     </div>
+    
+    <div id="mapMotorista"></div>
+    <button id="btnLogout" class="logout-btn">Sair</button>
 
-   <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&libraries=places&callback=initMap"></script>-->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&libraries=places&callback=initMapMotorista"></script>
     <script src="javascript/motorista.js"></script>
 </body>
 </html>
