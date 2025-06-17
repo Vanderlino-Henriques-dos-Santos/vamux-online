@@ -1,5 +1,6 @@
 // javascript/motorista.js
 
+
 // --- VERIFICAÇÃO DE LOGIN: Garante que só motoristas logados acessem esta página ---
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser || currentUser.type !== 'driver') {
@@ -34,6 +35,19 @@ const btnFinalizarCorrida = document.getElementById("btnFinalizarCorrida");
 const btnLogout = document.getElementById("btnLogout");
 
 let currentPendingRide = null; 
+
+function mostrarMensagemInterna(texto) {
+    const div = document.getElementById('mensagemInterna');
+    if (div) {
+        div.textContent = texto;
+        div.style.display = 'block';
+        setTimeout(() => {
+            div.style.display = 'none';
+        }, 4000);
+    }
+}
+
+
 
 // --- FUNÇÃO DE INICIALIZAÇÃO DO MAPA PARA MOTORISTA ---
 window.initMapMotorista = function () {
@@ -579,3 +593,6 @@ async function displayRouteToDestino(corridaData) {
         throw error; // Re-lança o erro
     }
 }
+
+
+

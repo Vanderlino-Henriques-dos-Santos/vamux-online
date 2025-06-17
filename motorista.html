@@ -6,6 +6,7 @@
     <title>VAMUX - Motorista</title>
     <link rel="stylesheet" href="css/index.css"> </head>
 <body>
+  
     <div class="container">
         <h2>Painel do Motorista</h2>
         
@@ -33,12 +34,15 @@
                 <button id="btnFinalizarCorrida" disabled>Finalizar Corrida</button>
             </div>
         </div>
+        <div id="mensagemInterna" class="mensagem-interna"></div>
+
     </div>
     
     <div id="mapMotorista"></div>
     <button id="btnLogout" class="logout-btn">Sair</button>
+<div id="mensagemInterna" class="mensagem-interna"></div>
 
-   <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM&libraries=places&callback=initMapMotorista"></script>-->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=&libraries=places&callback=initMapMotorista"></script>
     <script src="javascript/motorista.js"></script>
 </body>
 </html>

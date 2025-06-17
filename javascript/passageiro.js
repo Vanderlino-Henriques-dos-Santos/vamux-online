@@ -1,5 +1,6 @@
 // javascript/passageiro.js (VERSÃO COMPLETA, CORRIGIDA E ATUALIZADA PARA O TEMPO DE EXIBIÇÃO DA ESTIMATIVA)
 
+
 // --- VERIFICAÇÃO DE LOGIN: Garante que só passageiros logados acessem esta página ---
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser || currentUser.type !== 'passenger') {

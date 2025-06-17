@@ -1,22 +1,31 @@
-{
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
-}
-{
-  "rules": {
-    "corridas": {
-      "$corridaId": {
-        ".read": "auth != null",
-        ".write": "auth != null"
-      }
-    },
-    "usuarios": {
-      "$uid": {
-        ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid"
-      }
-    }
-  }
-}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Regras de Uso - VAMUX</title>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+  <div class="container">
+    <img src="img/logo-vamux.png" alt="Logo VAMUX" class="logo">
+    <h1>Regras de Uso</h1>
+
+    <ul>
+      <li>É proibido realizar corridas fora da plataforma do VAMUX.</li>
+      <li>Motoristas devem estar com documentação válida e atualizada.</li>
+      <li>Passageiros devem informar endereços reais e completos.</li>
+      <li>Qualquer comportamento inadequado poderá resultar em suspensão.</li>
+      <li>O uso do VAMUX implica na aceitação integral destes termos.</li>
+    </ul>
+  </div>
+
+  <!-- Banner de Apoio Institucional SEBRAE -->
+  <div class="anuncio-parceiro">
+    <img src="https://www.sebrae.com.br/SebraeLogo.png" alt="SEBRAE" class="logo-sebrae">
+    <p>Este projeto tem apoio institucional do <strong>SEBRAE</strong></p>
+  </div>
+
+</body>
+</html>
