@@ -1,60 +1,68 @@
 // javascript/cadastro.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { firebaseConfig } from "./firebase-config.js";
 
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { app } from "./firebase-config.js"; // Certifique-se que firebase-config.js exporta 'app'
-
-console.log("🥳 Arquivo cadastro.js carregado!"); // Adicione esta linha
-
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const form = document.querySelector("form");
-const mensagemCadastro = document.getElementById("mensagemCadastro");
+const db = getDatabase(app);
 
-if (form) { // Adicione esta verificação
-  console.log("✅ Formulário encontrado."); // Adicione esta linha
-  form.addEventListener("submit", (e) => {
-    e.preventDefault(); // Evita o recarregamento da página
-    console.log("🔥 Evento de submit disparado!"); // Adicione esta linha
+// Captura o tipo da URL
+const urlParams = new URLSearchParams(window.location.search);
+const tipo = urlParams.get("tipo");
 
-    const email = form.email.value.trim();
-    const senha = form.senha.value.trim();
+// Elementos do formulário
+const form = document.getElementById("form-cadastro");
+const btnPassageiro = document.getElementById("btn-passageiro");
+const btnMotorista = document.getElementById("btn-motorista");
 
-    if (!email || !senha) {
-      mensagemCadastro.textContent = "Por favor, preencha todos os campos.";
-      mensagemCadastro.style.color = "orange";
-      console.log("⚠️ Campos vazios."); // Adicione esta linha
-      return;
-    }
-
-    // Tentar criar o usuário no Firebase
-    createUserWithEmailAndPassword(auth, email, senha)
-      .then((userCredential) => {
-        // Usuário criado com sucesso
-        const user = userCredential.user;
-        mensagemCadastro.textContent = "🎉 Cadastro realizado com sucesso!";
-        mensagemCadastro.style.color = "lime";
-        console.log("✅ Usuário cadastrado:", user.email); // Adicione esta linha
-        
-        // Redireciona dependendo do tipo (se você estiver passando tipo na URL, como no login)
-        // Isso pode não ser necessário aqui se o cadastro não diferencia o tipo no momento.
-        const params = new URLSearchParams(window.location.search);
-        const tipo = params.get("tipo");
-        setTimeout(() => {
-          if (tipo === "passageiro") {
-            window.location.href = "passageiro.html";
-          } else if (tipo === "motorista") {
-           window.location.href = "motorista.html"; // Para ir direto para a área do motorista 
-          } else {
-            window.location.href = "login.html"; // Padrão
-          }
-        }, 1500);
-      })
-      .catch((error) => {
-        // Ocorreu um erro no cadastro
-        mensagemCadastro.textContent = `❌ Erro ao cadastrar: ${error.message}`;
-        mensagemCadastro.style.color = "red";
-        console.error("❌ Erro de cadastro Firebase:", error); // Adicione esta linha
-      });
-  });
+// Verifica e mostra o botão correto
+if (tipo === "passageiro") {
+  btnMotorista.style.display = "none";
+} else if (tipo === "motorista") {
+  btnPassageiro.style.display = "none";
 } else {
-  console.log("❌ Formulário NÃO encontrado! Verifique o HTML."); // Adicione esta linha
+  alert("Tipo de usuário inválido. Redirecionando...");
+  window.location.href = "index.html";
 }
+
+// Cadastro e redirecionamento
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const nome = document.getElementById("nome").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value;
+
+  if (!tipo || !nome || !email || !senha) {
+    alert("Preencha todos os campos corretamente.");
+    return;
+  }
+
+  createUserWithEmailAndPassword(auth, email, senha)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      // Salva no Realtime Database
+      set(ref(db, `${tipo}s/${user.uid}`), {
+        nome: nome,
+        email: email,
+        tipo: tipo
+      });
+
+      alert("Cadastro realizado com sucesso!");
+
+      // Redireciona para a tela correta
+      if (tipo === "passageiro") {
+        window.location.href = "passageiro.html";
+      } else {
+        window.location.href = "motorista.html";
+      }
+    })
+    .catch((error) => {
+      console.error("Erro ao cadastrar:", error);
+      alert("Erro ao cadastrar: " + error.message);
+    });
+});

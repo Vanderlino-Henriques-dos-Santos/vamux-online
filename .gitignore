@@ -1,7 +1,8 @@
-# IGNORAR arquivos sensíveis
-.env
+# 🔒 Protege suas chaves
 firebase-config.js
-apikey.js
-*.zip
-node_modules/
-git add
+.env
+
+# Ignora pastas locais e sistema
+node_modules
+.vscode
+.DS_Store

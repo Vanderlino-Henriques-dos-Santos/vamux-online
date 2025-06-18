@@ -1,37 +1,63 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cadastro - VAMUX</title>
-  <link rel="stylesheet" href="css/index.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAMUX - Cadastro</title>
+    <link rel="stylesheet" href="css/index.css"> <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Feuerwehr_Logo.svg/1200px-Feuerwehr_Logo.svg.png">
 </head>
 <body>
-  <div class="container">
-    <img src="imagens/logo.png" alt="Logo VAMUX" class="logo" />
-    <h1 class="gradient-text">Crie sua Conta</h1>
+    <header>
+        <nav>
+            <div class="logo">VAMUX</div>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div class="form-group">
-      <label for="name">Nome:</label>
-      <input type="text" id="name" placeholder="Seu nome completo" required />
-    </div>
-    <div class="form-group">
-      <label for="email">E-mail:</label>
-      <input type="email" id="email" placeholder="seu.email@exemplo.com" required />
-    </div>
-    <div class="form-group">
-      <label for="password">Senha:</label>
-      <input type="password" id="password" placeholder="Mínimo 6 caracteres" required />
-    </div>
+    <main>
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="welcome-section">
+                    <h1>Bem-vindo(a) ao VAMUX!</h1>
+                    <div class="vamux-logo-text">VAMUX</div>
+                    <img src="img/placeholder-sebrae-banner.png" alt="Banner Institucional Sebrae" class="sebrae-banner">
+                </div>
+                
+                <h2>Crie sua Conta</h2>
+                <form id="cadastroForm">
+                    <div class="input-group">
+                        <label for="nome">Nome:</label>
+                        <input type="text" id="nome" placeholder="Seu nome completo" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="emailCadastro">E-mail:</label>
+                        <input type="email" id="emailCadastro" placeholder="seu.email@exemplo.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="senhaCadastro">Senha:</label>
+                        <input type="password" id="senhaCadastro" placeholder="Mínimo 6 caracteres" required>
+                    </div>
 
-    <div class="buttons-container">
-      <button id="registerPassengerBtn" class="btn">Cadastrar como Passageiro</button>
-      <button id="registerDriverBtn" class="btn">Cadastrar como Motorista</button>
-    </div>
+                    <div class="cadastro-buttons">
+                        <button type="button" id="btnCadastrarPassageiro" class="btn primary">Cadastrar como Passageiro</button>
+                        <button type="button" id="btnCadastrarMotorista" class="btn secondary">Cadastrar como Motorista</button>
+                    </div>
 
-    <p id="message" class="message"></p>
-  </div>
+                    <p class="auth-link">Já tem uma conta? <a href="login.html">Faça Login aqui</a></p>
+                    <div id="cadastroMessage" class="message"></div>
+                </form>
+            </div>
+        </div>
+    </main>
 
-  <script type="module" src="javascript/cadastro.js"></script>
+    <footer>
+        <p>&copy; 2025 VAMUX. Todos os direitos reservados.</p>
+    </footer>
+
+    <script type="module" src="javascript/firebase-config.js"></script>
+    <script type="module" src="javascript/cadastro.js"></script>
 </body>
 </html>
