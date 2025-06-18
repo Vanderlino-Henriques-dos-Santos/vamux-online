@@ -6,3 +6,5 @@ firebase-config.js
 node_modules
 .vscode
 .DS_Store
+google-maps-key.js
+javascript/google-maps-key.js
