@@ -31,23 +31,23 @@
                 <p id="motoristaInfo"></p>
             </div>
         </div>
-        <div id="mapPassageiro"></div>
-        <button id="btnLogout" class="logout-btn">Sair</button>
-        <div id="mensagemInterna" class="mensagem-interna"></div>
-        <script type="module" src="./javascript/carregar-maps.js"></script>
-        <script src="javascript/passageiro.js"></script>
-        <script type="module">
+       <div id="mapPassageiro"></div>
+
+<button id="btnLogout" class="logout-btn">Sair</button>
+<div id="mensagemInterna" class="mensagem-interna"></div>
+
+<script type="module" src="./javascript/carregar-maps.js"></script>
+<script src="javascript/passageiro.js"></script>
+
+<script type="module">
   import { MAPS_API_KEY } from './javascript/google-maps-key.js';
   const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places`;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places&callback=initMapPassageiro`;
   script.async = true;
   script.defer = true;
   document.head.appendChild(script);
-        </script>
-    </body>
-    <div class="banner-teste">
-    🚧 ESTE APLICATIVO ESTÁ EM FASE DE TESTES. ALGUMAS FUNCIONALIDADES PODEM NÃO ESTAR 100% OPERACIONAIS. 🚧
-  </div>
+</script>
 
-  <div class="container">
+</body>
 </html>
+
