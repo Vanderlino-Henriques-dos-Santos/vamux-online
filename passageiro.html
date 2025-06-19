@@ -1,47 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VAMUX - Passageiro</title>
-    <link rel="stylesheet" href="css/index.css">
-</head>
-<body>
-     
-    <div class="container">
-        <h2>Solicitar Corrida</h2>
-        <label for="partidaInput">Origem:</label>
-        <input type="text" id="partidaInput" placeholder="Seu endereço de partida">
-
-        <label for="destinoInput">Destino:</label>
-        <input type="text" id="destinoInput" placeholder="Endereço de destino">
-
-        <button id="btnCalcularEstimativa">Calcular Estimativa</button>
-
-        <div id="estimateDisplay" class="info-panel" style="display: none;">
-            <p>Valor Estimado: <span id="valorEstimado"></span></p>
-            <p>Distância: <span id="distanciaEstimada"></span></p>
-            <p>Tempo Estimado: <span id="tempoEstimado"></span></p>
-            <button id="btnSolicitarCorrida" disabled>Solicitar Corrida</button>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>VAMUX - Passageiro</title>
+        <link rel="stylesheet" href="css/index.css">
+    </head>
+    <body>
+        <div class="container">
+            <h2>Solicitar Corrida</h2>
+            <label for="partidaInput">Origem:</label>
+            <input type="text" id="partidaInput" placeholder="Seu endereço de partida">
+            <label for="destinoInput">Destino:</label>
+            <input type="text" id="destinoInput" placeholder="Endereço de destino">
+            <button id="btnCalcularEstimativa">Calcular Estimativa</button>
+            <div id="estimateDisplay" class="info-panel" style="display: none;">
+                <p>Valor Estimado:
+                    <span id="valorEstimado"></span>
+                </p>
+                <p>Distância:
+                    <span id="distanciaEstimada"></span>
+                </p>
+                <p>Tempo Estimado:
+                    <span id="tempoEstimado"></span>
+                </p>
+                <button id="btnSolicitarCorrida" disabled>Solicitar Corrida</button>
+            </div>
+            <div id="corridaStatus" class="info-panel" style="display: none;">
+                <p id="statusMessage"></p>
+                <p id="motoristaInfo"></p>
+            </div>
         </div>
+        <div id="mapPassageiro"></div>
+        <button id="btnLogout" class="logout-btn">Sair</button>
+        <div id="mensagemInterna" class="mensagem-interna"></div>
+        <script type="module" src="./javascript/carregar-maps.js"></script>
+        <script src="javascript/passageiro.js"></script>
+        <script type="module">
+  import { MAPS_API_KEY } from './javascript/google-maps-key.js';
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places`;
+  script.async = true;
+  script.defer = true;
+  document.head.appendChild(script);
+        </script>
+    </body>
+    <div class="banner-teste">
+    🚧 ESTE APLICATIVO ESTÁ EM FASE DE TESTES. ALGUMAS FUNCIONALIDADES PODEM NÃO ESTAR 100% OPERACIONAIS. 🚧
+  </div>
 
-        <div id="corridaStatus" class="info-panel" style="display: none;">
-            <p id="statusMessage"></p>
-            <p id="motoristaInfo"></p> 
-        </div>
-    </div>
-
-    <div id="mapPassageiro"></div>
-    <button id="btnLogout" class="logout-btn">Sair</button>
-<div id="mensagemInterna" class="mensagem-interna"></div>
-
-<div id="map" style="width: 100%; height: 400px; background-color: lightgray;"></div>
-
-    <button>Sair</button>
-
-    <script type="module" src="./javascript/carregar-maps.js"></script>
-
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=&libraries=places&callback=initMapPassageiro"></script>
-    <script src="javascript/passageiro.js"></script>
-</body>
+  <div class="container">
 </html>

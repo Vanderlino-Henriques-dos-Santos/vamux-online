@@ -1,12 +1,25 @@
 // javascript/passageiro.js (VERSÃO COMPLETA, CORRIGIDA E ATUALIZADA PARA O TEMPO DE EXIBIÇÃO DA ESTIMATIVA)
 import { carregarGoogleMaps } from './carregar-maps.js';
 carregarGoogleMaps();
+function mostrarMensagemInterna(mensagem, tipo = 'info') {
+    const mensagemDiv = document.getElementById("mensagemInterna");
+    if (!mensagemDiv) return;
+
+    mensagemDiv.textContent = mensagem;
+    mensagemDiv.className = `mensagem-interna ${tipo}`;
+    mensagemDiv.style.display = "block";
+
+    setTimeout(() => {
+        mensagemDiv.style.display = "none";
+    }, 4000);
+}
 
 
 // --- VERIFICAÇÃO DE LOGIN: Garante que só passageiros logados acessem esta página ---
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser || currentUser.type !== 'passenger') {
-    alert('Você precisa estar logado como Passageiro para acessar esta página.');
+   mostrarMensagemInterna('Você precisa estar logado como Passageiro para acessar esta página.', 'erro');
+
     localStorage.clear(); // Limpa TUDO do localStorage se o usuário não está logado como passageiro
     window.location.href = 'login.html';
 }
@@ -81,8 +94,14 @@ window.initMapPassageiro = function () {
     }
 
     // Inicializa o Autocomplete para os campos de input
-    autocompletePartida = new google.maps.places.Autocomplete(partidaInput);
-    autocompleteDestino = new google.maps.places.Autocomplete(destinoInput);
+   
+const options = {
+  componentRestrictions: { country: 'br' },
+  fields: ["formatted_address", "geometry", "name"],
+};
+
+const partidaAutocomplete = new google.maps.places.Autocomplete(partidaInput, options);
+const destinoAutocomplete = new google.maps.places.Autocomplete(destinoInput, options);
 
     // Adiciona event listeners
     if (btnCalcularEstimativa) btnCalcularEstimativa.addEventListener("click", calculateAndDisplayEstimate);
@@ -124,7 +143,8 @@ async function calculateAndDisplayEstimate() {
     const destino = destinoInput.value;
 
     if (!partida || !destino) {
-        alert("Por favor, preencha a origem e o destino.");
+        mostrarMensagemInterna("Por favor, preencha a origem e o destino.", "erro");
+
         // Garante que o painel de estimativa não apareça se os campos estiverem vazios
         estimateDisplay.style.display = 'none'; 
         btnSolicitarCorrida.disabled = true;
@@ -180,14 +200,16 @@ async function calculateAndDisplayEstimate() {
             console.log("✅ Estimativa calculada e exibida. Botão 'Solicitar Corrida' habilitado. Campos editáveis.");
 
         } else {
-            alert("Erro ao obter rota calculada. Tente novamente. Status: " + response.status);
+            mostrarMensagemInterna("Erro ao obter rota. Tente novamente. Status: " + response.status, "erro");
+
             console.error("❌ Erro DirectionsService no passageiro:", response.status, response);
             estimateDisplay.style.display = 'none'; // Esconde o painel se houver erro
             btnSolicitarCorrida.disabled = true; // Desabilita o botão de solicitar se houver erro
             currentRouteData = null;
         }
     } catch (error) {
-        alert("Ocorreu um erro ao calcular a estimativa. Verifique os endereços e sua conexão.");
+        mostrarMensagemInterna("Erro ao calcular a estimativa. Verifique os endereços e tente novamente.", "erro");
+
         console.error("❌ Erro na requisição de rota no passageiro (catch):", error);
         estimateDisplay.style.display = 'none';
         btnSolicitarCorrida.disabled = true;
@@ -198,7 +220,8 @@ async function calculateAndDisplayEstimate() {
 function solicitarCorrida() {
     console.log("-> Passageiro clicou em Solicitar Corrida!");
     if (!currentRouteData) {
-        alert("Nenhuma estimativa válida para solicitar corrida. Por favor, calcule a estimativa primeiro.");
+       mostrarMensagemInterna("Nenhuma estimativa válida. Calcule a estimativa primeiro.", "erro");
+
         return;
     }
 
