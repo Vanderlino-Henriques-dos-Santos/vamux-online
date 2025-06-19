@@ -44,11 +44,9 @@
   <div id="mapMotorista"></div>
 
 <button id="btnLogout" class="logout-btn">Sair</button>
+<script type="module" src="javascript/motorista.js"></script>
 
-<!-- Carrega Google Maps com chave protegida -->
-<script type="module" src="./javascript/carregar-maps.js"></script>
-<script src="javascript/motorista.js"></script>
-
+<!-- INÍCIO: Carregamento do Google Maps com callback initMapMotorista -->
 <script type="module">
   import { MAPS_API_KEY } from './javascript/google-maps-key.js';
 
@@ -58,6 +56,8 @@
   script.defer = true;
   document.head.appendChild(script);
 </script>
+<!-- FIM: Carregamento do Google Maps -->
+
 
 <!-- Banner de Aviso -->
 <div class="banner-teste">
