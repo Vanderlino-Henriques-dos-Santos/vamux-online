@@ -39,20 +39,12 @@
 
     <!-- Mensagens internas -->
     <div id="mensagemInterna" class="mensagem-interna"></div>
+<!-- carregar-maps.js é responsável por injetar a API do Google Maps -->
+<script type="module" src="./javascript/carregar-maps.js"></script>
 
-    <!-- Scripts -->
-    <script type="module" src="./javascript/carregar-maps.js"></script>
-    <script src="javascript/passageiro.js"></script>
+<!-- passageiro.js inicializa o app com mapa, estimativa e corrida -->
+<script type="module" src="javascript/passageiro.js"></script>
 
-    <!-- Carregando Google Maps com chave protegida -->
-    <script type="module">
-        import { MAPS_API_KEY } from './javascript/google-maps-key.js';
-
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places&callback=initMapPassageiro`;
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
-    </script>
+   
 </body>
 </html>
