@@ -1,4 +1,6 @@
 // javascript/motorista.js
+import { carregarGoogleMaps } from './carregar-maps.js';
+carregarGoogleMaps();
 
 
 // --- VERIFICAÇÃO DE LOGIN: Garante que só motoristas logados acessem esta página ---

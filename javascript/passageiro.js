@@ -1,4 +1,6 @@
 // javascript/passageiro.js (VERSÃO COMPLETA, CORRIGIDA E ATUALIZADA PARA O TEMPO DE EXIBIÇÃO DA ESTIMATIVA)
+import { carregarGoogleMaps } from './carregar-maps.js';
+carregarGoogleMaps();
 
 
 // --- VERIFICAÇÃO DE LOGIN: Garante que só passageiros logados acessem esta página ---

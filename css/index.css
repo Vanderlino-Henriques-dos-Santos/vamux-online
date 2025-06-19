@@ -257,3 +257,10 @@ button:disabled {
         height: 40vh; /* Ajusta a altura do mapa em telas menores */
     }
 }
+.logo-principal {
+  width: 120px;        /* Largura da logo */
+  height: 120px;       /* Altura proporcional */
+  object-fit: contain; /* Mantém proporção original da imagem */
+  border-radius: 16px; /* Bordas arredondadas */
+  margin-bottom: 20px; /* Espaço inferior */
+}
