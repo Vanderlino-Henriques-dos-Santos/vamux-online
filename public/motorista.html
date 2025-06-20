@@ -1,70 +1,68 @@
+<!-- public/motorista.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VAMUX - Motorista</title>
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-        <div class="container">
-            <h2>Painel do Motorista</h2>
-            <div id="statusMotorista" class="info-panel">
-                <p>Aguardando novas corridas...</p>
-            </div>
-            <div id="corridaPendenteDetalhes" class="info-panel" style="display: none;">
-                <h3>Nova Corrida Solicitada!</h3>
-                <p>De:
-                    <span id="origemCorrida"></span>
-                </p>
-                <p>Para:
-                    <span id="destinoCorrida"></span>
-                </p>
-                <p>Estimativa:
-                    <span id="valorCorrida"></span>
-                </p>
-                <p>Passageiro:
-                    <span id="passageiroNome"></span>
-                </p>
-                <div class="button-group">
-                    <button id="btnAceitarCorrida" disabled>Aceitar Corrida</button>
-                    <button id="btnRecusarCorrida" disabled>Recusar Corrida</button>
-                </div>
-            </div>
-            <div id="corridaAtivaDetalhes" class="info-panel" style="display: none;">
-                <h3>Corrida Ativa</h3>
-                <p id="infoCorridaAtiva"></p>
-                <div class="button-group">
-                    <button id="btnChegueiNoPassageiro" disabled>Cheguei no Passageiro</button>
-                    <button id="btnFinalizarCorrida" disabled>Finalizar Corrida</button>
-                </div>
-            </div>
-            <div id="mensagemInterna" class="mensagem-interna"></div>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAMUX - Motorista</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Painel do Motorista</h2>
+
+    <div id="statusMotorista" class="info-panel">
+      <p>Aguardando novas corridas...</p>
+    </div>
+
+    <div id="corridaPendenteDetalhes" class="info-panel" style="display: none;">
+      <h3>Nova Corrida Solicitada!</h3>
+      <p>De: <span id="origemCorrida"></span></p>
+      <p>Para: <span id="destinoCorrida"></span></p>
+      <p>Estimativa: <span id="valorCorrida"></span></p>
+      <p>Passageiro: <span id="passageiroNome"></span></p>
+      <div class="button-group">
+        <button id="btnAceitarCorrida" disabled>Aceitar Corrida</button>
+        <button id="btnRecusarCorrida" disabled>Recusar Corrida</button>
+      </div>
+    </div>
+
+    <div id="corridaAtivaDetalhes" class="info-panel" style="display: none;">
+      <h3>Corrida Ativa</h3>
+      <p id="infoCorridaAtiva"></p>
+      <div class="button-group">
+        <button id="btnChegueiNoPassageiro" disabled>Cheguei no Passageiro</button>
+        <button id="btnFinalizarCorrida" disabled>Finalizar Corrida</button>
+      </div>
+    </div>
+
+    <div id="mensagemInterna" class="mensagem-interna"></div>
+  </div>
+
   <div id="mapMotorista"></div>
 
-<button id="btnLogout" class="logout-btn">Sair</button>
-<script type="module" src="javascript/motorista.js"></script>
+  <button id="btnLogout" class="logout-btn">Sair</button>
 
-<!-- INÍCIO: Carregamento do Google Maps com callback initMapMotorista -->
-<script type="module">
-  import { MAPS_API_KEY } from './javascript/google-maps-key.js';
+  <!-- INÍCIO: Banner de Testes -->
+  <div class="banner-teste">
+    🚧  "Aplicativo em Testes Operacionais" 🚧
+  </div>
+  <!-- FIM: Banner -->
 
-  const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places&callback=initMapMotorista`;
-  script.async = true;
-  script.defer = true;
-  document.head.appendChild(script);
-</script>
-<!-- FIM: Carregamento do Google Maps -->
- 
+  <!-- INÍCIO: Carregamento Google Maps -->
+  <script type="module">
+    import { MAPS_API_KEY } from '/src/google-maps-key.js';
 
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places&callback=initMapMotorista`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+  <!-- FIM: Carregamento Maps -->
 
-<!-- Banner de Aviso -->
-<div class="banner-teste">
-  🚧 ESTE APLICATIVO ESTÁ EM FASE DE TESTES. ALGUMAS FUNCIONALIDADES PODEM NÃO ESTAR 100% OPERACIONAIS. 🚧
-</div>
-
+  <!-- INÍCIO: Script principal do motorista -->
+  <script type="module" src="/src/motorista.js"></script>
+  <!-- FIM: Script -->
 </body>
 </html>
-   

@@ -1,63 +1,45 @@
+<!-- public/cadastro.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VAMUX - Cadastro</title>
-    <link rel="stylesheet" href="src/style.css"> <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Feuerwehr_Logo.svg/1200px-Feuerwehr_Logo.svg.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAMUX - Cadastro</title>
+  <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">VAMUX</div>
-            <ul>
-                <li><a href="index.html">Início</a></li>
-                <li><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+  <div class="container">
+    <img src="/assets/logo_vamux.png" alt="Logo VAMUX" class="logo" />
 
-    <main>
-        <div class="auth-container">
-            <div class="auth-box">
-                <div class="welcome-section">
-                    <h1>Bem-vindo(a) ao VAMUX!</h1>
-                    <div class="vamux-logo-text">VAMUX</div>
-                    <img src="img/placeholder-sebrae-banner.png" alt="Banner Institucional Sebrae" class="sebrae-banner">
-                </div>
-                
-                <h2>Crie sua Conta</h2>
-                <form id="cadastroForm">
-                    <div class="input-group">
-                        <label for="nome">Nome:</label>
-                        <input type="text" id="nome" placeholder="Seu nome completo" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="emailCadastro">E-mail:</label>
-                        <input type="email" id="emailCadastro" placeholder="seu.email@exemplo.com" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="senhaCadastro">Senha:</label>
-                        <input type="password" id="senhaCadastro" placeholder="Mínimo 6 caracteres" required>
-                    </div>
+    <h2>Crie sua Conta</h2>
 
-                    <div class="cadastro-buttons">
-                        <button type="button" id="btnCadastrarPassageiro" class="btn primary">Cadastrar como Passageiro</button>
-                        <button type="button" id="btnCadastrarMotorista" class="btn secondary">Cadastrar como Motorista</button>
-                    </div>
+    <form id="cadastroForm">
+      <input type="text" id="nome" placeholder="Nome completo" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="senha" placeholder="Senha" required />
+      
+      <select id="tipoUsuario" required>
+        <option value="">Selecione o tipo de usuário</option>
+        <option value="passenger">Sou Passageiro</option>
+        <option value="driver">Sou Motorista</option>
+      </select>
 
-                    <p class="auth-link">Já tem uma conta? <a href="login.html">Faça Login aqui</a></p>
-                    <div id="cadastroMessage" class="message"></div>
-                </form>
-            </div>
-        </div>
-    </main>
+      <button type="submit">Cadastrar</button>
+    </form>
 
-    <footer>
-        <p>&copy; 2025 VAMUX. Todos os direitos reservados.</p>
-    </footer>
+    <p class="link-opcao">
+      Já tem conta? <a href="login.html">Entrar</a>
+    </p>
+  </div>
 
-    <script type="module" src="javascript/firebase-config.js"></script>
-    <script type="module" src="javascript/cadastro.js"></script>
+  <!-- INÍCIO: Banner institucional -->
+  <div class="banner-teste">
+    🚧 "Aplicativo em fase de Testes Operacionais 🚧
+  </div>
+  <!-- FIM -->
+
+  <!-- INÍCIO: Script de Cadastro -->
+  <script type="module" src="/src/cadastro.js"></script>
+  <!-- FIM -->
 </body>
 </html>

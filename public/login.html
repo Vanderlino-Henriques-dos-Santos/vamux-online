@@ -1,38 +1,44 @@
+<!-- public/login.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VAMUX - Login</title>
-    <link rel="stylesheet" href="css/index.css"> </head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAMUX - Login</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
 <body>
-    <div class="container">
-        <h2>VAMUX - Login</h2>
-        
-        <div class="user-type-selection">
-            <label>
-                <input type="radio" name="userType" value="passenger" id="radioPassenger" checked> Passageiro
-            </label>
-            <label>
-                <input type="radio" name="userType" value="driver" id="radioDriver"> Motorista
-            </label>
-        </div>
+  <div class="container">
+    <img src="/assets/logo_vamux.png" alt="Logo VAMUX" class="logo" />
 
-        <input type="email" id="emailInput" placeholder="Seu Email" required>
-        <input type="password" id="passwordInput" placeholder="Sua Senha" required>
-        
-        <button id="btnLogin">Login</button>
+    <h2>Login</h2>
 
-        <p id="message" class="message"></p>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="senha" placeholder="Senha" required />
+      
+      <select id="tipoUsuario" required>
+        <option value="">Escolha o tipo de acesso</option>
+        <option value="passenger">Passageiro</option>
+        <option value="driver">Motorista</option>
+      </select>
 
-        <p class="switch-form">Não tem uma conta? <a href="index.html">Cadastre-se aqui</a></p>
-    </div>
+      <button type="submit">Entrar</button>
+    </form>
 
-    <script src="javascript/login.js"></script>
-</body>
-<div class="banner-teste">
-    🚧 ESTE APLICATIVO ESTÁ EM FASE DE TESTES. ALGUMAS FUNCIONALIDADES PODEM NÃO ESTAR 100% OPERACIONAIS. 🚧
+    <p class="link-opcao">
+      Não tem conta? <a href="cadastro.html">Cadastre-se</a>
+    </p>
   </div>
 
-  <div class="container">
+  <!-- INÍCIO: Banner institucional -->
+  <div class="banner-teste">
+    🚧 Aplicativo em Testes Operacionais 🚧
+  </div>
+  <!-- FIM: Banner -->
+
+  <!-- INÍCIO: Script principal de login -->
+  <script type="module" src="/src/login.js"></script>
+  <!-- FIM -->
+</body>
 </html>
