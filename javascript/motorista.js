@@ -1,4 +1,3 @@
-// javascript/motorista.js
 import { carregarGoogleMaps } from './carregar-maps.js';
 carregarGoogleMaps();
 
@@ -6,7 +5,7 @@ carregarGoogleMaps();
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser || currentUser.type !== 'driver') {
     alert('Você precisa estar logado como Motorista para acessar esta página.');
-    localStorage.clear(); 
+    localStorage.clear();
     window.location.href = 'login.html';
 }
 // --- FIM VERIFICAÇÃO LOGIN ---
@@ -14,7 +13,7 @@ if (!currentUser || currentUser.type !== 'driver') {
 let mapMotorista;
 let directionsServiceMotorista;
 let directionsRendererMotorista;
-let passageiroMarker; 
+let passageiroMarker;
 let destinoMarker;
 
 const statusMotoristaElement = document.getElementById("statusMotorista");
@@ -34,83 +33,41 @@ const btnLogout = document.getElementById("btnLogout");
 
 let currentPendingRide = null;
 
-function mostrarMensagemInterna(texto) {
-    const div = document.getElementById('mensagemInterna');
-    if (div) {
-        div.textContent = texto;
-        div.style.display = 'block';
-        setTimeout(() => {
-            div.style.display = 'none';
-        }, 4000);
-    }
-}
-// ======================= INÍCIO: Exporta função global para o callback da API =======================
-window.initMapMotorista = function () {
-    const mapDivMotorista = document.getElementById("mapMotorista");
-
-    if (!mapDivMotorista) {
-        console.error("❌ Elemento 'mapMotorista' não encontrado.");
-        return;
-    }
+window.initMapMotorista = () => {
+    const mapDiv = document.getElementById("mapMotorista");
+    if (!mapDiv) return console.error("Elemento mapMotorista não encontrado.");
 
     directionsServiceMotorista = new google.maps.DirectionsService();
     directionsRendererMotorista = new google.maps.DirectionsRenderer();
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const motoristaLatLng = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                };
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const motoristaLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            mapMotorista = new google.maps.Map(mapDiv, {
+                center: motoristaLatLng,
+                zoom: 15
+            });
+            directionsRendererMotorista.setMap(mapMotorista);
 
-                mapMotorista = new google.maps.Map(mapDivMotorista, {
-                    center: motoristaLatLng,
-                    zoom: 15,
-                });
-
-                new google.maps.Marker({
-                    position: motoristaLatLng,
-                    map: mapMotorista,
-                    title: "Você está aqui",
-                });
-
-                directionsRendererMotorista.setMap(mapMotorista);
-                console.log("✅ Mapa motorista inicializado com localização atual.");
-
+            updateMotoristaLocation(motoristaLatLng.lat, motoristaLatLng.lng);
+            setInterval(() => {
                 updateMotoristaLocation(motoristaLatLng.lat, motoristaLatLng.lng);
-                setInterval(() => {
-                    updateMotoristaLocation(motoristaLatLng.lat, motoristaLatLng.lng);
-                }, 3000);
-            },
-            (error) => {
-                console.warn("⚠️ Falha ao obter localização. Usando padrão. Erro:", error.message);
-                const defaultLatLng = { lat: -23.55052, lng: -46.633309 }; // São Paulo
-                mapMotorista = new google.maps.Map(mapDivMotorista, {
-                    center: defaultLatLng,
-                    zoom: 12,
-                });
-                directionsRendererMotorista.setMap(mapMotorista);
-                updateMotoristaLocation(defaultLatLng.lat, defaultLatLng.lng);
-            }
-        );
-    } else {
-        console.warn("⚠️ Navegador não suporta geolocalização. Usando padrão.");
-        const defaultLatLng = { lat: -23.55052, lng: -46.633309 };
-        mapMotorista = new google.maps.Map(mapDivMotorista, {
-            center: defaultLatLng,
-            zoom: 12,
-        });
-        directionsRendererMotorista.setMap(mapMotorista);
-        updateMotoristaLocation(defaultLatLng.lat, defaultLatLng.lng);
-    }
+            }, 3000);
+        },
+        (error) => {
+            console.warn("Geolocalização falhou:", error.message);
+            const fallback = { lat: -23.55052, lng: -46.633309 };
+            mapMotorista = new google.maps.Map(mapDiv, { center: fallback, zoom: 12 });
+            directionsRendererMotorista.setMap(mapMotorista);
+            updateMotoristaLocation(fallback.lat, fallback.lng);
+        }
+    );
 
-    // Botões
-    if (btnAceitarCorrida) btnAceitarCorrida.addEventListener("click", aceitarCorrida);
-    if (btnRecusarCorrida) btnRecusarCorrida.addEventListener("click", recusarCorrida);
-    if (btnChegueiNoPassageiro) btnChegueiNoPassageiro.addEventListener("click", chegueiNoPassageiro);
-    if (btnFinalizarCorrida) btnFinalizarCorrida.addEventListener("click", finalizarCorrida);
-    if (btnLogout) btnLogout.addEventListener("click", () => {
+    btnAceitarCorrida?.addEventListener("click", aceitarCorrida);
+    btnRecusarCorrida?.addEventListener("click", recusarCorrida);
+    btnChegueiNoPassageiro?.addEventListener("click", chegueiNoPassageiro);
+    btnFinalizarCorrida?.addEventListener("click", finalizarCorrida);
+    btnLogout?.addEventListener("click", () => {
         localStorage.clear();
         window.location.href = "login.html";
     });
@@ -118,185 +75,143 @@ window.initMapMotorista = function () {
     checkCorridaStatusMotorista();
     setInterval(checkCorridaStatusMotorista, 3000);
 };
-// ======================= FIM: initMapMotorista =======================
-// ======================= INÍCIO: updateMotoristaLocation =======================
+
 function updateMotoristaLocation(lat, lng) {
-    const motoristaLocalizacaoAtual = { lat: lat, lng: lng };
-    localStorage.setItem('motoristaLocalizacaoAtual', JSON.stringify(motoristaLocalizacaoAtual));
+    localStorage.setItem('motoristaLocalizacaoAtual', JSON.stringify({ lat, lng }));
 }
-// ======================= FIM: updateMotoristaLocation =======================
 
+async function checkCorridaStatusMotorista() {
+    const pendentes = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
+    const corridaAtiva = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
 
-// ======================= INÍCIO: aceitarCorrida =======================
-async function aceitarCorrida() {
-    console.log("-> Motorista clicou em Aceitar Corrida!");
-    if (!currentPendingRide) {
-        console.error("   Nenhuma corrida pendente selecionada.");
+    if (corridaAtiva?.status === "aceita" || corridaAtiva?.status === "a_bordo") {
+        corridaAtivaDetalhes.style.display = "block";
+        corridaPendenteDetalhes.style.display = "none";
+        statusMotoristaElement.style.display = "none";
+
+        infoCorridaAtivaElement.innerHTML = corridaAtiva.status === "aceita"
+            ? `Dirija-se a: <b>${corridaAtiva.origemPassageiro}</b>`
+            : `Indo para: <b>${corridaAtiva.destinoFinal}</b>`;
+
+        btnChegueiNoPassageiro.disabled = corridaAtiva.status !== "aceita";
+        btnFinalizarCorrida.disabled = corridaAtiva.status !== "a_bordo";
+
+        if (directionsRendererMotorista) {
+            const rota = corridaAtiva.status === "aceita"
+                ? corridaAtiva.rotaMotoristaPassageiro
+                : corridaAtiva.rotaPassageiroDestino;
+
+            if (rota) directionsRendererMotorista.setDirections(rota);
+        }
+
         return;
     }
 
-    let passageiroCorrida = JSON.parse(localStorage.getItem('corridaSolicitada'));
+    const novaCorrida = pendentes.find(c => c.status === "pendente");
+    if (novaCorrida) {
+        currentPendingRide = novaCorrida;
+        corridaPendenteDetalhes.style.display = "block";
+        corridaAtivaDetalhes.style.display = "none";
+        statusMotoristaElement.style.display = "none";
 
-    if (passageiroCorrida && passageiroCorrida.passageiroId === currentPendingRide.passageiroId && passageiroCorrida.status === "pendente") {
-        passageiroCorrida.status = "aceita";
-        passageiroCorrida.motoristaId = currentUser.email;
-        passageiroCorrida.motoristaNome = currentUser.name;
+        origemCorridaSpan.textContent = novaCorrida.origemPassageiro;
+        destinoCorridaSpan.textContent = novaCorrida.destinoFinal;
+        valorCorridaSpan.textContent = `R$ ${novaCorrida.valorEstimado}`;
+        passageiroNomeSpan.textContent = novaCorrida.passageiroNome;
 
-        try {
-            const motoristaLocalizacaoAtual = JSON.parse(localStorage.getItem('motoristaLocalizacaoAtual'));
-            if (!motoristaLocalizacaoAtual) {
-                alert("Sua localização não está disponível.");
-                return;
-            }
-
-            const request = {
-                origin: new google.maps.LatLng(motoristaLocalizacaoAtual.lat, motoristaLocalizacaoAtual.lng),
-                destination: passageiroCorrida.origemPassageiro,
-                travelMode: google.maps.TravelMode.DRIVING,
-            };
-
-            const response = await new Promise((resolve, reject) => {
-                directionsServiceMotorista.route(request, (result, status) => {
-                    if (status === "OK") resolve(result);
-                    else reject(new Error(`Erro: ${status}`));
-                });
-            });
-
-            passageiroCorrida.rotaMotoristaPassageiro = response;
-            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiroCorrida));
-            console.log("✅ Corrida atualizada para 'aceita' com rota salva.");
-        } catch (error) {
-            console.error("❌ Erro ao calcular rota:", error);
-            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiroCorrida));
+        if (novaCorrida.rotaPassageiroDestino) {
+            directionsRendererMotorista.setDirections(novaCorrida.rotaPassageiroDestino);
         }
     } else {
-        alert("Corrida indisponível.");
-        checkCorridaStatusMotorista();
-        return;
+        statusMotoristaElement.textContent = "Aguardando novas corridas...";
+        statusMotoristaElement.style.display = "block";
+        corridaPendenteDetalhes.style.display = "none";
+        corridaAtivaDetalhes.style.display = "none";
+        directionsRendererMotorista.setDirections({ routes: [] });
     }
-
-    let corridasPendentes = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
-    corridasPendentes = corridasPendentes.filter(c => !(c.passageiroId === currentPendingRide.passageiroId && c.status === "pendente"));
-    localStorage.setItem('corridasPendentes', JSON.stringify(corridasPendentes));
-
-    localStorage.setItem('corridaAceitaMotorista', JSON.stringify(passageiroCorrida));
-    checkCorridaStatusMotorista();
-    alert(`Corrida de ${currentPendingRide.origemPassageiro} para ${currentPendingRide.destinoFinal} aceita!`);
 }
-// ======================= FIM: aceitarCorrida =======================
 
-
-// ======================= INÍCIO: recusarCorrida =======================
-function recusarCorrida() {
-    console.log("-> Motorista clicou em Recusar Corrida.");
+async function aceitarCorrida() {
     if (!currentPendingRide) return;
 
-    let corridasPendentes = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
-    corridasPendentes = corridasPendentes.filter(c => 
-        !(c.passageiroId === currentPendingRide.passageiroId &&
-          c.origemPassageiro === currentPendingRide.origemPassageiro &&
-          c.destinoFinal === currentPendingRide.destinoFinal &&
-          c.status === "pendente")
-    );
-    localStorage.setItem('corridasPendentes', JSON.stringify(corridasPendentes));
+    const localCorrida = JSON.parse(localStorage.getItem('corridaSolicitada'));
+    if (localCorrida?.passageiroId === currentPendingRide.passageiroId && localCorrida.status === "pendente") {
+        localCorrida.status = "aceita";
+        localCorrida.motoristaId = currentUser.email;
+        localCorrida.motoristaNome = currentUser.name;
+
+        const loc = JSON.parse(localStorage.getItem('motoristaLocalizacaoAtual'));
+        if (!loc) return alert("Localização não disponível.");
+
+        const rota = await calcularRota(loc, localCorrida.origemPassageiro);
+        localCorrida.rotaMotoristaPassageiro = rota;
+
+        localStorage.setItem('corridaSolicitada', JSON.stringify(localCorrida));
+
+        const listaPendentes = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
+        const filtrada = listaPendentes.filter(c => c.passageiroId !== currentPendingRide.passageiroId);
+        localStorage.setItem('corridasPendentes', JSON.stringify(filtrada));
+
+        localStorage.setItem('corridaAceitaMotorista', JSON.stringify(localCorrida));
+        checkCorridaStatusMotorista();
+    }
+}
+
+function recusarCorrida() {
+    if (!currentPendingRide) return;
+
+    const lista = JSON.parse(localStorage.getItem('corridasPendentes')) || [];
+    const novaLista = lista.filter(c => c.passageiroId !== currentPendingRide.passageiroId);
+    localStorage.setItem('corridasPendentes', JSON.stringify(novaLista));
+
     currentPendingRide = null;
     checkCorridaStatusMotorista();
-    alert("Corrida recusada.");
 }
-// ======================= FIM: recusarCorrida =======================
 
+function chegueiNoPassageiro() {
+    const corrida = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
+    if (corrida?.status === "aceita") {
+        corrida.status = "a_bordo";
+        localStorage.setItem('corridaAceitaMotorista', JSON.stringify(corrida));
 
-// ======================= INÍCIO: chegueiNoPassageiro =======================
-async function chegueiNoPassageiro() {
-    console.log("-> Motorista clicou em Cheguei no Passageiro.");
-    let corridaAtiva = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
-
-    if (corridaAtiva && corridaAtiva.status === "aceita") {
-        corridaAtiva.status = "a_bordo";
-        localStorage.setItem('corridaAceitaMotorista', JSON.stringify(corridaAtiva));
-
-        let passageiroCorrida = JSON.parse(localStorage.getItem('corridaSolicitada'));
-        if (passageiroCorrida && passageiroCorrida.passageiroId === corridaAtiva.passageiroId) {
-            passageiroCorrida.status = "a_bordo";
-            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiroCorrida));
+        const passageiro = JSON.parse(localStorage.getItem('corridaSolicitada'));
+        if (passageiro?.passageiroId === corrida.passageiroId) {
+            passageiro.status = "a_bordo";
+            localStorage.setItem('corridaSolicitada', JSON.stringify(passageiro));
         }
 
         checkCorridaStatusMotorista();
-        alert("Passageiro a bordo! Indo para o destino.");
     }
 }
-// ======================= FIM: chegueiNoPassageiro =======================
-// ======================= INÍCIO: finalizarCorrida =======================
-function finalizarCorrida() {
-    console.log("-> Motorista clicou em Finalizar Corrida.");
-    let corridaAtiva = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
 
-    if (corridaAtiva && corridaAtiva.status === "a_bordo") {
-        corridaAtiva.status = "finalizada";
-        localStorage.setItem('corridaFinalizada', JSON.stringify(corridaAtiva));
+function finalizarCorrida() {
+    const corrida = JSON.parse(localStorage.getItem('corridaAceitaMotorista'));
+    if (corrida?.status === "a_bordo") {
+        corrida.status = "finalizada";
+        localStorage.setItem('corridaFinalizada', JSON.stringify(corrida));
         localStorage.removeItem('corridaAceitaMotorista');
         localStorage.removeItem('corridaSolicitada');
-
         checkCorridaStatusMotorista();
-
         alert("Corrida finalizada com sucesso!");
-    } else {
-        alert("Não há corrida ativa para finalizar.");
     }
 }
-// ======================= FIM: finalizarCorrida =======================
 
-
-// ======================= INÍCIO: exibirRotaParaPassageiro =======================
-async function exibirRotaParaPassageiro(origem, destino) {
-    if (!mapMotorista) {
-        console.error("❌ Mapa do motorista não está disponível.");
-        return;
-    }
-
-    const request = {
-        origin: origem,
-        destination: destino,
-        travelMode: google.maps.TravelMode.DRIVING,
-    };
-
-    try {
-        const result = await new Promise((resolve, reject) => {
-            directionsServiceMotorista.route(request, (res, status) => {
-                if (status === "OK") resolve(res);
-                else reject(`Erro ao exibir rota: ${status}`);
-            });
+function calcularRota(origem, destino) {
+    return new Promise((resolve, reject) => {
+        const request = {
+            origin: new google.maps.LatLng(origem.lat, origem.lng),
+            destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+        };
+        directionsServiceMotorista.route(request, (result, status) => {
+            if (status === "OK") resolve(result);
+            else reject("Erro ao calcular rota: " + status);
         });
-
-        directionsRendererMotorista.setDirections(result);
-        directionsRendererMotorista.setMap(mapMotorista);
-        console.log("✅ Rota exibida com sucesso.");
-    } catch (erro) {
-        console.error("❌ Falha ao renderizar rota:", erro);
-    }
-}
-// ======================= FIM: exibirRotaParaPassageiro =======================
-// ======================= INÍCIO: EVENT LISTENERS =======================
-if (btnAceitarCorrida) btnAceitarCorrida.addEventListener("click", aceitarCorrida);
-if (btnRecusarCorrida) btnRecusarCorrida.addEventListener("click", recusarCorrida);
-if (btnChegueiNoPassageiro) btnChegueiNoPassageiro.addEventListener("click", chegueiNoPassageiro);
-if (btnFinalizarCorrida) btnFinalizarCorrida.addEventListener("click", finalizarCorrida);
-
-if (btnLogout) {
-    btnLogout.addEventListener('click', () => {
-        localStorage.clear();
-        window.location.href = 'login.html';
     });
 }
-// ======================= FIM: EVENT LISTENERS =======================
 
-
-// ======================= INÍCIO: Inicialização Automática =======================
 document.addEventListener("DOMContentLoaded", () => {
     if (typeof initMapMotorista === "function") {
         initMapMotorista();
-    } else {
-        console.warn("⚠️ Função initMapMotorista não encontrada no escopo global.");
     }
 });
-// ======================= FIM: Inicialização Automática =======================

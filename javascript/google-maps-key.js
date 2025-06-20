@@ -1,2 +1,5 @@
 // javascript/google-maps-key.js
-export const MAPS_API_KEY = "AIzaSyD_gHvH6diRTaK0w68xdYfx5fPzNF23YXM";
+
+export const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+
