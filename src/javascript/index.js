@@ -3,6 +3,7 @@
 // Ele pode importar outros módulos conforme necessário.
 
 console.log("✅ VAMUX iniciado com Vite!");
+export {};
 
 // Se você precisar que main.js ou outros módulos sejam executados logo na inicialização, importe-os aqui.
 // Por exemplo:
