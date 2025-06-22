@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "engines": { // <<-- Adicione esta seção
-    "node": "18" // <<-- Com a versão do Node.js que deseja usar
-  },             // <<-- Certifique-se de que a linha "type": "module", termina com vírgula!
+  "engines": {
+    "node": "18"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
