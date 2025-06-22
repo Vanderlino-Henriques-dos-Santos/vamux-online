@@ -1,17 +1,18 @@
-// javascript/login.js
+// src/javascript/login.js
 
-const emailInput = document.getElementById('emailInput');
-const passwordInput = document.getElementById('passwordInput');
-const btnLogin = document.getElementById('btnLogin');
-const messageElement = document.getElementById('message');
-const radioPassenger = document.getElementById('radioPassenger');
-const radioDriver = document.getElementById('radioDriver');
+// Seletores de elementos:
+const emailInput = document.getElementById('emailInput'); 
+const passwordInput = document.getElementById('passwordInput'); 
+const loginForm = document.getElementById('loginForm'); 
+const messageElement = document.getElementById('message'); 
+const radioPassenger = document.getElementById('radioPassenger'); 
+const radioDriver = document.getElementById('radioDriver'); 
 
 // Função para exibir mensagens na UI
 function displayMessage(msg, isError = true) {
     messageElement.textContent = msg;
     messageElement.className = isError ? 'message error' : 'message success';
-    messageElement.style.display = 'block'; // Garante que a mensagem seja visível
+    messageElement.style.display = 'block'; 
 }
 
 // Funções de validação básica
@@ -20,21 +21,30 @@ function isValidEmail(email) {
 }
 
 function isValidPassword(password) {
-    return password.length >= 4; // Mínimo de 4 caracteres para a senha (ajuste se precisar)
+    return password.length >= 6; 
 }
 
 // --- Funções de Login ---
 
-// Carrega usuários do localStorage (salvos pelo index.html)
+// Carrega usuários do localStorage
 function getRegisteredUsers() {
     return JSON.parse(localStorage.getItem('registeredUsers')) || [];
 }
 
-// Função de Login
-btnLogin.addEventListener('click', () => {
+// Event Listener para o envio do formulário
+loginForm.addEventListener('submit', (event) => {
+    event.preventDefault(); // Previne o recarregamento padrão da página
+
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
-    const type = document.querySelector('input[name="userType"]:checked').value;
+    
+    let type = '';
+    const selectedUserType = document.querySelector('input[name="userType"]:checked');
+    if (selectedUserType) {
+        type = selectedUserType.value;
+    } else {
+        type = 'passenger'; 
+    }
 
     if (!email || !password) {
         displayMessage('Por favor, preencha email e senha para login.', true);
@@ -45,7 +55,7 @@ btnLogin.addEventListener('click', () => {
         displayMessage('Por favor, insira um email válido.', true);
         return;
     }
-    if (password.length < 6) { // A senha deve ter no mínimo 6 caracteres, conforme o cadastro
+    if (password.length < 6) { 
         displayMessage('A senha deve ter no mínimo 6 caracteres.', true);
         return;
     }
@@ -65,14 +75,15 @@ btnLogin.addEventListener('click', () => {
             } else { // type === 'driver'
                 window.location.href = 'motorista.html';
             }
-        }, 1000); // 1 segundo para o usuário ler a mensagem de sucesso
+        }, 1000); 
         
     } else {
         displayMessage('Email, senha ou tipo de usuário incorretos. Verifique suas credenciais e o tipo de conta.', true);
     }
 });
 
-// Ao carregar a página, verifica se já há um usuário logado
+// REMOVA OU COMENTE ESTE BLOCO SE QUISER QUE O USUÁRIO SEMPRE VEJA A TELA DE LOGIN
+/*
 document.addEventListener('DOMContentLoaded', () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (currentUser) {
@@ -84,3 +95,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+*/

@@ -1,50 +1,57 @@
-<!-- public/passageiro.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VAMUX - Passageiro</title>
-  <link rel="stylesheet" href="/src/style.css" />
-</head>
-<body>
-  <div class="container">
-    <h2>Painel do Passageiro</h2>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VAMUX - Passageiro</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Solicitar Corrida</h2>
 
-    <div class="form-group">
-      <input type="text" id="inputEnderecoOrigem" placeholder="Endereço de partida" />
-      <input type="text" id="inputEnderecoDestino" placeholder="Destino desejado" />
-      <button id="btnChamarCorrida">Chamar Corrida</button>
+      <div id="mensagemInterna" class="mensagem-interna" style="margin-bottom: 15px;"></div>
+
+      <label for="origemInput">Origem:</label>
+      <input
+        type="text"
+        id="origemInput" placeholder="Digite seu endereço de partida"
+      />
+
+      <label for="destinoInput">Destino:</label>
+      <input
+        type="text"
+        id="destinoInput" placeholder="Digite o destino desejado"
+      />
+
+      <button id="btnCalcularEstimativa" style="margin-top: 15px;">Calcular Estimativa</button>
+      
+      <div id="estimateDisplay" style="margin-top: 10px; font-weight: bold; display: none;"></div>
+
+      <button id="btnSolicitarCorrida" style="margin-top: 10px; display: none;">Solicitar Corrida</button>
+
+      <div id="statusCorrida" class="info-panel" style="display: none; margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;"></div>
+      
     </div>
 
-    <div id="statusCorrida" class="info-panel" style="display: none;"></div>
-    <div id="mensagemInterna" class="mensagem-interna"></div>
-  </div>
+    <div id="mapPassageiro" style="height: 400px; width: 100%; margin-top: 20px;"></div> <button id="btnLogout" class="logout-btn" style="margin-top: 20px;">Sair</button>
 
-  <div id="mapPassageiro"></div>
+    <div class="banner-teste">
+      🚧 Aplicativo em fase de testes operacionais 🚧
+    </div>
 
-  <button id="btnLogout" class="logout-btn">Sair</button>
+    <script type="module">
+      import { MAPS_API_KEY } from "/src/javascript/google-maps-key.js"; // Caminho corrigido
 
-  <!-- INÍCIO: Banner institucional -->
-  <div class="banner-teste">
-    🚧 "Aplicativo em Testes Operacionais" 🚧
-  </div>
-  <!-- FIM: Banner -->
+      // IMPORTANTE: Definir initMapPassageiro no objeto window para ser acessível como callback
+      // Esta função será definida no passageiro.js e exposta globalmente
+      
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places&region=BR&language=pt-BR&callback=initMapPassageiro`; // Callback correto
+      script.defer = true;
+      script.async = true;
+      document.head.appendChild(script);
+    </script>
 
-  <!-- INÍCIO: Carregamento do Google Maps -->
-  <script type="module">
-    import { MAPS_API_KEY } from '/src/google-maps-key.js';
-
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places&region=BR&language=pt-BR&callback=initMapPassageiro`;
-    script.defer = true;
-    script.async = true;
-    document.head.appendChild(script);
-  </script>
-  <!-- FIM: Carregamento do Maps -->
-
-  <!-- INÍCIO: Script principal do passageiro -->
-  <script type="module" src="/src/passageiro.js"></script>
-  <!-- FIM -->
-</body>
+    <script type="module" src="/src/javascript/passageiro.js"></script> </body>
 </html>

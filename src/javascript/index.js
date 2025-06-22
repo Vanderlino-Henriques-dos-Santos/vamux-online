@@ -1,0 +1,1 @@
+console.log("✅ VAMUX iniciado com Vite!");

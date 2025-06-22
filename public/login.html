@@ -1,44 +1,36 @@
 <!-- public/login.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VAMUX - Login</title>
-  <link rel="stylesheet" href="/src/style.css" />
-</head>
-<body>
-  <div class="container">
-    <img src="/assets/logo_vamux.png" alt="Logo VAMUX" class="logo" />
-
-    <h2>Login</h2>
-
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="senha" placeholder="Senha" required />
-      
-      <select id="tipoUsuario" required>
-        <option value="">Escolha o tipo de acesso</option>
-        <option value="passenger">Passageiro</option>
-        <option value="driver">Motorista</option>
-      </select>
-
-      <button type="submit">Entrar</button>
-    </form>
-
-    <p class="link-opcao">
-      Não tem conta? <a href="cadastro.html">Cadastre-se</a>
-    </p>
-  </div>
-
-  <!-- INÍCIO: Banner institucional -->
-  <div class="banner-teste">
-    🚧 Aplicativo em Testes Operacionais 🚧
-  </div>
-  <!-- FIM: Banner -->
-
-  <!-- INÍCIO: Script principal de login -->
-  <script type="module" src="/src/login.js"></script>
-  <!-- FIM -->
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>VAMUX - Login</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <!-- Banner institucional -->
+        <div class="banner-teste">
+            🚧 Aplicativo em fase de Testes Operacionais 🚧
+        </div>
+        <div class="container">
+            <img src="imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo">
+            <h2>Faça Login</h2>
+            <form id="loginForm">
+             <div class="user-type-selection" style="margin-bottom: 20px;">
+    <input type="radio" id="radioPassenger" name="userType" value="passenger" checked>
+    <label for="radioPassenger">Passageiro</label>
+    <input type="radio" id="radioDriver" name="userType" value="driver">
+    <label for="radioDriver">Motorista</label>
+</div>   
+                <div class="buttons-container">
+                    <button type="submit" class="register-button passenger">Entrar</button>
+                </div>
+            </form>
+            <p class="switch-form">
+                Ainda não tem conta?
+                <a href="cadastro.html">Cadastre-se</a>
+            </p>
+        </div>
+        <script type="module" src="/src/javascript/login.js"></script>
+    </body>
 </html>

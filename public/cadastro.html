@@ -1,45 +1,47 @@
-<!-- public/cadastro.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VAMUX - Cadastro</title>
-  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <div class="container">
-    <img src="/assets/logo_vamux.png" alt="Logo VAMUX" class="logo" />
-
     <h2>Crie sua Conta</h2>
 
     <form id="cadastroForm">
-      <input type="text" id="nome" placeholder="Nome completo" required />
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="senha" placeholder="Senha" required />
-      
-      <select id="tipoUsuario" required>
-        <option value="">Selecione o tipo de usuário</option>
-        <option value="passenger">Sou Passageiro</option>
-        <option value="driver">Sou Motorista</option>
-      </select>
+      <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" placeholder="Seu nome completo" required />
+      </div>
 
-      <button type="submit">Cadastrar</button>
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" placeholder="seu.email@exemplo.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" placeholder="Mínimo 6 caracteres" required />
+      </div>
+
+      <div id="cadastroMessage" style="margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none;"></div>
+
+      <div class="buttons-container">
+        <button type="submit" class="register-button passenger" data-tipo="passenger">Cadastrar como Passageiro</button>
+        <button type="submit" class="register-button driver" data-tipo="driver">Cadastrar como Motorista</button>
+      </div>
     </form>
 
-    <p class="link-opcao">
-      Já tem conta? <a href="login.html">Entrar</a>
+    <p class="switch-form">
+      Já tem uma conta? <a href="login.html">Faça Login aqui</a>
     </p>
   </div>
 
-  <!-- INÍCIO: Banner institucional -->
   <div class="banner-teste">
-    🚧 "Aplicativo em fase de Testes Operacionais 🚧
+    🚧 Aplicativo em fase de Testes Operacionais 🚧
   </div>
-  <!-- FIM -->
 
-  <!-- INÍCIO: Script de Cadastro -->
-  <script type="module" src="/src/cadastro.js"></script>
-  <!-- FIM -->
-</body>
+  <script type="module" src="/src/javascript/cadastro.js"></script> </body>
 </html>
