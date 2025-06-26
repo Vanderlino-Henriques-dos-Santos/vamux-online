@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel do Passageiro - VAMUX</title>
+    <link rel="stylesheet" href="/src/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="gradient-text">Painel do Passageiro</h1>
+
+      <div class="form-group">
+        <input type="text" id="origem" placeholder="Endereço de origem" />
+        <input type="text" id="destino" placeholder="Endereço de destino" />
+        <button id="calcular" class="btn">Calcular Estimativa</button>
+      </div>
+
+      <p id="info" class="mensagem"></p>
+
+      <button id="solicitar" class="btn">Solicitar Corrida</button>
+
+      <p id="status" class="mensagem"></p>
+
+      <div id="mapa" class="mapa-box"></div>
+    </div>
+
+    <script type="module" src="/src/javascript/passageiro.js"></script>
+  </body>
+</html>

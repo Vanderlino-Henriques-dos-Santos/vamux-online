@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Motorista - VAMUX</title>
+  <link rel="stylesheet" href="/src/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="/public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
+      <h1 class="gradient-text">Painel do Motorista</h1>
+      <p class="descricao">Buscando Corridas...</p>
+    </header>
+
+    <main>
+      <div id="mapa" class="mapa-box"></div>
+      <div id="mensagem" class="mensagem-status"></div>
+      <button id="finalizarCorrida" class="btn" style="display: none;">Finalizar Corrida</button>
+    </main>
+
+    <footer>
+      <p class="gradient-text">© 2025 VAMUX - Todos os direitos reservados.</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/javascript/motorista.js"></script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+/* Container */
+.container {
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo */
+.logo {
+  width: 100px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  object-fit: contain;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título com gradiente */
+.gradient-text {
+  font-size: 2.2rem;
+  background: linear-gradient(to right, #7f00ff, #e100ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+/* Introdução */
+.intro-text {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* Botões padrão */
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin: 10px 5px;
+  font-weight: bold;
+  width: 100%;
+}
+
+.btn-primary {
+  background-color: #6200ea;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #1e88e5;
+  color: white;
+}
+
+.btn-passageiro {
+  background-color: #6a1b9a;
+  color: white;
+}
+
+.btn-motorista {
+  background-color: #1976d2;
+  color: white;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+}
+.logout-btn:hover {
+  background-color: #c82333;
+}
+
+/* Inputs */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* Mensagens */
+.mensagem {
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* Painéis de status */
+.info-panel {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #e6e6fa;
+  color: #4a0082;
+  text-align: center;
+  font-weight: bold;
+  display: none;
+}
+.info-panel h3 {
+  margin-top: 0;
+  color: #6a0dad;
+  margin-bottom: 10px;
+}
+.info-panel p {
+  margin: 5px 0;
+}
+
+/* Estimativas de corrida */
+#estimateDisplay {
+  background-color: #e6e6fa;
+  color: #4a0082;
+}
+
+#corridaStatus.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+#corridaStatus.accepted {
+  background-color: #cce5ff;
+  color: #004085;
+}
+#corridaStatus.a_bordo {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+#corridaStatus.finalizada {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+#corridaStatus.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Mapa */
+.mapa {
+  width: 100%;
+  height: 400px;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #e0e0e0;
+}
+
+/* Grupos de botão */
+.buttons-container,
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.button-group button {
+  flex-grow: 1;
+  width: auto;
+}
+
+/* Botões de cadastro com estilo separado */
+.register-button {
+  flex-grow: 1;
+  padding: 12px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.register-button.passenger {
+  background-color: #6a0dad;
+}
+.register-button.passenger:hover {
+  background-color: #8a2be2;
+}
+.register-button.driver {
+  background-color: #007bff;
+}
+.register-button.driver:hover {
+  background-color: #0056b3;
+}
+
+/* Banner institucional */
+.banner-teste {
+  background-color: #fff0f0;
+  color: #cc0000;
+  text-align: center;
+  padding: 15px;
+  font-weight: bold;
+  font-size: 10px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  border-bottom: 2px solid #cc0000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  h1, h2 {
+    font-size: 1.5em;
+  }
+
+  input, select, button {
+    font-size: 0.95em;
+    padding: 10px;
+  }
+
+  .buttons-container,
+  .button-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .register-button,
+  .logout-btn {
+    width: 100%;
+  }
+
+  .logo {
+    width: 100px;
+  }
+
+  #mapPassageiro {
+  width: 100%;
+  height: 400px;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+}
+.mapa-box {
+  width: 100%;
+  height: 400px;
+  background-color: #ddd;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.mensagem-status {
+  font-size: 1.1rem;
+  color: white;
+  background-color: #6a00ff;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  margin-top: 10px;
+}

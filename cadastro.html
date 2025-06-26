@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro - VAMUX</title>
+    <link rel="stylesheet" href="/src/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <img src="public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
+      <h1 class="gradient-text">Criar Conta</h1>
+
+      <form id="cadastroForm">
+        <input type="text" id="nome" placeholder="Nome completo" required />
+        <input type="email" id="email" placeholder="E-mail" required />
+        <input type="password" id="senha" placeholder="Senha" required />
+
+        <select id="tipoUsuario" required>
+          <option value="">Selecione o tipo</option>
+          <option value="passageiro">Sou Passageiro</option>
+          <option value="motorista">Sou Motorista</option>
+        </select>
+
+        <button type="submit" class="btn">Cadastrar</button>
+      </form>
+
+      <p class="mensagem" id="mensagemCadastro"></p>
+      <p>Já tem conta? <a href="/login.html">Entrar</a></p>
+    </div>
+
+    <script type="module" src="/src/javascript/cadastro.js"></script>
+  </body>
+</html>

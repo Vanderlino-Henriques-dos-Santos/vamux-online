@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - VAMUX</title>
+    <link rel="stylesheet" href="/src/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <img src="/public/imagens/logo/logo_vamux.jpeg" alt="Logo VAMUX" class="logo" />
+
+      <h1 class="gradient-text">Entrar na Conta</h1>
+
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="E-mail" required />
+        <input type="password" id="senha" placeholder="Senha" required />
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
+
+      <p id="mensagemLogin" class="mensagem"></p>
+
+      <p>Não tem conta? <a href="/cadastro.html">Criar conta</a></p>
+    </div>
+
+    <script type="module" src="/src/javascript/login.js"></script>
+  </body>
+</html>
