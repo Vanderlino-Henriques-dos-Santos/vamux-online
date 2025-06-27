@@ -26,6 +26,7 @@ body {
   border-radius: 12px;
   text-align: center;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
 }
 
 /* Logo */
@@ -275,4 +276,148 @@ input, select {
   padding: 12px;
   text-align: center;
   margin-top: 10px;
+}
+.small-text {
+  font-size: 12px;
+  margin-top: 10px;
+}
+.btn-entrar {
+  display: inline-block;
+  margin: 20px auto;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(to right, #a100ff, #ff00ff);
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.btn-entrar:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #8800cc, #cc00cc);
+}
+.mensagem-status {
+  background-color: #8000c9;
+  color: white;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 12px;
+  text-align: center;
+  width: fit-content;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+.mensagem-rota {
+  background-color: #8000c9;
+  color: white;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 12px;
+  text-align: center;
+  width: fit-content;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+.mensagem-status {
+  background-color: #8000c9;
+  color: white;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 12px;
+  text-align: center;
+  width: fit-content;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+.btn {
+  background-color: #8000c9;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+.mensagem-status {
+  font-weight: 600;
+  font-size: 16px; /* um pouco maior */
+  margin-top: 12px;
+  text-align: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* Mensagem de sucesso */
+.mensagem-status.sucesso {
+  color: #00b300; /* verde vibrante */
+  background-color: transparent; /* sem fundo roxo */
+}
+
+/* Mensagem de erro */
+.mensagem-status.erro {
+  color: #ff3333; /* vermelho forte */
+  background-color: transparent; /* sem fundo roxo */
+}
+
+
+
+.sucesso {
+  color: green;
+  background-color: transparent;
+}
+
+.erro {
+  color: red;
+  background-color: transparent;
+}
+/* Botão padrão */
+.btn {
+  background-color: #8000c9;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+.btn:hover {
+  background-color: #5e0098;
+}
+
+/* Botão de Cancelar Corrida */
+#btnCancelar {
+  background-color: #d10000;
+}
+
+#btnCancelar:hover {
+  background-color: #a30000;
 }

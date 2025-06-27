@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Painel do Passageiro - VAMUX</title>
-    <link rel="stylesheet" href="/src/css/style.css" />
-  </head>
-  <body>
-    <div class="container">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Passageiro - VAMUX</title>
+  <link rel="stylesheet" href="/src/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="./public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
       <h1 class="gradient-text">Painel do Passageiro</h1>
+      <button id="btnSair" class="btn">Sair</button>
+    </header>
 
-      <div class="form-group">
-        <input type="text" id="origem" placeholder="Endereço de origem" />
-        <input type="text" id="destino" placeholder="Endereço de destino" />
-        <button id="calcular" class="btn">Calcular Estimativa</button>
-      </div>
+    <main>
+      <input type="text" id="origem" placeholder="Endereço de origem" />
+      <input type="text" id="destino" placeholder="Endereço de destino" />
+      <button id="btnCalcular" class="btn">Calcular Estimativa</button>
+      <button id="btnChamarCorrida" class="btn" style="display: none; margin-top: 10px;">Chamar Corrida</button>
 
-      <p id="info" class="mensagem"></p>
+      <p id="statusMensagem" class="mensagem-status"></p>
 
-      <button id="solicitar" class="btn">Solicitar Corrida</button>
+      <div id="dadosMotorista" class="mensagem-status" style="display: none; font-size: 14px;"></div>
 
-      <p id="status" class="mensagem"></p>
+      <div id="mapa" style="width: 100%; height: 300px; background-color: #ccc; border-radius: 12px; margin-top: 10px;"></div>
+    </main>
 
-      <div id="mapa" class="mapa-box"></div>
-    </div>
+  
 
-    <script type="module" src="/src/javascript/passageiro.js"></script>
-  </body>
+    <script type="module" src="./src/javascript/passageiro.js"></script>
+  </div>
+</body>
 </html>

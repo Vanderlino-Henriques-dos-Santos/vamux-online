@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - VAMUX</title>
-    <link rel="stylesheet" href="/src/css/style.css" />
-  </head>
-  <body>
-    <div class="container">
-      <img src="/public/imagens/logo/logo_vamux.jpeg" alt="Logo VAMUX" class="logo" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login VAMUX</title>
+  <link rel="stylesheet" href="/src/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <form id="form-login" class="form-box">
+      <img src="public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
+      <h1 class="gradient-text">Fazer Login</h1>
 
-      <h1 class="gradient-text">Entrar na Conta</h1>
+      <input type="email" id="email" placeholder="E-mail" />
+      <input type="password" id="senha" placeholder="Senha" />
 
-      <form id="loginForm">
-        <input type="email" id="email" placeholder="E-mail" required />
-        <input type="password" id="senha" placeholder="Senha" required />
-        <button type="submit" class="btn btn-primary">Entrar</button>
-      </form>
+      <button type="submit" class="btn">Entrar</button>
 
-      <p id="mensagemLogin" class="mensagem"></p>
+      <div id="mensagem-status" class="mensagem-status" style="display: none;"></div>
 
-      <p>Não tem conta? <a href="/cadastro.html">Criar conta</a></p>
-    </div>
+      <p style="margin-top: 15px;">Não tem conta? <a href="cadastro.html">Criar agora</a></p>
 
-    <script type="module" src="/src/javascript/login.js"></script>
-  </body>
+      <p class="gradient-text" style="margin-top: 20px;">© 2025 VAMUX</p>
+    </form>
+  </div>
+
+  <script type="module" src="/src/javascript/login.js"></script>
+</body>
 </html>

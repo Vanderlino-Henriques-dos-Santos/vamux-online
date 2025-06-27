@@ -1,179 +1,140 @@
-import app from "./firebase-config.js";
-import {
-  getDatabase,
-  ref,
-  push,
-  onValue
-} from "firebase/database";
+import { app } from './firebase-config.js';
+import { getDatabase, ref, push, onValue } from 'firebase/database';
 
-let origemCoords = null;
-let destinoCoords = null;
-let map;
-let marcadorMotorista;
-let rotaAtiva;
-let corridaId;
+const script = document.createElement("script");
+script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
+script.async = true;
+document.head.appendChild(script);
 
-function carregarGoogleMaps() {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+let map, directionsService, directionsRenderer;
+let origemInput, destinoInput, statusMensagem, btnChamar, dadosMotorista;
+let origemFinal, destinoFinal, distanciaFinal, valorFinal;
 
-  const script = document.createElement("script");
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
-  script.async = true;
-  script.defer = true;
-  document.head.appendChild(script);
-}
-
-window.initMap = function () {
-  const origemInput = document.getElementById("origem");
-  const destinoInput = document.getElementById("destino");
-
+window.initMap = () => {
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
   map = new google.maps.Map(document.getElementById("mapa"), {
-    center: { lat: -23.55052, lng: -46.633308 },
-    zoom: 13,
+    zoom: 14,
+    center: { lat: -23.5, lng: -46.6 },
   });
-
-  const autocompleteOrigem = new google.maps.places.Autocomplete(origemInput);
-  const autocompleteDestino = new google.maps.places.Autocomplete(destinoInput);
-
-  autocompleteOrigem.addListener("place_changed", () => {
-    const place = autocompleteOrigem.getPlace();
-    origemCoords = place.geometry.location;
-  });
-
-  autocompleteDestino.addListener("place_changed", () => {
-    const place = autocompleteDestino.getPlace();
-    destinoCoords = place.geometry.location;
-  });
-
-  document.getElementById("calcular").addEventListener("click", () => {
-    calcularRota();
-  });
-
-  document.getElementById("solicitar").addEventListener("click", () => {
-    solicitarCorrida();
-  });
+  directionsRenderer.setMap(map);
 };
 
-function calcularRota() {
-  if (!origemCoords || !destinoCoords) {
-    alert("Preencha os dois endereços.");
+document.addEventListener('DOMContentLoaded', () => {
+  origemInput = document.getElementById('origem');
+  destinoInput = document.getElementById('destino');
+  statusMensagem = document.getElementById('statusMensagem');
+  btnChamar = document.getElementById('btnChamarCorrida');
+  dadosMotorista = document.getElementById('dadosMotorista');
+
+  document.getElementById('btnCalcular').addEventListener('click', calcularEstimativa);
+  btnChamar.addEventListener('click', () => {
+    salvarCorrida(origemFinal, destinoFinal, distanciaFinal, valorFinal);
+    btnChamar.style.display = 'none';
+  });
+
+  document.getElementById('btnSair').addEventListener('click', () => {
+    localStorage.clear();
+    window.location.href = 'login.html';
+  });
+
+  escutarAtualizacaoCorrida();
+});
+
+function calcularEstimativa() {
+  const origem = origemInput.value.trim();
+  const destino = destinoInput.value.trim();
+
+  if (!origem || !destino) {
+    mostrarMensagem('Preencha origem e destino.', 'erro');
     return;
   }
 
-  const directionsService = new google.maps.DirectionsService();
-  const directionsRenderer = new google.maps.DirectionsRenderer();
-  directionsRenderer.setMap(map);
-
   const request = {
-    origin: origemCoords,
-    destination: destinoCoords,
+    origin: origem,
+    destination: destino,
     travelMode: google.maps.TravelMode.DRIVING,
   };
 
   directionsService.route(request, (result, status) => {
-    if (status === "OK") {
+    if (status === 'OK') {
       directionsRenderer.setDirections(result);
+      const distanciaTexto = result.routes[0].legs[0].distance.text;
+      const distanciaKm = parseFloat(result.routes[0].legs[0].distance.value) / 1000;
+      const valorEstimado = (distanciaKm * 3.5).toFixed(2);
 
-      const distancia = result.routes[0].legs[0].distance.text;
-      const duracao = result.routes[0].legs[0].duration.text;
-      const valor = calcularValor(distancia);
+      mostrarMensagem(`Distância: ${distanciaTexto} | Valor estimado: R$ ${valorEstimado}`, 'sucesso');
 
-      document.getElementById("info").innerText = `Distância: ${distancia} | Estimativa: R$ ${valor}`;
+      // Armazena para envio posterior
+      origemFinal = origem;
+      destinoFinal = destino;
+      distanciaFinal = distanciaKm;
+      valorFinal = valorEstimado;
 
-      // Armazena os dados
-      window.dadosCorrida = {
-        origem: document.getElementById("origem").value,
-        destino: document.getElementById("destino").value,
-        distancia,
-        duracao,
-        preco: valor,
-        origemLat: origemCoords.lat(),
-        origemLng: origemCoords.lng(),
-        destinoLat: destinoCoords.lat(),
-        destinoLng: destinoCoords.lng()
-      };
+      btnChamar.style.display = 'block';
     } else {
-      alert("Erro ao calcular rota.");
+      mostrarMensagem('Erro ao calcular rota.', 'erro');
     }
   });
 }
 
-function calcularValor(distanciaTexto) {
-  const km = parseFloat(distanciaTexto.replace(",", "."));
-  const valorBase = 5.0;
-  const valorPorKm = 2.4;
-  return (valorBase + km * valorPorKm).toFixed(2);
-}
-
-function solicitarCorrida() {
-  if (!window.dadosCorrida) {
-    alert("Calcule a estimativa antes.");
-    return;
-  }
-
+function salvarCorrida(origem, destino, distanciaKm, valorEstimado) {
   const db = getDatabase(app);
-  const corridasRef = ref(db, "corridas");
+  const corridaRef = ref(db, 'corridas');
+  const idPassageiro = localStorage.getItem('uid');
+  const nomePassageiro = localStorage.getItem('nome') || 'Passageiro';
 
   const novaCorrida = {
-    ...window.dadosCorrida,
-    status: "pendente",
+    origem,
+    destino,
+    distanciaKm,
+    valorEstimado,
+    status: 'pendente',
+    idPassageiro,
+    nomePassageiro,
+    timestamp: Date.now(),
   };
 
-  const novaRef = push(corridasRef, novaCorrida);
-
-  corridaId = novaRef.key;
-
-  onValue(ref(db, `corridas/${corridaId}`), (snapshot) => {
-    const dados = snapshot.val();
-    if (!dados) return;
-
-    if (dados.status === "aceita") {
-      document.getElementById("status").innerText =
-        "Corrida aceita! O motorista está a caminho.";
-
-      mostrarMotorista(dados.motoristaLat, dados.motoristaLng, dados.origemLat, dados.origemLng);
-    }
-  });
-
-  document.getElementById("status").innerText =
-    "Corrida solicitada! Aguardando motorista...";
-}
-
-function mostrarMotorista(motoristaLat, motoristaLng, origemLat, origemLng) {
-  const posMotorista = new google.maps.LatLng(motoristaLat, motoristaLng);
-  const destino = new google.maps.LatLng(origemLat, origemLng);
-
-  if (marcadorMotorista) {
-    marcadorMotorista.setPosition(posMotorista);
-  } else {
-    marcadorMotorista = new google.maps.Marker({
-      position: posMotorista,
-      map: map,
-      icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-      title: "Motorista",
+  push(corridaRef, novaCorrida)
+    .then(() => {
+      mostrarMensagem('Corrida solicitada! Aguardando motorista...', 'sucesso');
+    })
+    .catch((error) => {
+      console.error(error);
+      mostrarMensagem('Erro ao solicitar corrida.', 'erro');
     });
-  }
-
-  const directionsService = new google.maps.DirectionsService();
-  const directionsRenderer = new google.maps.DirectionsRenderer();
-
-  if (rotaAtiva) rotaAtiva.setMap(null);
-
-  directionsRenderer.setMap(map);
-  rotaAtiva = directionsRenderer;
-
-  directionsService.route(
-    {
-      origin: posMotorista,
-      destination: destino,
-      travelMode: google.maps.TravelMode.DRIVING,
-    },
-    (result, status) => {
-      if (status === "OK") {
-        directionsRenderer.setDirections(result);
-      }
-    }
-  );
 }
 
-carregarGoogleMaps();
+function escutarAtualizacaoCorrida() {
+  const db = getDatabase(app);
+  const corridasRef = ref(db, 'corridas');
+  const idPassageiro = localStorage.getItem('uid');
+
+  onValue(corridasRef, (snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+      const corrida = childSnapshot.val();
+
+      if (corrida.idPassageiro === idPassageiro) {
+        if (corrida.status === 'aceita') {
+          mostrarMensagem('Corrida aceita! Motorista a caminho.', 'sucesso');
+          dadosMotorista.style.display = 'block';
+          dadosMotorista.innerHTML = `
+            <strong>Motorista:</strong> ${corrida.nomeMotorista || 'N/A'}<br>
+            <strong>Veículo:</strong> ${corrida.veiculo || 'N/A'}<br>
+            <strong>Placa:</strong> ${corrida.placa || 'N/A'}
+          `;
+        } else if (corrida.status === 'recusada') {
+          mostrarMensagem('Corrida recusada pelo motorista. Tente novamente.', 'erro');
+        } else if (corrida.status === 'finalizada') {
+          mostrarMensagem('Corrida finalizada. Obrigado por usar o VAMUX!', 'sucesso');
+          setTimeout(() => window.location.reload(), 3000);
+        }
+      }
+    });
+  });
+}
+
+function mostrarMensagem(msg, tipo) {
+  statusMensagem.textContent = msg;
+  statusMensagem.style.color = tipo === 'erro' ? 'red' : 'green';
+}

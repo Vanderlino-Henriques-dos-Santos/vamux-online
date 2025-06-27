@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro - VAMUX</title>
-    <link rel="stylesheet" href="/src/css/style.css" />
-  </head>
-  <body>
-    <div class="container">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro VAMUX</title>
+  <link rel="stylesheet" href="/src/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <form id="form-cadastro" class="form-box">
       <img src="public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
-      <h1 class="gradient-text">Criar Conta</h1>
+      <h1 class="gradient-text">Crie sua Conta</h1>
 
-      <form id="cadastroForm">
-        <input type="text" id="nome" placeholder="Nome completo" required />
-        <input type="email" id="email" placeholder="E-mail" required />
-        <input type="password" id="senha" placeholder="Senha" required />
+      <input type="text" id="nome" placeholder="Nome completo" />
+      <input type="email" id="email" placeholder="E-mail" />
+      <input type="password" id="senha" placeholder="Senha" />
 
-        <select id="tipoUsuario" required>
-          <option value="">Selecione o tipo</option>
-          <option value="passageiro">Sou Passageiro</option>
-          <option value="motorista">Sou Motorista</option>
-        </select>
+      <select id="tipoUsuario">
+        <option value="Selecione">Selecione</option>
+        <option value="Sou Passageiro">Sou Passageiro</option>
+        <option value="Sou Motorista">Sou Motorista</option>
+      </select>
 
-        <button type="submit" class="btn">Cadastrar</button>
-      </form>
+      <button type="submit" class="btn">Cadastrar</button>
 
-      <p class="mensagem" id="mensagemCadastro"></p>
-      <p>Já tem conta? <a href="/login.html">Entrar</a></p>
-    </div>
+      <div id="mensagem-status" class="mensagem-status"></div>
 
-    <script type="module" src="/src/javascript/cadastro.js"></script>
-  </body>
+      <p style="margin-top: 15px;">Já tem conta? <a href="login.html">Fazer login</a></p>
+
+      <p class="gradient-text" style="margin-top: 20px;">© 2025 VAMUX</p>
+    </form>
+  </div>
+
+  <script type="module" src="/src/javascript/cadastro.js"></script>
+</body>
 </html>
