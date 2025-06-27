@@ -1,140 +1,145 @@
-import { app } from './firebase-config.js';
-import { getDatabase, ref, push, onValue } from 'firebase/database';
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, push, onValue, update } from "firebase/database";
+import { firebaseConfig } from "./firebase-config.js";
 
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+// Pega o nome do passageiro do localStorage
+const passageiroNome = localStorage.getItem("nome") || "Passageiro";
+
+// Elementos
+const origemInput = document.getElementById("origem");
+const destinoInput = document.getElementById("destino");
+const btnEstimar = document.getElementById("btn-estimar");
+const btnChamar = document.getElementById("btn-chamar");
+const estimativaDiv = document.getElementById("estimativa");
+const statusCorrida = document.getElementById("status-corrida");
+const infoMotorista = document.getElementById("info-motorista");
+
+let rotaTraçada = null;
+let coordenadas = {
+  origem: null,
+  destino: null,
+};
+
+// Função de inicialização do mapa
+function initMap() {
+  const mapa = new google.maps.Map(document.getElementById("mapa"), {
+    zoom: 13,
+    center: { lat: -23.55, lng: -46.63 },
+  });
+
+  rotaTraçada = new google.maps.DirectionsRenderer();
+  rotaTraçada.setMap(mapa);
+}
+
+window.initMap = initMap;
+
+// Carregar script do Google Maps com chave protegida via .env
+const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const script = document.createElement("script");
-script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
+script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
 script.async = true;
 document.head.appendChild(script);
 
-let map, directionsService, directionsRenderer;
-let origemInput, destinoInput, statusMensagem, btnChamar, dadosMotorista;
-let origemFinal, destinoFinal, distanciaFinal, valorFinal;
-
-window.initMap = () => {
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer();
-  map = new google.maps.Map(document.getElementById("mapa"), {
-    zoom: 14,
-    center: { lat: -23.5, lng: -46.6 },
-  });
-  directionsRenderer.setMap(map);
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  origemInput = document.getElementById('origem');
-  destinoInput = document.getElementById('destino');
-  statusMensagem = document.getElementById('statusMensagem');
-  btnChamar = document.getElementById('btnChamarCorrida');
-  dadosMotorista = document.getElementById('dadosMotorista');
-
-  document.getElementById('btnCalcular').addEventListener('click', calcularEstimativa);
-  btnChamar.addEventListener('click', () => {
-    salvarCorrida(origemFinal, destinoFinal, distanciaFinal, valorFinal);
-    btnChamar.style.display = 'none';
-  });
-
-  document.getElementById('btnSair').addEventListener('click', () => {
-    localStorage.clear();
-    window.location.href = 'login.html';
-  });
-
-  escutarAtualizacaoCorrida();
-});
-
-function calcularEstimativa() {
-  const origem = origemInput.value.trim();
-  const destino = destinoInput.value.trim();
+// Estimar distância e valor
+btnEstimar.addEventListener("click", () => {
+  const origem = origemInput.value;
+  const destino = destinoInput.value;
 
   if (!origem || !destino) {
-    mostrarMensagem('Preencha origem e destino.', 'erro');
+    estimativaDiv.textContent = "Preencha origem e destino.";
+    estimativaDiv.style.color = "red";
     return;
   }
 
-  const request = {
-    origin: origem,
-    destination: destino,
-    travelMode: google.maps.TravelMode.DRIVING,
-  };
+  const service = new google.maps.DirectionsService();
+  service.route(
+    {
+      origin: origem,
+      destination: destino,
+      travelMode: google.maps.TravelMode.DRIVING,
+    },
+    (response, status) => {
+      if (status === "OK") {
+        rotaTraçada.setDirections(response);
+        const distanciaKm =
+          response.routes[0].legs[0].distance.value / 1000; // metros p/ km
+        const valorEstimado = (distanciaKm * 3.5).toFixed(2);
 
-  directionsService.route(request, (result, status) => {
-    if (status === 'OK') {
-      directionsRenderer.setDirections(result);
-      const distanciaTexto = result.routes[0].legs[0].distance.text;
-      const distanciaKm = parseFloat(result.routes[0].legs[0].distance.value) / 1000;
-      const valorEstimado = (distanciaKm * 3.5).toFixed(2);
+        coordenadas.origem = origem;
+        coordenadas.destino = destino;
+        coordenadas.distanciaKm = distanciaKm;
+        coordenadas.valor = valorEstimado;
 
-      mostrarMensagem(`Distância: ${distanciaTexto} | Valor estimado: R$ ${valorEstimado}`, 'sucesso');
-
-      // Armazena para envio posterior
-      origemFinal = origem;
-      destinoFinal = destino;
-      distanciaFinal = distanciaKm;
-      valorFinal = valorEstimado;
-
-      btnChamar.style.display = 'block';
-    } else {
-      mostrarMensagem('Erro ao calcular rota.', 'erro');
+        estimativaDiv.innerHTML = `Distância: <b>${distanciaKm.toFixed(
+          2
+        )} km</b> | Valor estimado: <b>R$ ${valorEstimado}</b>`;
+        estimativaDiv.style.color = "green";
+        btnChamar.style.display = "inline-block";
+      } else {
+        estimativaDiv.textContent = "Erro ao calcular rota.";
+        estimativaDiv.style.color = "red";
+      }
     }
-  });
-}
+  );
+});
 
-function salvarCorrida(origem, destino, distanciaKm, valorEstimado) {
-  const db = getDatabase(app);
-  const corridaRef = ref(db, 'corridas');
-  const idPassageiro = localStorage.getItem('uid');
-  const nomePassageiro = localStorage.getItem('nome') || 'Passageiro';
+// Enviar corrida para o Firebase
+btnChamar.addEventListener("click", () => {
+  const corridasRef = ref(database, "corridas");
 
   const novaCorrida = {
-    origem,
-    destino,
-    distanciaKm,
-    valorEstimado,
-    status: 'pendente',
-    idPassageiro,
-    nomePassageiro,
-    timestamp: Date.now(),
+    passageiro: passageiroNome,
+    origem: coordenadas.origem,
+    destino: coordenadas.destino,
+    distancia: coordenadas.distanciaKm,
+    valor: coordenadas.valor,
+    status: "pendente",
+    motorista: "",
+    placa: "",
   };
 
-  push(corridaRef, novaCorrida)
-    .then(() => {
-      mostrarMensagem('Corrida solicitada! Aguardando motorista...', 'sucesso');
-    })
-    .catch((error) => {
-      console.error(error);
-      mostrarMensagem('Erro ao solicitar corrida.', 'erro');
-    });
-}
+  push(corridasRef, novaCorrida);
+  statusCorrida.textContent = "Corrida solicitada! Aguardando motorista...";
+  statusCorrida.style.color = "#8000c9";
+  btnChamar.style.display = "none";
+  estimativaDiv.style.display = "none";
 
-function escutarAtualizacaoCorrida() {
-  const db = getDatabase(app);
-  const corridasRef = ref(db, 'corridas');
-  const idPassageiro = localStorage.getItem('uid');
+  monitorarCorrida();
+});
+
+// Monitorar se motorista aceitou
+function monitorarCorrida() {
+  const corridasRef = ref(database, "corridas");
 
   onValue(corridasRef, (snapshot) => {
-    snapshot.forEach((childSnapshot) => {
-      const corrida = childSnapshot.val();
+    const data = snapshot.val();
+    if (!data) return;
 
-      if (corrida.idPassageiro === idPassageiro) {
-        if (corrida.status === 'aceita') {
-          mostrarMensagem('Corrida aceita! Motorista a caminho.', 'sucesso');
-          dadosMotorista.style.display = 'block';
-          dadosMotorista.innerHTML = `
-            <strong>Motorista:</strong> ${corrida.nomeMotorista || 'N/A'}<br>
-            <strong>Veículo:</strong> ${corrida.veiculo || 'N/A'}<br>
-            <strong>Placa:</strong> ${corrida.placa || 'N/A'}
-          `;
-        } else if (corrida.status === 'recusada') {
-          mostrarMensagem('Corrida recusada pelo motorista. Tente novamente.', 'erro');
-        } else if (corrida.status === 'finalizada') {
-          mostrarMensagem('Corrida finalizada. Obrigado por usar o VAMUX!', 'sucesso');
-          setTimeout(() => window.location.reload(), 3000);
+    Object.entries(data).forEach(([id, corrida]) => {
+      if (
+        corrida.passageiro === passageiroNome &&
+        (corrida.status === "aceita" || corrida.status === "finalizada")
+      ) {
+        statusCorrida.textContent =
+          corrida.status === "aceita"
+            ? "Corrida aceita! Motorista a caminho."
+            : "Corrida finalizada com sucesso!";
+        statusCorrida.style.color =
+          corrida.status === "aceita" ? "#8000c9" : "green";
+
+        if (corrida.motorista) {
+          infoMotorista.innerHTML = `Motorista: <b>${corrida.motorista}</b> | Placa: <b>${corrida.placa}</b>`;
+        }
+
+        if (corrida.status === "finalizada") {
+          setTimeout(() => {
+            location.reload();
+          }, 4000);
         }
       }
     });
   });
-}
-
-function mostrarMensagem(msg, tipo) {
-  statusMensagem.textContent = msg;
-  statusMensagem.style.color = tipo === 'erro' ? 'red' : 'green';
 }

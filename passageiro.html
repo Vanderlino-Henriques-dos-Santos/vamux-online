@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel do Passageiro - VAMUX</title>
-  <link rel="stylesheet" href="/src/css/style.css" />
-</head>
-<body>
-  <div class="container">
-    <header>
-      <img src="./public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
-      <h1 class="gradient-text">Painel do Passageiro</h1>
-      <button id="btnSair" class="btn">Sair</button>
-    </header>
-
-    <main>
-      <input type="text" id="origem" placeholder="Endereço de origem" />
-      <input type="text" id="destino" placeholder="Endereço de destino" />
-      <button id="btnCalcular" class="btn">Calcular Estimativa</button>
-      <button id="btnChamarCorrida" class="btn" style="display: none; margin-top: 10px;">Chamar Corrida</button>
-
-      <p id="statusMensagem" class="mensagem-status"></p>
-
-      <div id="dadosMotorista" class="mensagem-status" style="display: none; font-size: 14px;"></div>
-
-      <div id="mapa" style="width: 100%; height: 300px; background-color: #ccc; border-radius: 12px; margin-top: 10px;"></div>
-    </main>
-
-  
-
-    <script type="module" src="./src/javascript/passageiro.js"></script>
-  </div>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Passageiro - VAMUX</title>
+        <link rel="stylesheet" href="/src/css/style.css">
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <img src="public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo">
+                <h1 class="gradient-text">Painel do Passageiro</h1>
+                <p class="descricao">Solicite sua corrida com conforto e segurança.</p>
+            </header>
+            <main>
+                <div class="form">
+                    <input type="text" id="origem" placeholder="Endereço de partida">
+                    <input type="text" id="destino" placeholder="Endereço de destino">
+                    <button id="btn-estimar" class="btn">Calcular Estimativa</button>
+                    <div id="estimativa" class="mensagem-status"></div>
+                    <button id="btn-chamar" class="btn" style="display: none;">Chamar Corrida</button>
+                </div>
+                <div id="painel-corrida" style="margin-top: 20px;">
+                    <p id="status-corrida" class="mensagem-status"></p>
+                    <p id="info-motorista" class="mensagem-status"></p>
+                </div>
+                <div id="mapa" style="width: 100%; height: 400px; background: #ccc; margin-top: 20px; border-radius: 10px;"></div>
+            </main>
+        </div>
+        <script type="module" src="/src/javascript/passageiro.js"></script>
+    </body>
 </html>
