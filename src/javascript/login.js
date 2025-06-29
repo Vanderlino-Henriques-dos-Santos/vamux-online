@@ -1,6 +1,14 @@
+// 🔄 Firebase
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getDatabase, ref, get } from "firebase/database";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import {
+  getDatabase,
+  ref,
+  get,
+} from "firebase/database";
 import { firebaseConfig } from "./firebase-config.js";
 
 // Inicializa Firebase
@@ -8,67 +16,57 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-// Exibe mensagem visual
-function exibirMensagem(texto, tipo) {
-  const msg = document.getElementById("mensagem-status");
-  msg.innerHTML = texto;
-  msg.style.display = "block";
-  msg.style.color = tipo === "erro" ? "red" : "green";
-  msg.style.fontWeight = "600";
-  msg.style.marginTop = "10px";
+// Elementos da interface
+const form = document.getElementById("login-form");
+const emailInput = document.getElementById("email");
+const senhaInput = document.getElementById("senha");
+const statusLogin = document.getElementById("statusLogin");
+
+// Função para exibir mensagens visuais
+function exibirMensagem(texto, cor = "green") {
+  statusLogin.innerText = texto;
+  statusLogin.style.color = cor;
 }
 
 // Evento de login
-document.getElementById("form-login").addEventListener("submit", async (e) => {
+form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value.trim();
+  const email = emailInput.value.trim();
+  const senha = senhaInput.value.trim();
 
   if (!email || !senha) {
-    exibirMensagem("Preencha todos os campos.", "erro");
+    exibirMensagem("Preencha todos os campos!", "red");
     return;
   }
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
+  signInWithEmailAndPassword(auth, email, senha)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      const userRef = ref(database, `usuarios/${user.uid}`);
 
-    // Salva o UID no localStorage
-    localStorage.setItem("uidVamux", user.uid);
+      get(userRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const dados = snapshot.val();
+            exibirMensagem("Login efetuado com sucesso!", "green");
 
-    // Busca o tipo do usuário no database
-    const userRef = ref(database, `usuarios/${user.uid}`);
-    const snapshot = await get(userRef);
-
-    if (snapshot.exists()) {
-      const dados = snapshot.val();
-      const tipoUsuario = dados.tipo;
-
-      exibirMensagem("Login realizado com sucesso!", "sucesso");
-
-      setTimeout(() => {
-        if (tipoUsuario === "Sou Passageiro") {
-          window.location.href = "passageiro.html";
-        } else {
-          window.location.href = "motorista.html";
-        }
-      }, 1500);
-    } else {
-      exibirMensagem("Usuário não encontrado no banco de dados.", "erro");
-    }
-
-  } catch (error) {
-    let mensagemErro = "Erro ao fazer login.";
-
-    if (error.code === "auth/user-not-found") {
-      mensagemErro = "Usuário não encontrado.";
-    } else if (error.code === "auth/wrong-password") {
-      mensagemErro = "Senha incorreta.";
-    } else if (error.code === "auth/invalid-email") {
-      mensagemErro = "E-mail inválido.";
-    }
-
-    exibirMensagem(mensagemErro, "erro");
-  }
+            setTimeout(() => {
+              if (dados.tipo === "motorista") {
+                window.location.href = "motorista.html";
+              } else {
+                window.location.href = "passageiro.html";
+              }
+            }, 2000);
+          } else {
+            exibirMensagem("Usuário não encontrado na base de dados.", "red");
+          }
+        })
+        .catch(() => {
+          exibirMensagem("Erro ao acessar dados do usuário.", "red");
+        });
+    })
+    .catch((error) => {
+      exibirMensagem("Erro no login: " + error.message, "red");
+    });
 });

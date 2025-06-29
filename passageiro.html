@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Passageiro - VAMUX</title>
-        <link rel="stylesheet" href="/src/css/style.css">
-    </head>
-    <body>
-        <div class="container">
-            <header>
-                <img src="public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo">
-                <h1 class="gradient-text">Painel do Passageiro</h1>
-                <p class="descricao">Solicite sua corrida com conforto e segurança.</p>
-            </header>
-            <main>
-                <div class="form">
-                    <input type="text" id="origem" placeholder="Endereço de partida">
-                    <input type="text" id="destino" placeholder="Endereço de destino">
-                    <button id="btn-estimar" class="btn">Calcular Estimativa</button>
-                    <div id="estimativa" class="mensagem-status"></div>
-                    <button id="btn-chamar" class="btn" style="display: none;">Chamar Corrida</button>
-                </div>
-                <div id="painel-corrida" style="margin-top: 20px;">
-                    <p id="status-corrida" class="mensagem-status"></p>
-                    <p id="info-motorista" class="mensagem-status"></p>
-                </div>
-                <div id="mapa" style="width: 100%; height: 400px; background: #ccc; margin-top: 20px; border-radius: 10px;"></div>
-            </main>
-        </div>
-        <script type="module" src="/src/javascript/passageiro.js"></script>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel do Passageiro - VAMUX</title>
+  <link rel="stylesheet" href="/src/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="/public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
+      <h1 class="gradient-text">Área do Passageiro</h1>
+    </header>
+
+    <main>
+      <!-- Inputs para origem e destino -->
+      <div class="form-container">
+        <input type="text" id="origem" placeholder="Digite a origem" class="input" />
+        <input type="text" id="destino" placeholder="Digite o destino" class="input" />
+
+        <button id="calcularBtn" class="btn">Calcular Estimativa</button>
+        <p id="estimativa" class="mensagem-status"></p>
+
+        <button id="chamarCorridaBtn" class="btn" style="display: none;">Chamar Corrida</button>
+        <p id="status-corrida" class="mensagem-status"></p>
+      </div>
+
+      <!-- Mapa com rota -->
+      <div id="mapa" style="width: 100%; height: 400px; background-color: #eee; border-radius: 10px; margin-top: 20px;"></div>
+    </main>
+  </div>
+
+  <!-- Script JS principal do passageiro -->
+  <script type="module" defer src="/src/javascript/passageiro.js"></script>
+</body>
 </html>

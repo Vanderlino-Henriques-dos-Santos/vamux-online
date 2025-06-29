@@ -1,73 +1,81 @@
+// 🔄 Firebase
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
-import {
-  getDatabase,
-  ref,
-  set
-} from "firebase/database";
+import { getDatabase, ref, set } from "firebase/database";
+import { firebaseConfig } from "./firebase-config.js";
 
-import { firebaseConfig } from './firebase-config.js';
-
-// Inicializa Firebase localmente neste módulo
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-// Exibe mensagens
-function exibirMensagem(texto, tipo) {
-  const mensagemDiv = document.getElementById("mensagem-status");
-  mensagemDiv.innerText = texto;
-  mensagemDiv.style.display = "block";
-  mensagemDiv.style.color = tipo === "erro" ? "red" : "green";
-  mensagemDiv.style.backgroundColor = "transparent";
-  mensagemDiv.style.fontSize = "14px";
+// Elementos do formulário
+const nomeInput = document.getElementById("nome");
+const emailInput = document.getElementById("email");
+const senhaInput = document.getElementById("senha");
+const veiculoInput = document.getElementById("veiculo");
+const placaInput = document.getElementById("placa");
+
+const passageiroBtn = document.getElementById("btn-passageiro");
+const motoristaBtn = document.getElementById("btn-motorista");
+const statusBox = document.getElementById("statusCadastro");
+
+// Exibir mensagens visuais
+function exibirMensagem(texto, cor = "green") {
+  statusBox.innerText = texto;
+  statusBox.style.color = cor;
 }
 
-// Evento de cadastro
-document.getElementById("form-cadastro").addEventListener("submit", async (e) => {
-  e.preventDefault();
+// Função principal de cadastro
+function cadastrar(tipo) {
+  const nome = nomeInput.value.trim();
+  const email = emailInput.value.trim();
+  const senha = senhaInput.value.trim();
+  const veiculo = veiculoInput.value.trim();
+  const placa = placaInput.value.trim();
 
-  const nome = document.getElementById("nome").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value.trim();
-  const tipoUsuario = document.getElementById("tipoUsuario").value;
-
-  if (!nome || !email || !senha || !tipoUsuario || tipoUsuario === "Selecione") {
-    exibirMensagem("Preencha todos os campos.", "erro");
+  if (!nome || !email || !senha) {
+    exibirMensagem("Preencha nome, e-mail e senha!", "red");
     return;
   }
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-
-    await set(ref(database, `usuarios/${user.uid}`), {
-      nome,
-      email,
-      tipo: tipoUsuario
-    });
-
-    exibirMensagem("Cadastro efetuado com sucesso!", "sucesso");
-
-   setTimeout(() => {
-  window.location.href = "login.html";
-}, 2000);
-
-
-  } catch (error) {
-    let mensagemErro = "Erro ao cadastrar. Tente novamente.";
-
-    if (error.code === "auth/email-already-in-use") {
-      mensagemErro = "Este e-mail já está em uso.";
-    } else if (error.code === "auth/invalid-email") {
-      mensagemErro = "E-mail inválido.";
-    } else if (error.code === "auth/weak-password") {
-      mensagemErro = "A senha deve ter pelo menos 6 caracteres.";
-    }
-
-    exibirMensagem(mensagemErro, "erro");
+  if (tipo === "motorista" && (!veiculo || !placa)) {
+    exibirMensagem("Preencha veículo e placa!", "red");
+    return;
   }
-});
+
+  createUserWithEmailAndPassword(auth, email, senha)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      updateProfile(user, {
+        displayName: nome,
+      });
+
+      const userRef = ref(database, `usuarios/${user.uid}`);
+      set(userRef, {
+        nome: nome,
+        email: email,
+        tipo: tipo,
+        veiculo: tipo === "motorista" ? veiculo : "",
+        placa: tipo === "motorista" ? placa : "",
+      });
+
+      exibirMensagem("Cadastro efetuado com sucesso!", "green");
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 2000);
+    })
+    .catch((error) => {
+      exibirMensagem("Erro no cadastro: " + error.message, "red");
+    });
+}
+
+// Eventos dos botões
+passageiroBtn.addEventListener("click", () => cadastrar("passageiro"));
+motoristaBtn.addEventListener("click", () => cadastrar("motorista"));

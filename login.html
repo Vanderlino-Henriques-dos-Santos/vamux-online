@@ -3,28 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login VAMUX</title>
+  <title>Login - VAMUX</title>
   <link rel="stylesheet" href="/src/css/style.css" />
 </head>
 <body>
   <div class="container">
-    <form id="form-login" class="form-box">
-      <img src="public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
-      <h1 class="gradient-text">Fazer Login</h1>
+    <div class="form-box">
+      <img src="/public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
+      <h2 class="gradient-text"> Login</h2>
 
-      <input type="email" id="email" placeholder="E-mail" />
-      <input type="password" id="senha" placeholder="Senha" />
+      <form id="login-form">
+        <input type="email" id="email" placeholder="E-mail" class="input" />
+        <input type="password" id="senha" placeholder="Senha" class="input" />
 
-      <button type="submit" class="btn">Entrar</button>
+        <button type="submit" class="btn">Entrar</button>
 
-      <div id="mensagem-status" class="mensagem-status" style="display: none;"></div>
+        <!-- Mensagem de status -->
+        <p id="statusLogin" class="mensagem-status"></p>
+      </form>
 
-      <p style="margin-top: 15px;">Não tem conta? <a href="cadastro.html">Criar agora</a></p>
-
-      <p class="gradient-text" style="margin-top: 20px;">© 2025 VAMUX</p>
-    </form>
+      <p style="text-align: center; margin-top: 15px;">
+        Não tem conta? <a href="cadastro.html">Criar agora</a>
+      </p>
+    </div>
   </div>
 
-  <script type="module" src="/src/javascript/login.js"></script>
+  <script type="module" defer src="/src/javascript/login.js"></script>
 </body>
 </html>

@@ -132,11 +132,15 @@ input, select {
   margin: 5px 0;
 }
 
-/* Estimativas de corrida */
-#estimateDisplay {
-  background-color: #e6e6fa;
-  color: #4a0082;
+#estimativa {
+  font-size: 18px;
+  font-weight: 700;
+  color: #00aa00; /* Verde escuro */
+  text-align: center;
+  margin-top: 10px;
+  padding: 10px;
 }
+
 
 #corridaStatus.pending {
   background-color: #fff3cd;
@@ -276,6 +280,7 @@ input, select {
   padding: 12px;
   text-align: center;
   margin-top: 10px;
+  font-weight: bold;
 }
 .small-text {
   font-size: 12px;
@@ -284,8 +289,8 @@ input, select {
 .btn-entrar {
   display: inline-block;
   margin: 20px auto;
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 10px 20px;
+  font-size: 16px;
   font-weight: bold;
   color: white;
   background: linear-gradient(to right, #a100ff, #ff00ff);
@@ -301,8 +306,8 @@ input, select {
   background: linear-gradient(to right, #8800cc, #cc00cc);
 }
 .mensagem-status {
-  background-color: #8000c9;
-  color: white;
+  background: none;
+  color: #4CAF50;
   font-weight: 500;
   padding: 6px 10px;
   border-radius: 8px;
@@ -331,20 +336,16 @@ input, select {
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 .mensagem-status {
-  background-color: #8000c9;
-  color: white;
-  font-weight: 500;
-  padding: 6px 10px;
-  border-radius: 8px;
-  margin-top: 15px;
-  font-size: 12px;
+  font-size: 1.1rem;
+  color: green; /* ✅ SOMENTE TEXTO VERDE */
+  padding: 8px 0;
   text-align: center;
-  width: fit-content;
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  font-weight: bold;
+  background: none;
+  border: none;
 }
+
 .btn {
   background-color: #8000c9;
   color: #fff;
@@ -420,4 +421,23 @@ input, select {
 
 #btnCancelar:hover {
   background-color: #a30000;
+}
+/* Mensagens de status para passageiro e motorista */
+.mensagem-status {
+  font-weight: 600;
+  font-size: 20px;
+  margin-top: 10px;
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Mensagem de sucesso - cor verde */
+.mensagem-status.sucesso {
+  color: #00aa00;
+}
+.mensagem-status.erro {
+  color: #cc0000;
+  background: none;
+  padding: 0;
 }

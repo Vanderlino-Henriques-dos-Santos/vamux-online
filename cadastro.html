@@ -3,35 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastro VAMUX</title>
+  <title>Cadastro - VAMUX</title>
   <link rel="stylesheet" href="/src/css/style.css" />
 </head>
 <body>
   <div class="container">
-    <form id="form-cadastro" class="form-box">
-      <img src="public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
-      <h1 class="gradient-text">Crie sua Conta</h1>
+    <div class="form-box">
+      <img src="/public/imagens/logo/logo.jpg" alt="Logo VAMUX" class="logo" />
+      <h2 class="gradient-text">Crie sua Conta</h2>
 
-      <input type="text" id="nome" placeholder="Nome completo" />
-      <input type="email" id="email" placeholder="E-mail" />
-      <input type="password" id="senha" placeholder="Senha" />
+      <form id="cadastro-form">
+        <input type="text" id="nome" placeholder="Nome completo" class="input" />
+        <input type="email" id="email" placeholder="E-mail" class="input" />
+        <input type="password" id="senha" placeholder="Senha" class="input" />
+        <input type="text" id="veiculo" placeholder="Veículo (somente motoristas)" class="input" />
+        <input type="text" id="placa" placeholder="Placa (somente motoristas)" class="input" />
 
-      <select id="tipoUsuario">
-        <option value="Selecione">Selecione</option>
-        <option value="Sou Passageiro">Sou Passageiro</option>
-        <option value="Sou Motorista">Sou Motorista</option>
-      </select>
+        <!-- Mensagem de status -->
+        <p id="statusCadastro" class="mensagem-status"></p>
 
-      <button type="submit" class="btn">Cadastrar</button>
-
-      <div id="mensagem-status" class="mensagem-status"></div>
-
-      <p style="margin-top: 15px;">Já tem conta? <a href="login.html">Fazer login</a></p>
-
-      <p class="gradient-text" style="margin-top: 20px;">© 2025 VAMUX</p>
-    </form>
+        <button type="button" id="btn-passageiro" class="btn">Sou Passageiro</button>
+        <button type="button" id="btn-motorista" class="btn">Sou Motorista</button>
+      </form>
+    </div>
   </div>
 
-  <script type="module" src="/src/javascript/cadastro.js"></script>
+  <!-- Scripts -->
+  <script type="module" defer src="/src/javascript/cadastro.js"></script>
 </body>
 </html>

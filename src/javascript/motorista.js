@@ -1,186 +1,160 @@
+// 🔄 Firebase
 import { initializeApp } from "firebase/app";
 import {
   getDatabase,
   ref,
-  onValue,
+  query,
+  orderByChild,
+  equalTo,
+  onChildAdded,
+  get,
   update,
+  off,
+  limitToLast
 } from "firebase/database";
+import {
+  getAuth,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { firebaseConfig } from "./firebase-config.js";
 
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const auth = getAuth(app);
 
-// Pega o nome e placa do motorista do localStorage
-const nomeMotorista = localStorage.getItem("nome") || "Motorista";
-const placaVeiculo = localStorage.getItem("placa") || "ABC-1234";
+// Elementos do HTML
+const statusCorrida = document.getElementById("statusCorrida");
+const aceitarBtn = document.getElementById("aceitarCorridaBtn");
+const finalizarBtn = document.getElementById("finalizarCorridaBtn");
+const mapaElemento = document.getElementById("mapa");
 
-// Elementos
-const btnOnline = document.getElementById("btn-online");
-const mensagem = document.getElementById("mensagem");
+// Variáveis do mapa e controle
+let map, directionsService, directionsRenderer;
+let corridaIdAtual = null;
+let nomeMotorista = "Motorista";
 
-let mapa;
-let rota;
-let direcoesService;
-let localMotorista = null;
-let corridaAtualId = null;
-
-btnOnline.addEventListener("click", () => {
-  mensagem.textContent = "Você está online! Aguardando corridas...";
-  mensagem.style.color = "#8000c9";
-  escutarCorridas();
-});
-
-// Inicializar o mapa
+// Inicia o mapa com Google Maps
 function initMap() {
-  mapa = new google.maps.Map(document.getElementById("mapa"), {
-    zoom: 15,
-    center: { lat: -23.55, lng: -46.63 },
+  map = new google.maps.Map(mapaElemento, {
+    center: { lat: -23.55052, lng: -46.633308 },
+    zoom: 12,
   });
 
-  rota = new google.maps.DirectionsRenderer();
-  rota.setMap(mapa);
-  direcoesService = new google.maps.DirectionsService();
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
 
-  rastrearLocalizacao();
+  escutarCorridasPendentes(); // Ativa escuta quando mapa estiver pronto
 }
-
 window.initMap = initMap;
 
-// Carrega o mapa com a chave protegida do .env
-const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+// Carrega script do Google Maps dinamicamente
 const script = document.createElement("script");
-script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
-script.async = true;
+script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&callback=initMap`;
+script.defer = true;
 document.head.appendChild(script);
 
-// Rastreia localização do motorista
-function rastrearLocalizacao() {
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(
-      (position) => {
-        localMotorista = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        mapa.setCenter(localMotorista);
-        new google.maps.Marker({
-          position: localMotorista,
-          map: mapa,
-          title: "Você",
-          icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-        });
-      },
-      () => {
-        mensagem.textContent = "Não foi possível obter sua localização.";
-        mensagem.style.color = "red";
-      }
-    );
+// Define nome do motorista autenticado
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    nomeMotorista = user.displayName || "Motorista";
   }
+});
+
+// ✅ NOVO BLOCO: escuta a última corrida pendente e disponível
+function escutarCorridasPendentes() {
+  const refCorridasPendentes = query(
+    ref(database, "corridas"),
+    orderByChild("status"),
+    equalTo("pendente"),
+    limitToLast(1) // Garante que apenas a mais recente seja escutada
+  );
+
+  onChildAdded(refCorridasPendentes, (snapshot) => {
+    const id = snapshot.key;
+    const corrida = snapshot.val();
+
+    // Ignora corridas que já foram aceitas
+    if (corrida.motorista || corrida.status !== "pendente") return;
+
+    // Atualiza variáveis e interface
+    corridaIdAtual = id;
+
+    statusCorrida.innerText = `Passageiro: ${corrida.passageiro} | Rota: ${corrida.origem} → ${corrida.destino}`;
+    statusCorrida.style.color = "green";
+    aceitarBtn.style.display = "inline-block";
+
+    mostrarRota(corrida.origem, corrida.destino);
+  });
 }
 
-// Escutar corridas pendentes
-function escutarCorridas() {
-  const corridasRef = ref(database, "corridas");
+// Traça a rota no mapa usando Google Directions API
+function mostrarRota(origem, destino) {
+  const request = {
+    origin: origem,
+    destination: destino,
+    travelMode: "DRIVING",
+  };
 
-  onValue(corridasRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-
-    for (const [id, corrida] of Object.entries(data)) {
-      if (corrida.status === "pendente") {
-        exibirSolicitacao(corrida, id);
-        break;
-      }
+  directionsService.route(request, (result, status) => {
+    if (status === "OK") {
+      directionsRenderer.setDirections(result);
+    } else {
+      console.error("Erro ao traçar rota:", status);
     }
   });
 }
 
-// Exibir corrida para aceitar
-function exibirSolicitacao(corrida, id) {
-  mensagem.innerHTML = `
-    <div style="
-      background-color: #8000c9;
-      color: white;
-      font-weight: 500;
-      padding: 6px 10px;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 14px;
-      text-align: center;
-      width: fit-content;
-      max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-    ">
-      Corrida solicitada por <b>${corrida.passageiro}</b><br>
-      De: ${corrida.origem}<br>
-      Para: ${corrida.destino}<br>
-      Valor: R$ ${corrida.valor}<br>
-      <button class="btn" style="margin-top: 10px;" onclick="aceitarCorrida('${id}', '${corrida.origem}')">Aceitar Corrida</button>
-    </div>
-  `;
-}
+// Quando motorista clica em "Aceitar Corrida"
+aceitarBtn.addEventListener("click", async () => {
+  if (!corridaIdAtual) return;
 
-// Aceitar corrida
-window.aceitarCorrida = function (id, origem) {
-  const corridaRef = ref(database, `corridas/${id}`);
-  update(corridaRef, {
+  const user = auth.currentUser;
+  const corridaRef = ref(database, `corridas/${corridaIdAtual}`);
+  const snapshot = await get(corridaRef);
+
+  if (!snapshot.exists() || snapshot.val().status !== "pendente") {
+    statusCorrida.innerText = "Corrida já foi atribuída.";
+    statusCorrida.style.color = "orange";
+    aceitarBtn.style.display = "none";
+    return;
+  }
+
+  // Atualiza corrida no banco com dados do motorista
+  await update(corridaRef, {
     status: "aceita",
     motorista: nomeMotorista,
-    placa: placaVeiculo,
+    motoristaUid: user.uid,
   });
 
-  corridaAtualId = id;
-  mensagem.textContent = "Corrida aceita! Rota traçada até o passageiro.";
-  mensagem.style.color = "#8000c9";
+  // Desativa escuta temporariamente
+  off(ref(database, "corridas"));
 
-  traçarRota(origem);
-  adicionarBotaoFinalizar();
-};
+  const corrida = snapshot.val();
+  statusCorrida.innerText = `Corrida aceita! Passageiro: ${corrida.passageiro} | Rota: ${corrida.origem} → ${corrida.destino}`;
+  statusCorrida.style.color = "#8000c9";
+  aceitarBtn.style.display = "none";
+  finalizarBtn.style.display = "inline-block";
+});
 
-// Traçar rota até o passageiro
-function traçarRota(origem) {
-  direcoesService.route(
-    {
-      origin: localMotorista,
-      destination: origem,
-      travelMode: google.maps.TravelMode.DRIVING,
-    },
-    (res, status) => {
-      if (status === "OK") {
-        rota.setDirections(res);
-      }
-    }
-  );
-}
+// Quando motorista finaliza a corrida
+finalizarBtn.addEventListener("click", async () => {
+  if (!corridaIdAtual) return;
 
-// Adicionar botão para finalizar
-function adicionarBotaoFinalizar() {
-  const botao = document.createElement("button");
-  botao.textContent = "Finalizar Corrida";
-  botao.className = "btn";
-  botao.style.marginTop = "15px";
-  botao.onclick = finalizarCorrida;
-
-  mensagem.appendChild(botao);
-}
-
-// Finalizar corrida
-function finalizarCorrida() {
-  if (!corridaAtualId) return;
-  const corridaRef = ref(database, `corridas/${corridaAtualId}`);
-
-  update(corridaRef, {
+  const corridaRef = ref(database, `corridas/${corridaIdAtual}`);
+  await update(corridaRef, {
     status: "finalizada",
   });
 
-  mensagem.textContent = "Corrida finalizada. Aguardando nova corrida...";
-  mensagem.style.color = "green";
-  corridaAtualId = null;
+  // Limpa estado da corrida
+  statusCorrida.innerText = "Corrida finalizada. Aguardando nova solicitação...";
+  statusCorrida.style.color = "blue";
+  finalizarBtn.style.display = "none";
+  aceitarBtn.style.display = "none";
+  corridaIdAtual = null;
 
-  setTimeout(() => {
-    mensagem.textContent = "Você está online! Aguardando corridas...";
-    mensagem.style.color = "#8000c9";
-  }, 4000);
-}
+  directionsRenderer.set("directions", null); // limpa mapa
+
+  escutarCorridasPendentes(); // reativa escuta para novas corridas
+});
